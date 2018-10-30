@@ -19,5 +19,30 @@ RUN conda config --add channels conda-forge
 # Now install hyphy from bioconda
 RUN conda install hyphy
 
-# Install nano
+# Install nano, awk, sed
 RUN apt-get install -y nano
+RUN apt-get install -y gawk
+RUN apt-get install -y sed 
+RUN apt-get install -y util-linux 
+
+
+#Install R and python
+
+#From node:4
+RUN apt-get update && apt-get remove -y python && apt-get install -y python2.7 r-base
+
+
+# Add data
+ADD /query/ /home/query/
+ADD /ref/ /home/ref/
+ADD /test/ /home/test/
+
+
+# Define directory
+
+WORKDIR /home/test
+
+
+# Define maintainer
+
+MAINTAINER Alejandro Berrio alebesc@gmail.com
