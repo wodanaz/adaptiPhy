@@ -68,7 +68,7 @@ for primates in chr*.maf ; do root= `basename $primates .primate.maf` ; maf_pars
 functional_feat/featBED/$root.feat.bed --mask-features hg19,ponAbe2,gorGor3,panTro4,rheMac3 > masked/$root.masked.maf; done
 ```
 
-Now, let's we can pull down query alignments into multiple fasta files according to your features directory.
+Now, we can pull down query alignments into multiple fasta files according to your features directory.
 
 
 ```bash
