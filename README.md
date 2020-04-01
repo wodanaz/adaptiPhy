@@ -95,6 +95,10 @@ HyPhy doesn't perform well with missing dashes, ambiguities or missing sequence.
 
 ### Note: Modify loading biopython according to your cluster needs 
 
+### Note: if you decide to run local tests of selection, the procedure is a bit different. Please follow the pipeline in Local_Reference.txt
+
+
+
 ```bash
 
 for file in *fa; do echo $file >> all.list;done
