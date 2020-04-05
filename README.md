@@ -29,7 +29,7 @@ ChIP-seq.
 ### note: For simplicity of the user, I have uploaded the reference regions as refmasked2.tar.gz, the unmasked maf alignemtns as unmasked1.tar.gz, and the masked genomewide alignments for local NFR extraction masked1.tar.gz. Just download, decompress with tar -xzvf and these directories are ready to use for making either local or global concatenated reference sequences, and to extract query regions ###
 
 
-### 1 ###
+### 1 Download genomewide alignments  ### 
 Download a multiZ alignment from UCSC (100way multiple alignment)
 
 ```bash
@@ -37,7 +37,7 @@ for chr in chr1 chr2 chr3 chr4 chr5 chr6 chr7 chr8 chr9 chr10 chr11 chr12 chr13 
 do wget --timestamping 'http://hgdownload.cse.ucsc.edu/goldenPath/hg19/multiz100way/maf/'$chr.maf.gz; done
 ```
 
-### 2 ###
+### 2 Download Referennce genome ###
 Download the human assembly reference for each MAF from UCSC
 
 ```bash
@@ -46,7 +46,7 @@ do wget --timestamping 'ftp://hgdownload.cse.ucsc.edu/goldenPath/hg19/chromosome
 ```
 
 
-### 3 ###
+### 3 Subset the 100-way genome-wide alignment for queries ###
 To extract a smaller set of MAF files to use as query. This should correspond to the species of interest. In this case: human, chimp, gorilla, orangutan, macaque
 
 ```bash
@@ -54,26 +54,8 @@ for file in chr*.maf; do root= basename $file .maf; maf_parse $file --seqs hg19,
 ```
 Note: Save in a directory called unmasked
 
-### 4 ###
-To extract a smaller set of masked MAF files to use as reference. This should correspond to the species of interest. In this case: human, chimp, gorilla, orangutan, macaque
-Create a directory with all the functional features to mask. You can use the file functional.feat.merge.bed
 
-```bash
-mkdir featBED 
-for chr in chr1 chr2 chr3 chr4 chr5 chr6 chr7 chr8 chr9 chr10 chr11 chr12 chr13 chr14 chr15 chr16 chr17 chr18 chr19 chr20 chr21 chr22 chrX chrY ; 
-do grep -w $chr functional.feat.merge.bed  | awk '{print $1 "\t" $2 "\t" $3 }' > featBED/$chr.feat.bed; done
-```
-
-To mask the maf files, do:
-
-create a directory named masked
-
-```bash
-for primates in chr*.maf ; do root= `basename $primates .primate.maf` ; maf_parse $primates --features 
-functional_feat/featBED/$root.feat.bed --mask-features hg19,ponAbe2,gorGor3,panTro4,rheMac3 > masked/$root.masked.maf; done
-```
-
-### 5 ###
+### 4 Extract query alignments ###
 Now, we can pull down query alignments into multiple fasta files according to your features directory.
 
 
@@ -128,7 +110,7 @@ module load Anaconda/1.9.2-fasrc01
 python filtering.py 
 ```
 
-### 6 ###
+### 6 Concatenate NFRs for neutral reference ###
 Now, we need to make a putatively neutral reference
 
 
