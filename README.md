@@ -28,7 +28,11 @@ ChIP-seq.
 
 ### note: For simplicity, you can download the non-functional regions 'refmasked2.tar.gz', the unmasked maf alignemtns as 'unmasked1.tar.gz', and the masked genomewide alignments for extracting local NFR extraction 'masked1.tar.gz'. After downloading,  just decompress with tar -xzvf and these directories are ready to use for making either local, global concatenated reference sequences, and to extract query regions ###
 
-### if you download these files, start in step 3 ###
+### if you download these files, start in step 4 ###
+
+
+
+
 
 
 ### 1 Download genomewide alignments  ### 
@@ -48,6 +52,7 @@ do wget --timestamping 'ftp://hgdownload.cse.ucsc.edu/goldenPath/hg19/chromosome
 ```
 
 
+
 ### 3 Subset the 100-way genome-wide alignment for queries ###
 To extract a smaller set of MAF files to use as query. This should correspond to the species of interest. In this case: human, chimp, gorilla, orangutan, macaque
 
@@ -58,7 +63,7 @@ Note: Save in a directory called unmasked
 
 
 ### 4 Extract query alignments ###
-Now, we can pull down query alignments into multiple fasta files according to your features directory.
+Now, we can pull down query alignments into multiple fasta files according to your features directory. This is the list of locations of to scan for selection
 
 
 ```bash
