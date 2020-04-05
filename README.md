@@ -26,7 +26,7 @@ This walkthough can be used to test for positive selection in regulatory regions
 from data obtained from functional genomic experiments such as ATAC-seq or  	
 ChIP-seq.		
 
-### note: For simplicity of the user, I have uploaded the reference regions as refmasked2.tar.gz, the unmasked maf alignemtns as unmasked1.tar.gz, and the masked genomewide alignments for local NFR extraction masked1.tar.gz. Just download, decompress with tar -xzvf and these directories are ready to use for making either local or global concatenated reference sequences, and to extract query regions ###
+### note: For simplicity, you can download the non-functional regions 'refmasked2.tar.gz', the unmasked maf alignemtns as 'unmasked1.tar.gz', and the masked genomewide alignments for extracting local NFR extraction 'masked1.tar.gz'. After downloading,  just decompress with tar -xzvf and these directories are ready to use for making either local, global concatenated reference sequences, and to extract query regions ###
 
 ### if you download these files, start in step 3 ###
 
