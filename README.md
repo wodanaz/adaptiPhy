@@ -184,7 +184,7 @@ done #exit nano ctrl+O ENTER ctrl+x
 ```
 
 
-### 7 ###
+### 7 Run adaptiPhy using HyPhy ###
 Now, we are ready to run hyphy
 
 
