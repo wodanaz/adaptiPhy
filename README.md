@@ -28,6 +28,8 @@ ChIP-seq.
 
 ### note: For simplicity of the user, I have uploaded the reference regions as refmasked2.tar.gz, the unmasked maf alignemtns as unmasked1.tar.gz, and the masked genomewide alignments for local NFR extraction masked1.tar.gz. Just download, decompress with tar -xzvf and these directories are ready to use for making either local or global concatenated reference sequences, and to extract query regions ###
 
+### if you download these files, start in step 3 ###
+
 
 ### 1 Download genomewide alignments  ### 
 Download a multiZ alignment from UCSC (100way multiple alignment)
