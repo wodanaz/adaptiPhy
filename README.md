@@ -29,14 +29,16 @@ ChIP-seq.
 ### note: For simplicity of the user, I have uploaded the reference regions as refmasked2.tar.gz, the unmasked maf alignemtns as unmasked1.tar.gz, and the masked genomewide alignments for local NFR extraction masked1.tar.gz. Just download, decompress with tar -xzvf and these directories are ready to use for making either local or global concatenated reference sequences, and to extract query regions ###
 
 
-1 Download a multiZ alignment from UCSC (100way multiple alignment)
+### 1 ###
+Download a multiZ alignment from UCSC (100way multiple alignment)
 
 ```bash
 for chr in chr1 chr2 chr3 chr4 chr5 chr6 chr7 chr8 chr9 chr10 chr11 chr12 chr13 chr14 chr15 chr16 chr17 chr18 chr19 chr20 chr21 chr22 chrX chrY; 
 do wget --timestamping 'http://hgdownload.cse.ucsc.edu/goldenPath/hg19/multiz100way/maf/'$chr.maf.gz; done
 ```
 
-2 Download the human assembly reference for each MAF from UCSC
+### 2 ###
+Download the human assembly reference for each MAF from UCSC
 
 ```bash
 for chr in chr1 chr2 chr3 chr4 chr5 chr6 chr7 chr8 chr9 chr10 chr11 chr12 chr13 chr14 chr15 chr16 chr17 chr18 chr19 chr20 chr21 chr22 chrX chrY; 
@@ -44,14 +46,16 @@ do wget --timestamping 'ftp://hgdownload.cse.ucsc.edu/goldenPath/hg19/chromosome
 ```
 
 
-3 To extract a smaller set of MAF files to use as query. This should correspond to the species of interest. In this case: human, chimp, gorilla, orangutan, macaque
+### 3 ###
+To extract a smaller set of MAF files to use as query. This should correspond to the species of interest. In this case: human, chimp, gorilla, orangutan, macaque
 
 ```bash
 for file in chr*.maf; do root= basename $file .maf; maf_parse $file --seqs hg19,ponAbe2,gorGor3,panTro4,rheMac3 --out-root primate/$root; done
 ```
 Note: Save in a directory called unmasked
 
-4 To extract a smaller set of masked MAF files to use as reference. This should correspond to the species of interest. In this case: human, chimp, gorilla, orangutan, macaque
+### 4 ###
+To extract a smaller set of masked MAF files to use as reference. This should correspond to the species of interest. In this case: human, chimp, gorilla, orangutan, macaque
 Create a directory with all the functional features to mask. You can use the file functional.feat.merge.bed
 
 ```bash
@@ -69,7 +73,8 @@ for primates in chr*.maf ; do root= `basename $primates .primate.maf` ; maf_pars
 functional_feat/featBED/$root.feat.bed --mask-features hg19,ponAbe2,gorGor3,panTro4,rheMac3 > masked/$root.masked.maf; done
 ```
 
-5 Now, we can pull down query alignments into multiple fasta files according to your features directory.
+### 5 ###
+Now, we can pull down query alignments into multiple fasta files according to your features directory.
 
 
 ```bash
@@ -79,7 +84,7 @@ for chr in chr1 chr2 chr3 chr4 chr5 chr6 chr7 chr8 chr9 chr10 chr11 chr12 chr13 
 done
 ```
 
-6 To generate alignments for the query regions
+To generate alignments for the query regions
 
 ```bash
 mkdir query
@@ -110,19 +115,20 @@ python prunning.py
 
 ```
 
-7 Once this is done, please generate a new list of fasta files
+Once this is done, please generate a new list of fasta files
 
 ```bash
 for file in *prunned; do echo $file >> all.prunned.list;done
 ```
 
-8 Next, remove anything alignment smaller than 250 bp. Modify if necessary
+Next, remove anything alignment smaller than 250 bp. Modify if necessary
 
 ```bash
 module load Anaconda/1.9.2-fasrc01
 python filtering.py 
 ```
 
+### 6 ###
 Now, we need to make a putatively neutral reference
 
 
@@ -196,6 +202,7 @@ done #exit nano ctrl+O ENTER ctrl+x
 ```
 
 
+### 7 ###
 Now, we are ready to run hyphy
 
 
