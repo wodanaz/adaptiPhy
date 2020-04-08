@@ -1,4 +1,4 @@
-# README #
+#### README #
 
 This README describes the minimal steps that are necessary to get an analysis of selection up and running.
 
@@ -20,7 +20,7 @@ This README describes the minimal steps that are necessary to get an analysis of
 1. Slurm (optional)
 
 
-### Selection test guidelines ###
+#### Selection test walkthrough
 											
 This walkthough can be used to test for positive selection in regulatory regions 	
 from data obtained from functional genomic experiments such as ATAC-seq or  	
