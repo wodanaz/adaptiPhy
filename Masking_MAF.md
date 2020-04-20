@@ -3,24 +3,24 @@
 Copy and transfer all the bed files with boundary information to this new directory
 
 
-*knownRefSeq.bed		RefSeq Human Known genes 
-*knownGene.bed  		UCSC Human Known genes   
-*lincRNA.bed  		long non-coding RNAs
-*tRNA.bed  		Human tRNA
-*wgRNA.bed		Human microRNA and sncRNA
-*humanmRNA.bed 		Total human mRNA
+* knownRefSeq.bed: RefSeq Human Known genes 
+* knownGene.bed: UCSC Human Known genes   
+* lincRNA.bed: long non-coding RNAs
+* tRNA.bed: Human tRNA
+* wgRNA.bed: Human microRNA and sncRNA
+* humanmRNA.bed: Total human mRNA
 
-*OpenChromSynth.master.bed  	Synthesis of all human open chromatin, DNAseI-seq, FAIRE-seq, ChIP-seq
-*thurman.master.bed		Thurman et al, 2012. 125 different cell types and tissues
-*honeybadger.master.bed		Curated list of promoters and enhancers from HoneyBadger https://personal.broadinstitute.org/meuleman/reg2map/HoneyBadger_release/
-*vistaEnhancer.bed		Human Vista Enhancers
+* OpenChromSynth.master.bed: Synthesis of all human open chromatin, DNAseI-seq, FAIRE-seq, ChIP-seq
+* thurman.master.bed: Thurman et al, 2012. 125 different cell types and tissues
+* honeybadger.master.bed: Curated list of promoters and enhancers from HoneyBadger https://personal.broadinstitute.org/meuleman/reg2map/HoneyBadger_release/
+* vistaEnhancer.bed: Human Vista Enhancers
 
-*CpGislands.bed			known for UCSC genome browser
+* CpGislands.bed: known for UCSC genome browser
 
-*microsats.bed			short repeats
-*InterruptedRpts.bed		Interrupted Rpts - Fragments of Interrupted Repeats Joined by RepeatMasker ID
-*NumtS.bed			Human NumtS mitochondrial sequence
-*simplerepeats.bed		Simple Tandem Repeats by TRF
+* microsats.bed: short repeats
+* InterruptedRpts.bed: Interrupted Rpts - Fragments of Interrupted Repeats Joined by RepeatMasker ID
+* NumtS.bed: Human NumtS mitochondrial sequence
+* simplerepeats.bed: Simple Tandem Repeats by TRF
 
 
 
