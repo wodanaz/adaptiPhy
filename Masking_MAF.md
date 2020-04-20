@@ -64,7 +64,7 @@ maf_parse $primates --features functional_feat/featBEDv3/$root.feat.bed --mask-f
 done
 ```
 
-# Don't forget to mask the same genomic regions in the reference chromosomes as well
+#### Don't forget to mask the same genomic regions in the reference chromosomes as well
 
 
 ```bash
