@@ -51,7 +51,7 @@ for chr in chr1 chr2 chr3 chr4 chr5 chr6 chr7 chr8 chr9 chr10 chr11 chr12 chr13 
 do wget --timestamping 'ftp://hgdownload.cse.ucsc.edu/goldenPath/hg19/chromosomes/'$chr.fa.gz; done ```
 ```
 
-
+#### note: for the originl identification of NFRs, we masked the maf and human reference using known annotations. The following link shows how to mask the genome with different features. https://github.com/wodanaz/adaptiPhy/blob/master/Masking_MAF.md
 
 ### 3 Subset the 100-way genome-wide alignment for queries ###
 To extract a smaller set of MAF files to use as query. This should correspond to the species of interest. In this case: human, chimp, gorilla, orangutan, macaque
