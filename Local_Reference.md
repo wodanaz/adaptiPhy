@@ -1,73 +1,63 @@
 # This pipeline shows how to run adaptiphy if the user desires to run local tests of selection suing 100 Kb of the 
 # flanking sequence of the site of interest
 
-# First, load the bedtools module according to your system (ignore if it is preloaded)
-module load bedtools2
+First, load the bedtools module according to your system (ignore if it is preloaded)
 
+```bash
 sortBed -i dhs_file.bed > dhs_file.sorted.bed
 
 bedtools flank -i dhs_file.sorted.bed -g hg19.genome -b 50000 > flanks50K.bed    # flanks around dhs region window
-
 
 sortBed -i flanks50K.bed > flanks50K.sorted.bed
 
 bedtools merge -i flanks50K.sorted.bed > flanks50K.merged.bed
 
 bedtools subtract -a flanks50K.merged.bed -b dhs_file.sorted.bed > flanks50K.clean.bed
+```
 
-# to make local windows of 300bp around each dhs in the list
-
+to make local windows of 300bp around each dhs in the list
+```bash
 bedtools makewindows -b flanks50K.clean.bed -w 300 >  localsplit_100K.bed
+```
 
+To create a features file for each chromosome
 
-# To create a features file for each chromosome
+```bash
 mkdir features100K
 for chr in chr1 chr2 chr3 chr4 chr5 chr6 chr7 chr8 chr9 chr10 chr11 chr12 chr13 chr14 chr15 chr16 chr17 chr18 chr19 chr20 chr21 chr22 chrX chrY ; 
 	do grep -w $chr localsplit_100K.bed | awk '{print $1 "\t" $2 "\t" $3 }' | sort -k1,1 -k2,2 -V > features100K/$chr.feat.bed; 
 done
+```
 
-
-
-
-######################################################################################
-######################################################################################
 # In order to parse alignments for the local non-functional regions
 
+```bash 
 cd /directory/with/UCSC/maf_files/maskedv3/
-nano do_100Ksplit300.sh
-#!/usr/bin/env bash
-#SBATCH --mail-type=END
+
 for chr in chr1 chr2 chr3 chr4 chr5 chr6 chr7 chr8 chr9 chr10 chr11 chr12 chr13 chr14 chr15 chr16 chr17 chr18 chr19 chr20 chr21 chr22 chrX chrY; do
 msa_split $chr.masked.maf --refseq $chr.masked.fa --gap-strip ANY -q --in-format MAF --features /directory/where/you/run/test/features100K/$chr.feat.bed --for-features --out-root   /directory/where/you/run/test/local/ref/$chr; done;
+```
 
-sbatch do_100Ksplit300.sh
+T parse alignments for the DHS regions of interest
 
 
-
-######################################################################################
-######################################################################################
-# In order to parse alignments for the DHS regions of interest
-
+```bash
 cd /directory/with/UCSC/maf_files/unmasked/
-nano do_queries.sh
-#!/usr/bin/env bash
-#SBATCH --mail-type=END
 for chr in chr1 chr2 chr3 chr4 chr5 chr6 chr7 chr8 chr9 chr10 chr11 chr12 chr13 chr14 chr15 chr16 chr17 chr18 chr19 chr20 chr21 chr22 chrX chrY;
 do msa_split $chr.primate.maf --refseq $chr.fa --gap-strip ANY -q --in-format MAF --features /directory/where/you/run/test/features_query/$chr.feat.bed --for-features --out-root/directory/where/you/run/test/local/query/$chr;
 done
+```
+
+To filter any NFR alignment containing any match to masked sequence
 
 
-######################################################################################
-######################################################################################
-# To filter any NFR alignment containing any match to masked sequence
+make a list of all the alignments generated
 
-
-# make a list of all the alignments generated
+```bash
 for file in *fa; do echo $file >> all.list;done
 
 
-# to filter we need this python script that runs in python 2
-nano filtering.py
+nno filtering.py
 import re # for Regular expressions
 import sys
 from Bio import AlignIO
@@ -144,53 +134,55 @@ for item in badsimiosAsk:
 
 
 thefile2.close()
+```
 
-######### Run this python script
-
-module load Anaconda/1.9.2-fasrc01
+Run script
+```bash
 python filtering.py 
+```
+
+Next, we need to format our search dictionary
+
+Rformat and move to the working directory
+
+```bash
+cat ref/goodalignments.txt | awk -F"." '{ print $1 "\t" $2}' | awk -F"-" '{ print $1 "\t" $2 "\t" $3}' > goodalignments_100K_REF.300.bed 
+
+```
+Do the same for the query, it is important to redo the query bed list becasue after splitting the genome, the locations in the chromosome are sligthly moved
 
 
-
-
-
-##########################################################################################################
-### Next, we need to format our search dictionary
-
-# reformat and move to the working directory
-cat ref/goodalignments.txt | awk -F"." '{ print $1 "\t" $2}' | awk -F"-" '{ print $1 "\t" $2 "\t" $3}' > goodalignments_100K_REF.300.bed  #100K
-
-##########################################################################################################
-### Do the same for the query, 
-### it is important to redo the query bed list becasue after splitting the genome, the locations in the chromosome are sligthly moved
-
+```bash
 cat query/goodalignments.txt | awk -F"." '{ print $1 "\t" $2}' | awk -F"-" '{ print $1 "\t" $2 "\t" $3}' | sort -k1,1 -k2,2 -V > queries.bed  #100K
+```
 
 
+#### Sort the distribution of references
 
-##########################################################################################################
-###  Sort the distribution of references
+
+```bash
 sortBed -i goodalignments_100K_REF.300.bed  > goodalignments_100K_REF.300.sort.bed 
+```
 
-##########################################################################################################
 ### Create Dictionary of NFRs for each DHS
 
-# first, define regions:
+First, define regions:
+
+```bash
 bedtools window -a queries.bed -b goodalignments_100K_REF.300.sort.bed -w 50000 > DHSregions2ref100K.bed
-
+```
 # Make a 100K Dictionary
-
+```bash
 cat DHSregions2ref100K.bed | wc -l
 cat DHSregions2ref100K.bed | head
 cat DHSregions2ref100K.bed | awk '{print $1 "." $2 "-" $3 ".fa" "\t" $4 "." $5 "-" $6 ".fa" }'  > DHS2REF_100K.tab
 awk '$1 != prev{printf "%s%s",ors,$1; ors=ORS; ofs="\t"} {printf "%s%s",ofs,$2; ofs="\t"; prev=$1} END{print ""}' DHS2REF_100K.tab >  DHS2REF_100K.fa.dict
+```
 
+Now we need to concatenate reference files within 100K. 
+To do this, run the following script:
 
-##########################################################################################################################################################################
-# Now we need to concatenate reference files within 100K. 
-# To do this, run the following script:
-
-
+```bash
 nano merge_LocAlignments.py
 import re # for Regular expressions
 from Bio import AlignIO
@@ -242,29 +234,29 @@ for i,j in d.iteritems():
 
 
 
-### Exit nano
+```
 
-###################################################################
-module load Anaconda/1.9.2-fasrc01
+Run previous script using:
+
+```bash
 python merge_LocAlignments.py
-
-###############################################################################################
-### Python Adds a description that can be removed with this simple Bash code:
+```
 
 
+note: python Adds a description that can be removed with this simple Bash code:
+
+```bash
 for file in *fa.ref; do echo $file >> ref.tab; done
 for file in `cat ref.tab`; do root=`basename $file .fa.ref`; awk '{if($1 ~ /^>/){split($1,a,"\t"); print a[1]}else{print}}' $file > $root.ref.fa; done
 
 
-# now, make a list of each reference element
-
 for file in *ref.fa; do echo $file >> ref2.list; done
 awk -F"." '{print $1 "." $2 }' ref2.list > ref.list
+```
 
+This file generates the batch files that run HYPHY for each query and reference in the cluster, modify accordingly
 
-# This file generates the batch files that run HYPHY for each query and reference in the cluster, modify accordingly
-
-
+```bash
 nano bfgenerator_local.py
 import sys
 import csv
@@ -302,39 +294,34 @@ for lrt in model:
 
 
 #exit nano ctrl+O ENTER ctrl+x
+```
 
 
 
+Run python script
 
-# run python script
+```bash
 python bfgenerator_global.py ref.list
+```
 
 
+To Make lists of bf launchers per chromosome
 
-
-###############################################################################################################################
-# To MAke lists of bf launchers per chromosome
-
-
+```bash
 for chr in chr1 chr2 chr3 chr4 chr5 chr6 chr7 chr8 chr9 chr10 chr11 chr12 chr13 chr14 chr15 chr16 chr17 chr18 chr19 chr20 chr21 chr22 chrX chrY; do
 	echo $chr.*hg19.null.bf >> $chr.null.hg19.list;
 	echo $chr.*hg19.alt.bf >> $chr.alt.hg19.list;
 	echo $chr.*panTro4.null.bf >> $chr.null.panTro4.list;
 	echo $chr.*panTro4.alt.bf >> $chr.alt.panTro4.list;	
 done
+```
+
+Create the following file"
+
+```bash
 	
-	
-	
-	
-	
-	
-	
-rm shgenerator.py
 nano shgenerator.py
 #!/usr/bin/env python
-#SBATCH --mail-type=END
-#SBATCH --mail-user=<your email>
-#SBATCH --mem-per-cpu=2000
 import sys
 import csv
 import random
@@ -358,15 +345,14 @@ for lrt in model:
 
 
 #exit nano ctrl+O ENTER ctrl+x
+```
 
 
 
 
 
-
-module load Anaconda/1.9.2-fasrc01
+``` bash
 python shgenerator.py
-
 
 
 
@@ -393,9 +379,8 @@ mkdir res
 module load hyphy
 for file in chr*hg19*sh ; do sbatch $file ; done
 for file in chr*panTro4*sh ; do sbatch $file ; done
+```
 
-
-######################################################################################
-## After processing in HyPHy, process data just like global references
+After processing in HyPHy, process data just like global references
 
 
