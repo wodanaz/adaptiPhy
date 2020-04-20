@@ -34,7 +34,6 @@ ChIP-seq.
 
 
 
-
 ### 1 Download genomewide alignments  ### 
 Download a multiZ alignment from UCSC (100way multiple alignment)
 
@@ -90,7 +89,9 @@ HyPhy doesn't perform well with missing dashes, ambiguities or missing sequence.
 
 ### Note: Modify loading biopython according to your cluster needs 
 
-### Note: if you decide to run local tests of selection, the procedure is a bit different. Please follow the pipeline in Local_Reference.txt
+### Note: if you decide to run local tests of selection, the procedure is a bit different. Please follow the pipeline in:
+
+https://github.com/wodanaz/adaptiPhy/blob/master/Local_Reference.md
 
 
 
