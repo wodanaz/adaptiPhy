@@ -2,6 +2,9 @@
 
 This README describes the minimal steps that are necessary to get an analysis of selection up and running.
 
+Cite this method
+Berrio, A., Haygood, R. & Wray, G.A. Identifying branch-specific positive selection throughout the regulatory genome using an appropriate proxy neutral. BMC Genomics 21, 359 (2020). https://doi.org/10.1186/s12864-020-6752-4
+
 ### What is this repository for? ###
 
 * The scripts associated with this walkthrough can be used to pulldown multiple alignments and analyse positive selection in specific branches.
