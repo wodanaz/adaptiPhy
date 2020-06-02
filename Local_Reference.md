@@ -1,4 +1,4 @@
-# This pipeline shows how to run adaptiphy if the user desires to run local tests of selection suing 100 Kb of the 
+# This pipeline shows how to run adaptiphy if the user desires to run local tests of selection using 100 Kb of the 
 # flanking sequence of the site of interest
 
 First, load the bedtools module according to your system (ignore if it is preloaded)
