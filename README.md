@@ -56,9 +56,10 @@ do wget --timestamping 'ftp://hgdownload.cse.ucsc.edu/goldenPath/hg19/chromosome
 To extract a smaller set of MAF files to use as query. This should correspond to the species of interest. In this case: human, chimp, gorilla, orangutan, macaque
 
 ```bash
+mkdir primate
 for file in chr*.maf; do root= basename $file .maf; maf_parse $file --seqs hg19,ponAbe2,gorGor3,panTro4,rheMac3 --out-root primate/$root; done
 ```
-Note: Save in a directory called unmasked
+Note: Save in a directory called primate
 
 
 ### 4 Extract query alignments ###
