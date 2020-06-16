@@ -38,7 +38,7 @@ for chr in chr1 chr2 chr3 chr4 chr5 chr6 chr7 chr8 chr9 chr10 chr11 chr12 chr13 
 msa_split $chr.masked.maf --refseq $chr.masked.fa --gap-strip ANY -q --in-format MAF --features /directory/where/you/run/test/features100K/$chr.feat.bed --for-features --out-root   /directory/where/you/run/test/local/ref/$chr; done;
 ```
 
-T parse alignments for the DHS regions of interest
+To parse alignments for the DHS regions of interest
 
 
 ```bash
@@ -57,7 +57,7 @@ make a list of all the alignments generated
 for file in *fa; do echo $file >> all.list;done
 
 
-nno filtering.py
+nano filtering.py
 import re # for Regular expressions
 import sys
 from Bio import AlignIO
