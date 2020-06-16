@@ -177,6 +177,13 @@ cat DHSregions2ref100K.bed | wc -l
 cat DHSregions2ref100K.bed | head
 cat DHSregions2ref100K.bed | awk '{print $1 "." $2 "-" $3 ".fa" "\t" $4 "." $5 "-" $6 ".fa" }'  > DHS2REF_100K.tab
 awk '$1 != prev{printf "%s%s",ors,$1; ors=ORS; ofs="\t"} {printf "%s%s",ofs,$2; ofs="\t"; prev=$1} END{print ""}' DHS2REF_100K.tab >  DHS2REF_100K.fa.dict
+
+
+cp DHS2REF_100K.fa.dict ref
+
+cd ref
+
+
 ```
 
 Now we need to concatenate reference files within 100K. 
