@@ -92,8 +92,8 @@ Submit to HPC (Slurm)
 sbatch dobf.sh
 ```
 
+Make lists of bfs for each branch and model
 
-MAke a list of bfs
 ```bash
 for chr in chr1 chr2 chr3 chr4 chr5 chr6 chr7 chr8 chr9 chr10 chr11 chr12 chr13 chr14 chr15 chr16 chr17 chr18 chr19 chr20 chr21 chr22 chrX chrY; do
 	echo $chr.*hg38.null.bf >> $chr.null.hg38.list;
