@@ -27,11 +27,18 @@ tar -xzvf REF.tar.gz
  
  
  Remove giberish and empty alignments from files and make a new queries list file
- 
+ In the query direcotory
  ```bash
- ls -1 | awk -F"." '{ print $1 "." $2 }' > queries.list 
+ ls -1 | sed -r 's/.fa.prunned//g' > query.list 
+ ```
+ In the ref directory
+  ```bash
+ ls -1 | sed -r 's/.ref.fa//g' > ref.list 
  ```
  
+ 
+Copy query.list and ref.list to test directory
+
  
 ```bash
 
@@ -82,7 +89,7 @@ nano dobf.sh
 #SBATCH --mail-user=xxxxxx@xxxxxx.com
 #SBATCH --mem=150
 module load Anaconda/1.9.2-fasrc01
-python bfgenerator_global.py queries.list
+python bfgenerator_global.py query.list
 ```
 
 Submit to HPC (Slurm)
