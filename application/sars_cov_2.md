@@ -1,5 +1,5 @@
 
-# A markdown pipeline of my analysis of selection using SARS-CoV-2 as a reference species
+# A markdown pipeline to run an analysis of selection using SARS-CoV-2 as a reference species
 
 
 First, I downloaded the current genomes alignment from the NCBI
