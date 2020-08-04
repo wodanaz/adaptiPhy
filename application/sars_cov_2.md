@@ -8,9 +8,9 @@ First, I downloaded the current genomes alignment from the NCBI
 #Upload data to Hardac
 
 ```bash
-scp Coronavirus_genomes_final.fasta  ab620@hardac-xfer.genome.duke.edu:/data/wraycompute/alejo/PS_tests/covid_19/alignment_final
-scp SARS_CoV_2.fasta  ab620@hardac-xfer.genome.duke.edu:/data/wraycompute/alejo/PS_tests/covid_19/alignment_final
-scp SARS_CoV.fasta  ab620@hardac-xfer.genome.duke.edu:/data/wraycompute/alejo/PS_tests/covid_19/alignment_final
+scp Coronavirus_genomes_final.fasta  xxxxx@your.hpc.system.edu:your/path//covid_19/alignment_final
+scp SARS_CoV_2.fasta  xxxxx@your.hpc.system.edu:your/path//covid_19/alignment_final
+scp SARS_CoV.fasta  xxxxx@your.hpc.system.edu:your/path//covid_19/alignment_final
 
 
 grep ">" Coronavirus_genomes_final.fasta
@@ -298,8 +298,8 @@ for replicate in range(10):
 				k = random.randint(1,1000);
 				f = open('%s.%s.%s.%i.bf' % (i,virus,lrt,replicate), 'w')
 				f.write('random_seed=%i;\n' % k)
-				f.write('quer_seq_file= "/data/wraycompute/alejo/PS_tests/covid_19/alignment_final/query/%s.fa";\n' % i)
-				f.write('ref_seq_file = "/data/wraycompute/alejo/PS_tests/covid_19/alignment_final/query/%s.%i.ref.fa";\n' % (i,replicate))
+				f.write('quer_seq_file= "your/path//covid_19/alignment_final/query/%s.fa";\n' % i)
+				f.write('ref_seq_file = "your/path//covid_19/alignment_final/query/%s.%i.ref.fa";\n' % (i,replicate))
 				f.write('fit_repl_count = 20;\n')
 				f.write('tree= "(((((SARS_CoV_2,Bat_CoV_RaTG13),Pa_CoV_Guangdong),Pa_CoV_Guangxi_P4L),(Bat_CoV_LYRa11,SARS_CoV)),Bat_CoV_BM48)";\n')
 				f.write('fgrnd_branch_name = "%s";\n' % virus)
@@ -417,7 +417,7 @@ nano domodel_query.sh
 #SBATCH -n 24
 #SBATCH --mem-per-cpu=100
 #SBATCH --mail-type=END
-#SBATCH --mail-user=alebesc@gmail.com
+#SBATCH --mail-user=your_email@email.com
 for file in `cat ref.list` ; do
 phyloFit $file.fa --tree "(Bat_CoV_BM48,((Bat_CoV_LYRa11,SARS_CoV),(Pa_CoV_Guangxi_P4L,(Pa_CoV_Guangdong, (SARS_CoV_2,Bat_CoV_RaTG13)))))" -i FASTA --subst-mod HKY85 --out-root MODELS_HKY85_query/$file; # HKY85 model, It runs fast and it also the model applied in HYPHY
 done #exit nano ctrl+O ENTER ctrl+x
@@ -434,7 +434,7 @@ nano domodel_ref.sh
 #SBATCH -n 24
 #SBATCH --mem-per-cpu=100
 #SBATCH --mail-type=END
-#SBATCH --mail-user=alebesc@gmail.com
+#SBATCH --mail-user=your_email@email.com
 for file in `cat ref.list` ; do for i in {0..9} ; do
 phyloFit $file.$i.ref.fa --tree "(Bat_CoV_BM48,((Bat_CoV_LYRa11,SARS_CoV),(Pa_CoV_Guangxi_P4L,(Pa_CoV_Guangdong, (SARS_CoV_2,Bat_CoV_RaTG13)))))" -i FASTA --subst-mod HKY85 --out-root MODELS_HKY85_ref/$file.$i; # HKY85 model, It runs fast and it also the model applied in HYPHY
 done; done #exit nano ctrl+O ENTER ctrl+x
@@ -783,7 +783,7 @@ nano dophastcons.sh
 #SBATCH -n 24
 #SBATCH --mem-per-cpu=100
 #SBATCH --mail-type=END
-#SBATCH --mail-user=alebesc@gmail.com
+#SBATCH --mail-user=your_email@email.com
 for file in `cat ref.list` ; do for i in {0..9} ; do
 phastCons -i FASTA --estimate-trees TREES/$file.$i $file.fa MODELS_HKY85_ref/$file.$i.mod --no-post-probs;
 done;
@@ -796,7 +796,7 @@ nano dophastcons2.sh
 #SBATCH -n 24
 #SBATCH --mem-per-cpu=100
 #SBATCH --mail-type=END
-#SBATCH --mail-user=alebesc@gmail.com
+#SBATCH --mail-user=your_email@email.com
 ls TREES/*.cons.mod > cons.txt
 phyloBoot --read-mods '*cons.txt' --output-average ave.cons.mod 
 ls TREES/*.noncons.mod > noncons.txt
@@ -813,7 +813,7 @@ nano dophastcons3.sh
 #SBATCH -n 24
 #SBATCH --mem-per-cpu=100
 #SBATCH --mail-type=END
-#SBATCH --mail-user=alebesc@gmail.com
+#SBATCH --mail-user=your_email@email.com
 for file in `cat ref.list` ; do 
 phastCons -i FASTA --most-conserved ELEMENTS/$file.bed --score $file.fa ave.cons.mod,ave.noncons.mod > SCORES/$file.wig
 done;
@@ -982,7 +982,7 @@ nano do_gard.sh
 #SBATCH --ntasks-per-core=1 
 #SBATCH --mem=20g
 #SBATCH --mail-type=END
-#SBATCH --mail-user=alebesc@gmail.com
+#SBATCH --mail-user=your_email@email.com
 hyphy CPU=24 GARD --type nucleotide --alignment Coronavirus_genomes_final.fasta  --rv GDD --rate-classes 3 omp_get_max_threads 
 
 
@@ -1016,7 +1016,7 @@ for file in `cat ref.list` ; do
 root=`basename $file .ref.fa`;
 echo '#!/usr/bin/env bash' > $root.raxml.sh;
 echo "#SBATCH --mail-type=END" >> $root.raxml.sh;
-echo "#SBATCH --mail-user=alebesc@gmail.com" >> $root.raxml.sh;
+echo "#SBATCH --mail-user=your_email@email.com" >> $root.raxml.sh;
 for i in {0..9} ; do
 echo "raxml-ng --msa $file.$i.ref.fa --all --seed 42 --tree pars{20} --bs-tree 100 --simd avx2 --force --threads 1 --model GTR+G --prefix $root.$i  --outgroup Bat_CoV_BM48 " >> $root.raxml.sh
 done
@@ -1030,7 +1030,7 @@ for file in `cat ref.list` ; do
 root=`basename $file .ref.fa`;
 echo '#!/usr/bin/env bash' > $root.raxml.sh;
 echo "#SBATCH --mail-type=END" >> $root.raxml.sh;
-echo "#SBATCH --mail-user=alebesc@gmail.com" >> $root.raxml.sh;
+echo "#SBATCH --mail-user=your_email@email.com" >> $root.raxml.sh;
 for i in {0..9} ; do
 echo "raxmlHPC  -m GTRGAMMA -p 12345 -s $file.$i.ref.fa  -b 12345 -N 100  -n $root.$i  -o Bat_CoV_BM48 " >> $root.raxml.sh
 done
@@ -1062,16 +1062,17 @@ for filename in `cat trees.list`; do grep -H "SARS_CoV_2" $filename  >> trees.ta
 
 grep "TREE tree_" Coronavirus_genomes_final.fasta.best-gard
 
+
+
+
+
+
+
+
+
+
+
+
+
+
 ```
-
-
-
-
-
-
-
-
-
-
-
-
