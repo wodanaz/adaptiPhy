@@ -504,8 +504,7 @@ for filename in `cat null.Bat_CoV_LYRa11.log`; do grep -H "BEST LOG-L:" $filenam
 
 ```
 
-
-# Consolidating tables for 5 branches
+# Consolidating tables for all the branches with the exception of the outgroup
 
 ```bash
 awk '{print $1 "\t" $3}' null.SARS_CoV_2.tab | sort -k1,1 -V  > nulls.SARS_CoV_2.tab
@@ -529,11 +528,7 @@ awk '{print $1 "\t" $3}' alt.Bat_CoV_LYRa11.tab | sort -k1,1 -V > alts.Bat_CoV_L
 
 ```
 
-
-
-
-#####
-# 3 COLUMNS of data, I can pull down other parameteres later
+#### Now, I can make each likelihood table to be joined in a single file
 
 ```bash
 awk -F"." '{print $1 "\t" $2 "\t" $3 "\t" $5  }'  nulls.SARS_CoV_2.tab > col1.SARS_CoV_2.tab
@@ -566,7 +561,7 @@ cat likelihoods.SARS_CoV_2.tab  likelihoods.Bat_CoV_RaTG13.tab  likelihoods.Pa_C
 ```
 
 
-# to go to R:
+# Now, compute P-values in R:
 
 
 ```bash
@@ -587,12 +582,6 @@ q()
 
 
 
-
-
-###################################################
-# 3 columns
-
-
 ```bash
 awk '{ print $1 "\t" $2 "\t" $6 "\t" $5 }' likelihoods.pvals.tab | sort -k1,1 -V  >  likelihoods.pvals2.tab
 sed 1i"genome_location\treplicate\tpval\tvirus" likelihoods.pvals2.tab > sars2.adaptiphy.data
@@ -606,10 +595,9 @@ sed -i -e "1d" sars2.adaptiphy.data
 
 ```
 
-###############################################################################################################################################################
+# Example:
 
-
-#For Ref
+For Ref
 cat chr.29551-29850.9.mod
 ALPHABET: A C G T 
 ORDER: 0
@@ -624,8 +612,8 @@ RATE_MAT:
 TREE: (Bat_CoV_BM48:0.0780206,((Bat_CoV_LYRa11:0.0452548,SARS_CoV:0.0454444):0.0690806,(Pa_CoV_Guangxi_P4L:0.0813149,(Pa_CoV_Guangdong:0.0475241,(SARS_CoV_2:0.0155872,Bat_CoV_RaTG13:0.0189104):0.0355897):0.0463466):0.0908438):0.0780206);
 
 
-# Let's stop here for a while.... we need to check the table and make sure it's looking good
-# we need to further modify column 1 alone -> I don't like the dots, it would be nicer to have chromosome and location in separate columns
+#### Let's stop here for a while.... we need to check the table and make sure it's looking good
+#### we need to further modify column 1 alone -> I don't like the dots, it would be nicer to have chromosome and location in separate columns
 
 
 ```bash
@@ -644,51 +632,6 @@ sed 1i"genome_location\treplicate\tSARS_CoV_2\tBat_CoV_RaTG13\tPa_CoV_Guangdong\
 ```
 
 
-#For Query
-
-cat chr.29551-29850.mod
-ALPHABET: A C G T 
-ORDER: 0
-SUBST_MOD: HKY85
-TRAINING_LNL: -400.448785
-BACKGROUND: 0.315058 0.193822 0.186873 0.304247 
-RATE_MAT:
-  -0.899015    0.202411    0.378874    0.317729 
-   0.329019   -1.141017    0.195154    0.616844 
-   0.638763    0.202411   -1.158903    0.317729 
-   0.329019    0.392964    0.195154   -0.917137 
-TREE: (Bat_CoV_BM48:0.00827015,((Bat_CoV_LYRa11:0.00542106,SARS_CoV:0.00545641):0.0109575,(Pa_CoV_Guangxi_P4L:0.0473029,(Pa_CoV_Guangdong:1.66111e-18,(SARS_CoV_2:9.30224e-17,Bat_CoV_RaTG13:0.00542749):0.00542569):0.0256534):0.0220178):0.00827015);
-
-
-
-
-
-1 chr.29551-29850.mod 
-2 TREE   
-3 Bat_CoV_BM48 
-4 0.00827015  
-5 Bat_CoV_LYRa11 
-6 0.00542106 
-7 SARS_CoV 
-8 0.00545641  
-9 0.0109575  
-10 Pa_CoV_Guangxi_P4L 
-11 0.0473029  
-12 Pa_CoV_Guangdong 
-13 1.66111e-18  
-14 SARS_CoV_2 
-15 9.30224e-17 
-16 Bat_CoV_RaTG13 
-17 0.00542749  
-18 0.00542569  
-19 0.0256534  
-20 0.0220178  
-21 0.00827015 
-
-
-# Let's stop here for a while.... we need to check the table and make sure it's looking good
-# we need to further modify column 1 alone -> I don't like the dots, it would be nicer to have chromosome and location in separate columns
-
 
 ```bash
 
@@ -706,10 +649,7 @@ sed 1i"genome_location\tSARS_CoV_2\tBat_CoV_RaTG13\tPa_CoV_Guangdong\tPa_CoV_Gua
 
 ```
 
-###################################################################################################################################################################
-
-
-
+```bash
 
 cd ..
 cd ..
@@ -754,23 +694,11 @@ awk '{  rate6 = $13 / $14 ; print $1 "\t" $2  "\t" $13 "\t"  $14 "\t"  rate6  "\
 
 cat PhyloFit.SARS_CoV_2.tab  PhyloFit.Bat_CoV_RaTG13.tab  PhyloFit.Pa_CoV_Guangdong.tab  PhyloFit.Pa_CoV_Guangxi_P4L.tab PhyloFit.SARS_CoV.tab PhyloFit.Bat_CoV_LYRa11.tab |  sort -k1 -k2,2n  -V | sed 1i"genome_location\treplicate\tQsubsRate\tRsubsRate\tzeta\tvirus" > sars2.phyloFit.data
 
-####
+```
 
+# Computing PhastCons
 
-
-##########################################################################################################################
-##########################################################################################################################
-#####       PhastCons             ###########################################################################################
-##########################################################################################################################
-
-
-#mkdir -p TREES     # put estimated tree models here
-##rm -f TREES/*      # in case old versions left over
-#for file in `cat ref.list` ; do phastCons --target-coverage 0.125 --expected-length 20 --gc 0.4 --estimate-trees TREES/$file $file.prunned.fa init.mod --no-post-probs ;
-#done
-
-
-
+```bash
 
 mkdir -p TREES
 rm -f TREES/*      # in case old versions left over
@@ -829,21 +757,13 @@ cd ..
 
 cp query/SCORES/sars2.phastCons.data .
 
+```
 
 
-# Adjust tuning parameters and return to step 2, if necessary. Repeat until coverage and smoothing targets are met.
-# Suppose our targets are 65% coverage of coding exons and a PIT of 10 bits. At UCSC, we would test the first constraint using the featureBits program, e.g.,
+# Consolidate all datasets
 
-#featureBits -enrichment hg17 knownGene:cds most-conserved.bed
 
-#The second constraint could be tested with consEntropy, e.g.,
-
-#consEntropy .125 20 ave.cons.mod ave.noncons.mod
-
-# As in Section 3, we adjust the tuning parameters as needed, only now we repeat steps 2, 3, and 4 after each adjustment, until convergence.
-
-########################
-
+```bash
 
 ls *data
 
@@ -896,13 +816,11 @@ write.table(covid19.selection.data2 , file ="sars2.selection.data", row.names=F,
 
 q()
 
+```
 
-#######################################################################333######################################3
+# To run PREQUEL to generate common ancestors
 
-
-### PREQUEL
-
-
+```bash
 ls *.mod > mytree.txt
 phyloBoot --read-mods '*mytree.txt' --output-average mytree.mod
 
@@ -915,12 +833,10 @@ cat mytree.mod
 
 prequel Coronavirus_genomes_final.fasta mytree.mod anc --no-probs  --keep-gaps
 
+```
 
 
-
-
-######################################
-# In local machine
+Do this In local machine
 
 ```bash
 nano wuCor1.bed
