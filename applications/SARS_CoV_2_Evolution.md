@@ -448,14 +448,10 @@ sbatch domodel_query.sh
 
 ```
 
-
-###############################################################################################################################################################
-###############################################################################################################################################################
-###############################################################################################################################################################
-### After HyPhy had finished running. We can retrieve data from the res/ directory
+# After HyPhy had finished running. We can retrieve data from the res/ directory
 cd res
-# we need to model the likelihood ratio test results in a chi-square distribution to obtain p-values for each pair of null v alternative models...
-# to do this, we can use the program phase8.rb .... but maybe I can implement it in R
+#### we need to model the likelihood ratio test results in a chi-square distribution to obtain p-values for each pair of null v alternative models...
+#### to do this, we can use the program phase8.rb .... but maybe I can implement it in R
 
 
 
