@@ -45,7 +45,15 @@ I made an additional segmentation of 500 bp to test for recombination across tre
 
 ```bash
 
+module load bedtools2
+bedtools makewindows -b  sars2.bed -w 499 -s 250 > split_sars2_500.bed
 
+
+```
+
+#### To create sliding windows alignments
+
+```bash
 
 awk '{ print $1 "\t" $2 - 1 "\t" $3 }' split_sars2.bed > split_map.bed
 
