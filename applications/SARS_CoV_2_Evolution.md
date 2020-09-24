@@ -166,7 +166,7 @@ python filtering.py
 ```
 
 
-
+Now, we need to generate a dictionary were each query will be assigned to 20 reference aignments. The following Python script will do that:
 
 
 ```bash
@@ -241,7 +241,7 @@ for replicate in range(10):
 ```
 
 
-Concatenate 20 sequences randomly
+Now, run this program to concatenate 20 sequences randomly
 
 
 ```bash
