@@ -334,7 +334,7 @@ for i in {0..9} ; do echo *SARS_CoV.null.$i.bf >> null.SARS_CoV.$i.list ; done
 
 ```
 
-
+The following script will generate launchers for each branch and query
 
 ```bash
 
@@ -371,7 +371,7 @@ for replicate in range(10):
 
 ```
 
-Run
+Run and create new directiries to save data
 
 
 
@@ -393,7 +393,7 @@ for file in *sh ; do sbatch $file ; done
 
 ```
 
-
+#### The following commands will generate the substitution rates in the query and reference for each of the branches in the tree. Which will be used to obtain the zeta value. This value will represent the 'acceleration' of a given window. Then, adaptiPhy will provide its p-value.
 
 ```
 
@@ -469,6 +469,8 @@ for file in *SARS_CoV.null.*.res; do echo $file >>null.SARS_CoV.log; done;
 for file in *SARS_CoV.alt.*.res; do echo $file >>alt.SARS_CoV.log; done;
 
 ```
+
+The following scripts will generate tables that are easier to use for calculations in R than a line of text
 
 
 ```bash
