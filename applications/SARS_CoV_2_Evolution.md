@@ -8,7 +8,7 @@ First, I downloaded the current genomes alignment from the NCBI
 #Upload data to Hardac
 
 ```bash
-scp Coronavirus_genomes_final.fasta  xxxxx@your.hpc.system.edu:your/path//covid_19/alignment_final
+scp Coronavirus_genomes_final.fasta  xxxxx@your.hpc.system.edu:your/path/covid_19/alignment_final
 scp SARS_CoV_2.fasta  xxxxx@your.hpc.system.edu:your/path//covid_19/alignment_final
 scp SARS_CoV.fasta  xxxxx@your.hpc.system.edu:your/path//covid_19/alignment_final
 
@@ -38,9 +38,6 @@ chr	1	30068
 module load bedtools2
 bedtools makewindows -b  sars2.bed -w 299 -s 150 > split_sars2.bed
 
-module load bedtools2
-bedtools makewindows -b  sars2.bed -w 499 -s 250 > split_sars2_500.bed
-
 
 ```
 
@@ -56,20 +53,8 @@ mkdir query
 msa_split Coronavirus_genomes_final.fasta --refseq SARS_CoV_2.fasta --gap-strip ANY -q --in-format FASTA --features split_map.bed  --for-features --out-root query/chr 
 
 
-
-
-
-
-
-awk '{ print $1 "\t" $2 - 1 "\t" $3 }' split_sars2_500.bed > split_map_500.bed
-mkdir query_500
-msa_split Coronavirus_genomes_final.fasta --refseq SARS_CoV_2.fasta --in-format FASTA --features split_map_500.bed  --for-features --out-root query_500/chr 
-
-
-
 cd query
 for file in *fa; do echo $file >> all.list;done
-
 
 sort -k1 -V all.list > all_sort.list
 
