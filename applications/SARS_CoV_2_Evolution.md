@@ -433,6 +433,11 @@ phyloFit $file.$i.ref.fa --tree "(Bat_CoV_BM48,((Bat_CoV_LYRa11,SARS_CoV),(Pa_Co
 done; done #exit nano ctrl+O ENTER ctrl+x
 
 
+```
+and submit job
+
+```bash
+
 
 sbatch domodel_ref.sh
 sbatch domodel_query.sh
