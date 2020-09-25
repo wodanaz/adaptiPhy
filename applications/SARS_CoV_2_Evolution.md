@@ -617,6 +617,9 @@ TREE: (Bat_CoV_BM48:0.0780206,((Bat_CoV_LYRa11:0.0452548,SARS_CoV:0.0454444):0.0
 
 
 ```bash
+
+cd /query/MODELS_HKY85_ref
+
 for filename in *mod; do grep -H "TREE:" $filename; done > output.hky85.txt
 
 cat output.hky85.txt | sed -r 's/\(+/ /g' |  sed -r 's/\)/ /g'  | sed -r 's/:/ /g' |  sed -r 's/,/ /g' | sed -r 's/;//g' | awk '{ print $1  "\t" $15  "\t" $17  "\t" $13 "\t" $11  "\t" $8 "\t" $6 }' > BranchLenghts.tab
@@ -634,7 +637,7 @@ sed 1i"genome_location\treplicate\tSARS_CoV_2\tBat_CoV_RaTG13\tPa_CoV_Guangdong\
 
 
 ```bash
-
+cd /query/MODELS_HKY85_query
 
 for filename in *mod; do grep -H "TREE:" $filename; done > output.hky85.txt
 
