@@ -8,6 +8,8 @@ https://peerj.com/articles/10234/#
 
 First download all the files and save them in a proper directory.
 
-Next, follow the steps in 
+Next, follow the steps in https://github.com/wodanaz/adaptiPhy/blob/master/applications/SARS_CoV_2_Evolution.md
 
+
+Once is done, you will get a table with the results from adaptiPhy, PhyloFit and PhastCons
 
