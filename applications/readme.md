@@ -6,3 +6,8 @@
 https://peerj.com/articles/10234/#
 
 
+First download all the files and save them in a proper directory.
+
+Next, follow the steps in SARS_CoV_2_Evolution.md
+
+
