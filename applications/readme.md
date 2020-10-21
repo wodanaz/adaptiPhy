@@ -13,5 +13,5 @@ Next, follow the steps in https://github.com/wodanaz/adaptiPhy/blob/master/appli
 
 Once is done, you will get a table with the results from adaptiPhy, PhyloFit and PhastCons.
 
-Next, unzip and follow the steps in your R environment
+Next, download, unzip "R_analysis.zip", and follow the steps in your R environment
 
