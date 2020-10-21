@@ -11,5 +11,7 @@ First download all the files and save them in a proper directory.
 Next, follow the steps in https://github.com/wodanaz/adaptiPhy/blob/master/applications/SARS_CoV_2_Evolution.md
 
 
-Once is done, you will get a table with the results from adaptiPhy, PhyloFit and PhastCons
+Once is done, you will get a table with the results from adaptiPhy, PhyloFit and PhastCons.
+
+Next, unzip and follow the steps in your R environment
 
