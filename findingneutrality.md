@@ -89,6 +89,7 @@ ggplot(branch_full_mask) +
   
 ```
 
+![alt text](https://github.com/wodanaz/adaptiPhy/blob/master/fig_rel_branch.png?raw=true)
 
 
 ```R
