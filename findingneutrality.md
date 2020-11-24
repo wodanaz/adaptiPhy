@@ -1,7 +1,8 @@
 
 
-# To subset a list of putative neutral elements:
+# To create a subset list of putative neutral elements:
 
+First, we need to compute the substitution rate among each node and tip of the three. Here, we used PhyloFit to do this.
 
 ```bash
 
@@ -40,9 +41,73 @@ sed 1i"chromosome\trheMac3\tponAbe2\tgorGor3\tpanTro4\thg19\tPanHomo\tPanHomoGor
 
 ```
 
+### Next, we need to compute the relative substitution rate of each branch relative to the entire tree.
+ 
+Here we use R to do this
+
+```R
+# set working directory to the path where you saved Branches.mask.data
+setwd("~/path/to/file")
+
+Genome_branches_mask = read.table("Branches.mask.data", header = TRUE)  # read tab file 
+
+# Compute relative branch lenght for each branch:
+
+rheMac3_rb <- Genome_branches_mask$rheMac3 / (Genome_branches_mask$rheMac3 + Genome_branches_mask$ponAbe2 + Genome_branches_mask$gorGor3 + Genome_branches_mask$panTro4 + Genome_branches_mask$hg19 + Genome_branches_mask$PanHomo+ Genome_branches_mask$PanHomoGor + Genome_branches_mask$PanHomoGorPon)
+ponAbe2_rb <- Genome_branches_mask$ponAbe2 / (Genome_branches_mask$rheMac3 + Genome_branches_mask$ponAbe2 + Genome_branches_mask$gorGor3 + Genome_branches_mask$panTro4 + Genome_branches_mask$hg19 + Genome_branches_mask$PanHomo+ Genome_branches_mask$PanHomoGor + Genome_branches_mask$PanHomoGorPon)
+gorGor3_rb <- Genome_branches_mask$gorGor3 / (Genome_branches_mask$rheMac3 + Genome_branches_mask$ponAbe2 + Genome_branches_mask$gorGor3 + Genome_branches_mask$panTro4 + Genome_branches_mask$hg19 + Genome_branches_mask$PanHomo+ Genome_branches_mask$PanHomoGor + Genome_branches_mask$PanHomoGorPon)
+panTro4_rb <- Genome_branches_mask$panTro4 / (Genome_branches_mask$rheMac3 + Genome_branches_mask$ponAbe2 + Genome_branches_mask$gorGor3 + Genome_branches_mask$panTro4 + Genome_branches_mask$hg19 + Genome_branches_mask$PanHomo+ Genome_branches_mask$PanHomoGor + Genome_branches_mask$PanHomoGorPon)
+hg19_rb    <- Genome_branches_mask$hg19    / (Genome_branches_mask$rheMac3 + Genome_branches_mask$ponAbe2 + Genome_branches_mask$gorGor3 + Genome_branches_mask$panTro4 + Genome_branches_mask$hg19 + Genome_branches_mask$PanHomo+ Genome_branches_mask$PanHomoGor + Genome_branches_mask$PanHomoGorPon)
+
+# I include the inner branches, just in case
+
+PanHomo_rb <- Genome_branches_mask$PanHomo   / (Genome_branches_mask$rheMac3 + Genome_branches_mask$ponAbe2 + Genome_branches_mask$gorGor3 + Genome_branches_mask$panTro4 + Genome_branches_mask$hg19 + Genome_branches_mask$PanHomo+ Genome_branches_mask$PanHomoGor + Genome_branches_mask$PanHomoGorPon)
+PanHomoGor_rb <- Genome_branches_mask$PanHomoGor   / (Genome_branches_mask$rheMac3 + Genome_branches_mask$ponAbe2 + Genome_branches_mask$gorGor3 + Genome_branches_mask$panTro4 + Genome_branches_mask$hg19 + Genome_branches_mask$PanHomo+ Genome_branches_mask$PanHomoGor + Genome_branches_mask$PanHomoGorPon)
+PanHomoGorPon_rb <- Genome_branches_mask$PanHomoGorPon   / (Genome_branches_mask$rheMac3 + Genome_branches_mask$ponAbe2 + Genome_branches_mask$gorGor3 + Genome_branches_mask$panTro4 + Genome_branches_mask$hg19 + Genome_branches_mask$PanHomo+ Genome_branches_mask$PanHomoGor + Genome_branches_mask$PanHomoGorPon)
+
+
+# make a new dataframe of relative branch lenghts:
+
+relBraches_mask <- as.data.frame(cbind(panTro4_rb, hg19_rb, ponAbe2_rb, gorGor3_rb, rheMac3_rb, PanHomo_rb, PanHomoGor_rb, PanHomoGorPon_rb))
+
+# combine with the original table
+
+branch_full_mask <- cbind(Genome_branches_mask, relBraches_mask)
+
+
+library(ggplot2)
+
+ggplot(branch_full_mask) +
+  geom_density(data =branch_full_mask, aes(x=hg19_rb),  colour="black", fill="darkblue") +
+  geom_density(data = branch_full_mask, aes(x=panTro4_rb),  colour="black", fill="green", alpha= 0.3) +
+  geom_density(data =branch_full_mask, aes(x=gorGor3_rb),  colour="black", fill="blue", alpha= 0.5) +
+  geom_density(data =branch_full_mask, aes(x=ponAbe2_rb),  colour="black", fill="red", alpha= 0.5) +
+  geom_density(data = branch_full_mask, aes(x=rheMac3_rb),  colour="black", fill="yellow", alpha= 0.5) +
+  theme_bw() + labs(x = "Branch length", y="Density", title = "Reference Branch Length Distribution (Masked)") +
+  scale_x_continuous(limits = c(0, 0.5))
+  
+  
+```
+
 
 
 ```R
+
+# remove trees with very small substitution rate. Change the value of the parameter (0.001) according to the distribution figure. The idea is to remove the peak of sites with a substitution rate near to zero (these are highly conserved sites).
+
+NoMissData_mask <- subset(subset(subset(subset(subset(branch_full_mask, hg19>0.001), panTro4 > 0.001), gorGor3 > 0.001), ponAbe2 > 0.001), rheMac3 > 0.001)
+
+
+library(ggplot2)
+
+ggplot(NoMissData_mask) +
+  geom_density(data =NoMissData_mask, aes(x=hg19_rb),  colour="black", fill="darkblue") +
+  geom_density(data = NoMissData_mask, aes(x=panTro4_rb),  colour="black", fill="green", alpha= 0.3) +
+  geom_density(data =NoMissData_mask, aes(x=gorGor3_rb),  colour="black", fill="blue", alpha= 0.5) +
+  geom_density(data =NoMissData_mask, aes(x=ponAbe2_rb),  colour="black", fill="red", alpha= 0.5) +
+  geom_density(data = NoMissData_mask, aes(x=rheMac3_rb),  colour="black", fill="yellow", alpha= 0.5) +
+  theme_bw() + labs(x = "Branch length", y="Density", title = "Reference Branch Length Distribution (Masked)") +
+  scale_x_continuous(limits = c(0, 0.5))
 
 
 
