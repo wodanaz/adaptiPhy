@@ -126,9 +126,10 @@ q3 <- matrix(summary(NoMissData_mask$hg19_rb))[5,]
 
 
 neutralset <- subset(NoMissData_mask, hg19_rb>q1 & hg19_rb<q3)
-dim(moreneutralset)
+dim(neutralset)
 
 # Finally, save this set of sequences. We assume these are non-functional and putatively neutral
+neutralset.txt <- paste(neutralset$chromosome, "fa", sep=".")
 
 
 write.table(neutralset.txt, file ="neutralset.txt", row.names=F, col.names=F, quote=F) 
