@@ -140,7 +140,7 @@ cd  /your/path/to/neutral/alignments/from/masked/fasta
 ```
 
 Run these commands to generate neutral reference sequences. But make sure you have a set of putatively neutral sequences.
-Please refer to findingneutrality.md in order to do this.
+Please refer to findingneutrality.md (https://github.com/wodanaz/adaptiPhy/blob/master/findingneutrality.md) in order to do this.
 
 
 ```bash
