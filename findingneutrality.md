@@ -110,6 +110,29 @@ ggplot(NoMissData_mask) +
   theme_bw() + labs(x = "Branch length", y="Density", title = "Reference Branch Length Distribution (Masked)") +
   scale_x_continuous(limits = c(0, 0.5))
 
+```
+
+![alt text](https://github.com/wodanaz/adaptiPhy/blob/master/fig_rel_branch_2.png?raw=true)
+
+```R
+# compute mean, median and first and third quantile for the human branch:
+
+mean_hg19 <- mean(NoMissData_mask$hg19_rb)
+median_hg19 <- median(NoMissData_mask$hg19_rb)
+
+quantile(NoMissData_mask$hg19_rb)
+q1 <- matrix(summary(NoMissData_mask$hg19_rb))[2,]
+q3 <- matrix(summary(NoMissData_mask$hg19_rb))[5,]
+
+
+neutralset <- subset(NoMissData_mask, hg19_rb>q1 & hg19_rb<q3)
+dim(moreneutralset)
+
+# Finally, save this set of sequences. We assume these are non-functional and putatively neutral
+
+
+write.table(neutralset.txt, file ="neutralset.txt", row.names=F, col.names=F, quote=F) 
 
 
 ```
+
