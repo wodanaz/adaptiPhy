@@ -20,7 +20,7 @@ docker image ls
 
 ```
 
-Finally, enter the image:
+Finally, enter into the image environment:
 
 ```bash
 docker run -it wodenaz/accelerated-evolution-version3
