@@ -10,6 +10,8 @@ Berrio, A., Haygood, R. & Wray, G.A. Identifying branch-specific positive select
 * The scripts associated with this walkthrough can be used to pulldown multiple alignments and analyse positive selection in specific branches.
 * Version 2.0
 
+* For a docker container with minimal requirements, please follow the instructions at https://github.com/wodanaz/adaptiPhy/blob/master/docker_instructions.md
+
 ### How do I get set up? ###
 
 * Dependencies:
