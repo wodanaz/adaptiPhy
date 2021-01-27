@@ -1,6 +1,8 @@
 # README
 
 This README describes the minimal steps that are necessary to get an analysis of selection up and running.
+* For a docker container with minimal requirements, please follow the instructions at https://github.com/wodanaz/adaptiPhy/blob/master/docker_instructions.md
+
 
 Cite this method
 Berrio, A., Haygood, R. & Wray, G.A. Identifying branch-specific positive selection throughout the regulatory genome using an appropriate proxy neutral. BMC Genomics 21, 359 (2020). https://doi.org/10.1186/s12864-020-6752-4
@@ -10,7 +12,6 @@ Berrio, A., Haygood, R. & Wray, G.A. Identifying branch-specific positive select
 * The scripts associated with this walkthrough can be used to pulldown multiple alignments and analyse positive selection in specific branches.
 * Version 2.0
 
-* For a docker container with minimal requirements, please follow the instructions at https://github.com/wodanaz/adaptiPhy/blob/master/docker_instructions.md
 
 ### How do I get set up? ###
 
