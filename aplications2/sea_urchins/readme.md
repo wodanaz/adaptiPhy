@@ -4,7 +4,7 @@
 Measure local compositional complexity (LCC) of DNA sequence
 
 
-'''bash 
+```bash 
 
 nano dolcc_content.sh
 #!/usr/bin/env bash
