@@ -1,4 +1,3 @@
-nano prunning.py
 import re # for Regular expressions
 import sys, sets
 
