@@ -179,6 +179,15 @@ awk -F"." '{print $1 "." $2 }' ref2.list > ref.list
 for file in `cat ref.tab`; do rm $file; done
 ```
 
+Run batch generator but first, edit the file by adding the species of interest in the branches line, and the location of the the ref and queries, also add the corresponding tree
+
+
+```bash
+python bfgenerator_global.py ref.list
+```
+
+
+
 Make a list of all batch files that have been generated for the alternative and the null models. This can be split for runs in parallel
 
 
