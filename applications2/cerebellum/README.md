@@ -194,7 +194,7 @@ Now, that the queries were created, we need to make a concatenated reference for
 
 ```bash
 
-cd query
+cd ..
 cat query/goodalignments.txt | awk -F"." '{ print $1 "\t" $2}' | awk -F"-" '{ print $1 "\t" $2 "\t" $3}' | sort -k1,1 -k2,2 -V > queries.bed  #100K
 cat query/goodalignments.txt > queries_cerebelum.list
 
