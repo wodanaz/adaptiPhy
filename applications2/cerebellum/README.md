@@ -182,6 +182,12 @@ python filtering.py
 ```bash
 sbatch dofilter.py.sh
 ```
+Check list lengths
 
+
+```bash
+  
+wc -l ambiguous.txt asterisks.txt goodalignments.txt
+```
 
 
