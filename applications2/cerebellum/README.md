@@ -504,6 +504,45 @@ for file in chr*panTro4*sh ; do sbatch $file ; done
 
 ```
 
+### Now we are ready to run PhyloP to get the rates of substituion so, we can compute zeta, the value representing evolutionary ratio
+
+
+For the queries:
+```bash
+cd /data/wraycompute/alejo/PS_tests/primate/Cerebellum_v1/query
+mkdir -p MODELS_HKY85
+nano domodel.sh
+#!/usr/bin/env bash
+#SBATCH -n 24
+#SBATCH --mem-per-cpu=100
+#SBATCH --mail-type=END
+#SBATCH --mail-user=alebesc@gmail.com
+for file in `cat goodalignments.txt` ; 
+do root=`basename $file .ref.fa`; 
+phyloFit $file --tree "(rheMac3,(ponAbe2,(gorGor3,(panTro4,hg19))))" -i FASTA --subst-mod HKY85 --out-root MODELS_HKY85/$root; # HKY85 model, It runs fast and it also the model applied in HYPHY
+done #exit nano ctrl+O ENTER ctrl+x
+
+cd ..
+```
+
+For the references:
+
+```bash
+cd /data/wraycompute/alejo/PS_tests/primate/Cerebellum_v1/ref
+mkdir -p MODELS_HKY85
+rm domodel.sh
+nano domodel.sh
+#!/usr/bin/env bash
+#SBATCH -n 24
+#SBATCH --mem-per-cpu=100
+#SBATCH --mail-type=END
+#SBATCH --mail-user=alebesc@gmail.com
+for file in `cat ref.list` ; 
+do root=`basename $file .ref.fa`; 
+phyloFit $file.ref.fa --tree "(rheMac3,(ponAbe2,(gorGor3,(panTro4,hg19))))" -i FASTA --subst-mod HKY85 --out-root MODELS_HKY85/$root; # HKY85 model, It runs fast and it also the model applied in HYPHY
+done #exit nano ctrl+O ENTER ctrl+x
+```
+
 
 
 
