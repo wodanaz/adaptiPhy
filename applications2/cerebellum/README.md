@@ -283,5 +283,19 @@ for i,j in dictionary.iteritems():
 ```
 
 
+and run it:
 
+```bash
+rm dodicts.sh
+nano dodicts.sh
+#!/usr/bin/env bash
+#SBATCH --mail-type=END
+#SBATCH --mail-user=alebesc@gmail.com
+#SBATCH --mem=150
+module load Anaconda/1.9.2-fasrc01
+python DictGen_cerbellum.py
+```
+```bash
+sbatch dodicts.sh
+```
 
