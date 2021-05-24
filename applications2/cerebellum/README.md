@@ -224,7 +224,7 @@ from Bio.Align import MultipleSeqAlignment
 
 
 
-keys= "queries_cerebelum..list"
+keys= "queries_cerebelum.list"
 values= "neutral.list"
 
 
@@ -299,3 +299,17 @@ python DictGen_cerbellum.py
 sbatch dodicts.sh
 ```
 
+
+
+
+Wait until it finishes running. And then, mv the alignments to a new ref directory in your working directory
+
+```bash
+cd /data/wraycompute/alejo/PS_tests/primate/maskedv3/refmasked2
+
+for file in `cat queries_k562.list`; do echo $file.ref >> ref.k562.tab; done
+
+mkdir /data/wraycompute/alejo/PS_tests/primate/Cerebellum_v1/ref 
+
+for file in `cat queries_cerebelum.list`; do mv $file.ref /data/wraycompute/alejo/PS_tests/primate/Cerebellum_v1/ref ; done
+```
