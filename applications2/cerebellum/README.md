@@ -313,3 +313,22 @@ mkdir /data/wraycompute/alejo/PS_tests/primate/Cerebellum_v1/ref
 
 for file in `cat queries_cerebelum.list`; do mv $file.ref /data/wraycompute/alejo/PS_tests/primate/Cerebellum_v1/ref ; done
 ```
+
+After moving files, the description in the new fasta files must be changed
+
+```bash
+cd  /data/wraycompute/alejo/PS_tests/primate/Cerebellum_v1/ref 
+
+for file in *prunned.ref ; do echo $file >> all.ref.tab; done
+
+
+rm do_refs.sh
+nano do_refs.sh
+#!/usr/bin/env bash
+#SBATCH --mail-type=END
+#SBATCH --mail-user=alebesc@gmail.com
+#SBATCH --mem=1500
+for file in `cat all.ref.tab`; do root=`basename $file .fa.prunned.ref`; awk '{if($1 ~ /^>/){split($1,a,"\t"); print a[1]}else{print}}' $file > $root.ref.fa; done
+```
+
+
