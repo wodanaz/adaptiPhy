@@ -518,7 +518,7 @@ nano domodel.sh
 #SBATCH --mail-type=END
 #SBATCH --mail-user=alebesc@gmail.com
 for file in `cat goodalignments.txt` ; 
-do root=`basename $file .ref.fa`; 
+do root=`basename $file .fa.prunned`; 
 phyloFit $file --tree "(rheMac3,(ponAbe2,(gorGor3,(panTro4,hg19))))" -i FASTA --subst-mod HKY85 --out-root MODELS_HKY85/$root; # HKY85 model, It runs fast and it also the model applied in HYPHY
 done #exit nano ctrl+O ENTER ctrl+x
 
