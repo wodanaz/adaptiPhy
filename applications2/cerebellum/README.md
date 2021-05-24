@@ -35,13 +35,12 @@ sbatch do_queries.sh
 
 ```
 
-
-
+Go to query directory and make a list of alignments
 
 
 ```bash
 
-cd /data/wraycompute/alejo/PS_tests/primate/Cerebellum_v1
+cd /data/wraycompute/alejo/PS_tests/primate/Cerebellum_v1/query
 
 
 for file in *fa; do echo $file >> all.list;done
@@ -51,6 +50,8 @@ wc -l all.list
 
 head all.list
 ```
+
+Need to clean alignments and prun deletions relative to the human genome
 
 ```bash
 nano prun.py.sh
@@ -64,6 +65,13 @@ python prunning.py
 ```
 
 Run it
+
+
+```bash
+sbatch prun.py.sh
+```
+
+
 
 ```bash
 for file in *prunned; do echo $file >> all.prunned.list;done
