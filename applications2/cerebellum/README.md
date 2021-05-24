@@ -163,11 +163,25 @@ thefile2.close()
 ```
 
 
+Run this python script
 
 
 
+```bash
+nano dofilter.py.sh
+#!/usr/bin/env bash
+#SBATCH --mail-type=END
+#SBATCH --mail-user=alebesc@gmail.com
+#SBATCH -N 1
+#SBATCH --mem=200
+module load Anaconda/1.9.2-fasrc01
+python filtering.py 
 
+```
 
+```bash
+sbatch dofilter.py.sh
+```
 
 
 
