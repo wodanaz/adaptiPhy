@@ -307,7 +307,7 @@ Wait until it finishes running. And then, mv the alignments to a new ref directo
 ```bash
 cd /data/wraycompute/alejo/PS_tests/primate/maskedv3/refmasked2
 
-for file in `cat queries_k562.list`; do echo $file.ref >> ref.k562.tab; done
+for file in `cat queries_cerebelum.list`; do echo $file.ref >> ref.cerebellum.tab; done
 
 mkdir /data/wraycompute/alejo/PS_tests/primate/Cerebellum_v1/ref 
 
