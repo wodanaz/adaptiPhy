@@ -224,7 +224,7 @@ from Bio.Align import MultipleSeqAlignment
 
 
 
-keys= "queries_k562.list"
+keys= "queries_cerebelum..list"
 values= "neutral.list"
 
 
