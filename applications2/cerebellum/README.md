@@ -71,13 +71,14 @@ Run it
 sbatch prun.py.sh
 ```
 
+Wait until it finishes running
 
 
 ```bash
 for file in *prunned; do echo $file >> all.prunned.list;done
 ```
 
-
+Filter out any alignment shorter than 250bps
 
 ```bash
 rm filtering.py
@@ -109,7 +110,7 @@ for i in reflist:
 	mydata = myfile.read()
 	fasta = AlignIO.read(i, "fasta")
 	myfile.close()
-	if fasta.get_alignment_length() > 145 :
+	if fasta.get_alignment_length() > 200 :
 		maxNs = len(re.findall(ambiguous, str(mydata), re.I))
 		maxAsk = len(re.findall(missing, str(mydata), re.I))
 		if maxNs > 2:
