@@ -330,5 +330,101 @@ nano do_refs.sh
 #SBATCH --mem=1500
 for file in `cat all.ref.tab`; do root=`basename $file .fa.prunned.ref`; awk '{if($1 ~ /^>/){split($1,a,"\t"); print a[1]}else{print}}' $file > $root.ref.fa; done
 ```
+```bash
+sbatch do_refs.sh
+```
 
+
+Create a new list and remove \*ref files to release some disk space
+
+
+```bash
+awk -F"." '{print $1 "." $2 }' all.ref.tab > ref.list
+
+
+
+nano do_remove.sh
+#!/usr/bin/env bash
+#SBATCH --mail-type=END
+#SBATCH --mail-user=alebesc@gmail.com
+#SBATCH --mem=1500
+for file in `cat all.ref.tab`; do rm $file; done
+```
+```bash
+sbatch do_remove.sh
+```
+
+
+Now, this is almost ready to run AdaptiPhy. 
+
+Copy the scripts where the models are defined to your test direcotry
+
+alt4-fgrnd_spec.bf  null4-fgrnd_spec.bf
+
+
+```bash
+cd ..
+
+mkdir test
+
+cp ref/ref.list test
+cp alt4-fgrnd_spec.bf  test
+cp null4-fgrnd_spec.bf test
+```
+
+The following lines are used to create the batch file creator. This script, generates a batch file for each query for each adaptiPhy run.
+
+```bash
+rm bfgenerator_global.py
+nano bfgenerator_global.py
+import sys
+import csv
+import random
+query=sys.argv[1]
+
+
+with open(query) as f:
+    querylist = f.read().splitlines() 
+
+
+
+
+
+
+
+model = ['null','alt']
+branches = ['hg19','panTro4' ]
+for lrt in model:
+	for ape in branches:
+		for i in querylist:
+			k = random.randint(1,1000);
+			f = open('%s.%s.%s.bf' % (i,ape,lrt), 'w')
+			f.write('random_seed=%i;\n' % k)
+			f.write('quer_seq_file= "/data/wraycompute/alejo/PS_tests/primate/Cerebellum_v1/query/%s.fa.prunned";\n' % i)
+			f.write('ref_seq_file = "/data/wraycompute/alejo/PS_tests/primate/Cerebellum_v1/ref/%s.ref.fa";\n' % i)
+			f.write('fit_repl_count = 20;\n')
+			f.write('tree= "(rheMac3,(ponAbe2,(gorGor3,(panTro4,hg19))))";\n')
+			f.write('fgrnd_branch_name = "%s";\n' % ape)
+			f.write('res_file = "res/%s.%s.%s.res";\n' % (i,ape,lrt))
+			f.write('#include "%s4-fgrnd_spec.bf";\n' % lrt)
+
+
+
+
+
+#exit nano ctrl+O ENTER ctrl+x
+```
+
+```bash
+nano dobf.sh
+#!/usr/bin/env bash
+#SBATCH --mail-type=END
+#SBATCH --mail-user=alebesc@gmail.com
+#SBATCH --mem=150
+module load Anaconda/1.9.2-fasrc01
+python bfgenerator_global.py ref.list
+```
+```bash
+sbatch dobf.sh
+```
 
