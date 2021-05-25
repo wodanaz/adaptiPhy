@@ -579,7 +579,7 @@ sed 1i"genome_location\thg19\tpanTro4\tHCh\tgorGor3\tHchG\tponAbe2\tHChGO\trheMa
 cd ..
 cd ..
 
-#cp query_enlarged/MODELS_HKY85/Q.hky85.Branches.tab .
+
 cp query/MODELS_HKY85/Q.hky85.Branches.tab .
 cp ref/MODELS_HKY85/R.hky85.Branches.tab .
 
