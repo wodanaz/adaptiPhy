@@ -542,8 +542,102 @@ do phyloFit $file.ref.fa --tree "(rheMac3,(ponAbe2,(gorGor3,(panTro4,hg19))))" -
 done #exit nano ctrl+O ENTER ctrl+x
 ```
 
+Adaptiphy can take some time to finish, in the mean time we can process PhyloFit data.
+
+
+For the query:
+
+```bash
+cd ../query/MODELS_HKY85/
+
+for filename in *mod; do grep -H "TREE:" $filename; done > output.hky85.txt
+
+cat output.hky85.txt | sed -r 's/\(+/ /g' |  sed -r 's/\)/ /g'  | sed -r 's/:/ /g' |  sed -r 's/,/ /g' | sed -r 's/;//g' | awk '{ print $1  "\t" $12  "\t" $10  "\t" $13 "\t" $8  "\t" $14 "\t" $6 "\t" $14 "\t" $4 }' | sed 's/.mod//g' > BranchLenghts.tab
+
+sed 1i"genome_location\thg19\tpanTro4\tHCh\tgorGor3\tHchG\tponAbe2\tHChGO\trheMac3" BranchLenghts.tab > Q.hky85.Branches.tab
+
+
+```
+
+And, for the references:
+
+```bash
+cd ..
+cd /ref/MODELS_HKY85/
+
+for filename in *mod; do grep -H "TREE:" $filename; done > output.hky85.txt
+
+cat output.hky85.txt | sed -r 's/\(+/ /g' |  sed -r 's/\)/ /g'  | sed -r 's/:/ /g' |  sed -r 's/,/ /g' | sed -r 's/;//g' | awk '{ print $1  "\t" $12  "\t" $10  "\t" $13 "\t" $8  "\t" $14 "\t" $6 "\t" $14 "\t" $4 }' | sed 's/.mod//g' > BranchLenghts.tab
+
+sed 1i"genome_location\thg19\tpanTro4\tHCh\tgorGor3\tHchG\tponAbe2\tHChGO\trheMac3" BranchLenghts.tab > R.hky85.Branches.tab
+
+```
+
+```bash
+
+
+cd ..
+cd ..
+
+#cp query_enlarged/MODELS_HKY85/Q.hky85.Branches.tab .
+cp query/MODELS_HKY85/Q.hky85.Branches.tab .
+cp ref/MODELS_HKY85/R.hky85.Branches.tab .
+
+
+wc -l Q.hky85.Branches.tab
+wc -l R.hky85.Branches.tab
 
 
 
+sed -i -e "1d" Q.hky85.Branches.tab
+sed -i -e "1d" R.hky85.Branches.tab
+
+
+
+sort Q.hky85.Branches.tab -k1,1 -V > Q.hky85.Branches.sorted.tab
+sort R.hky85.Branches.tab -k1,1 -V > R.hky85.Branches.sorted.tab
+
+awk '{print $1}' Q.hky85.Branches.sorted.tab | awk -F":" '{print $1 "\t" $2 }' | awk -F"-" '{print $1 "\t" $2 "\t" $3}' > Q.hky85.bed
+awk '{print $1}' R.hky85.Branches.sorted.tab | awk -F":" '{print $1 "\t" $2 }'  | awk -F"-" '{print $1 "\t" $2 "\t" $3}' > R.hky85.bed
+
+
+paste Q.hky85.bed Q.hky85.Branches.sorted.tab | column -s '\t' -t | awk '{print $1 "\t" $2 "\t" $3 "\t" $9 }' > Q.hky85.hg19.bed # human
+paste R.hky85.bed R.hky85.Branches.sorted.tab | column -s '\t' -t | awk '{print $1 "\t" $2 "\t" $3 "\t" $9 }' > R.hky85.hg19.bed # human
+
+paste Q.hky85.bed Q.hky85.Branches.sorted.tab | column -s '\t' -t | awk '{print $1 "\t" $2 "\t" $3 "\t" $8 }' > Q.hky85.panTro4.bed # chimp
+paste R.hky85.bed R.hky85.Branches.sorted.tab | column -s '\t' -t | awk '{print $1 "\t" $2 "\t" $3 "\t" $8 }' > R.hky85.panTro4.bed # chimp
+```
+
+Compute Zeta
+
+```bash
+module load R
+R
+```
+
+```R
+K562_Q = as.data.frame(read.table("Q.hky85.Branches.sorted.tab", header = F)) # read tab file 
+#colnames(K562_data) <- c('chromosome', 'pval.human', 'zeta.human', 'pval.chimp', 'zeta.chimp','phastcons')
+K562_R= as.data.frame(read.table("R.hky85.Branches.sorted.tab", header = F)) # read tab file 
+colnames(K562_Q) 
+colnames(K562_R) 
+
+K562.zeta <- merge(K562_Q, K562_R, by= "V1")
+
+rate1 <- K562.zeta$V6.x / K562.zeta$V6.y # human
+rate2 <- K562.zeta$V5.x / K562.zeta$V5.y # chimp
+
+
+K562_selection <- data.frame(K562.zeta$V1 , rate1, rate2)
+colnames(K562_selection) <- c('chromosome', 'zeta.human', 'zeta.chimp')
+
+
+K562_selection <- data.frame(K562.zeta$V1 , rate1, rate2)
+colnames(K562_selection) <- c('chromosome', 'zeta.human', 'zeta.chimp')
+
+write.table(K562_selection, file ="PhyloFit.K562.data", row.names=F, col.names=T, quote=F) 
+
+
+```
 
 
