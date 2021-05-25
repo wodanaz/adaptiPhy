@@ -636,7 +636,9 @@ write.table(Cerebellum_selection, file ="PhyloFit.Cerebellum.data", row.names=F,
 
 
 ```
-
+```bash
+sed -ri 's/\./:/' PhyloFit.Cerebellum.data
+```
 
 If the part run by HyPhy has been completed, its time to consolidate tables and compute P-value
 
