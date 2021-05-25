@@ -638,3 +638,105 @@ write.table(Cerebellum_selection, file ="PhyloFit.Cerebellum.data", row.names=F,
 ```
 
 
+If the part run by HyPhy has been completed, its time to consolidate tables and compute P-value
+
+
+```bash
+
+
+cd test/res
+
+for file in *hg19.null.res; do echo $file >> null.hg19.log; done;
+for file in *hg19.alt.res; do echo $file >>alt.hg19.log; done;
+for file in *panTro4.null.res; do echo $file >>null.panTro4.log; done;
+for file in *panTro4.alt.res; do echo $file >> alt.panTro4.log; done;
+
+
+
+wc -l *log
+
+
+nano domodelX1.sh
+#!/usr/bin/env bash
+#SBATCH -n 24
+#SBATCH --mem-per-cpu=100
+#SBATCH --mail-type=END
+#SBATCH --mail-user=alebesc@gmail.com
+for filename in `cat alt.panTro4.log`; do grep -H -m 1 "BEST LOG-L:" $filename >> alt.panTro4.tab; done;
+for filename in `cat null.panTro4.log`; do grep -H -m 1 "BEST LOG-L:" $filename >> null.panTro4.tab; done;
+for filename in `cat alt.hg19.log`; do grep -H -m 1 "BEST LOG-L:" $filename >> alt.hg19.tab; done;
+for filename in `cat null.hg19.log`; do grep -H -m 1 "BEST LOG-L:" $filename >> null.hg19.tab; done;
+```
+```bash
+sbatch domodelX1.sh
+```
+
+Consolidating tables for 5 branches:
+```bash
+
+awk '{print $1 "\t" $3}' null.hg19.tab | sort -k1,1 -V  | sed -r 's/.hg19.null.res:BEST//g' | sed -r 's/\./:/' > nulls.hg19.tab
+awk '{print $1 "\t" $3}' alt.hg19.tab | sort -k1,1 -V  | sed -r 's/.hg19.alt.res:BEST//g' | sed -r 's/\./:/'> alts.hg19.tab
+
+awk '{print $1 "\t" $3}' null.panTro4.tab | sort -k1,1 -V | sed -r 's/.panTro4.null.res:BEST//g' | sed -r 's/\./:/'  > nulls.panTro4.tab
+awk '{print $1 "\t" $3}' alt.panTro4.tab | sort -k1,1 -V | sed -r 's/.panTro4.alt.res:BEST//g' | sed -r 's/\./:/' > alts.panTro4.tab
+
+
+
+```
+
+```bash
+module load R
+R
+```
+
+```R
+Cerebellum_nulls_hg19 = as.data.frame(read.table("nulls.hg19.tab", header = F)) # read tab file 
+Cerebellum_alts_hg19 = as.data.frame(read.table("alts.hg19.tab", header = F)) # read tab file 
+Cerebellum_nulls_panTro4 = as.data.frame(read.table("nulls.panTro4.tab", header = F)) # read tab file 
+Cerebellum_alts_panTro4 = as.data.frame(read.table("alts.panTro4.tab", header = F)) # read tab file 
+
+
+
+colnames(Cerebellum_nulls_hg19) 
+colnames(Cerebellum_alts_hg19) 
+
+head(Cerebellum_nulls_hg19) 
+head(Cerebellum_alts_hg19) 
+
+Cerebellum.likelihoods.hg19 <- merge(Cerebellum_nulls_hg19, Cerebellum_alts_hg19, by= "V1")
+LRT <- -2*(Cerebellum.likelihoods.hg19$V2.x - Cerebellum.likelihoods.hg19$V2.y)
+Cerebellum.likelihoods.hg19$pval <- 1-pchisq(LRT, 1)
+Cerebellum.likelihoods.hg19$V2.x <-NULL
+Cerebellum.likelihoods.hg19$V2.y <-NULL
+
+Cerebellum.likelihoods.panTro4 <- merge(Cerebellum_nulls_panTro4, Cerebellum_alts_panTro4, by= "V1")
+LRT <- -2*(Cerebellum.likelihoods.panTro4$V2.x - Cerebellum.likelihoods.panTro4$V2.y)
+Cerebellum.likelihoods.panTro4$pval <- 1-pchisq(LRT, 1)
+Cerebellum.likelihoods.panTro4$V2.x <-NULL
+Cerebellum.likelihoods.panTro4$V2.y <-NULL
+
+
+Cerebellum.pvals <- merge(Cerebellum.likelihoods.hg19, Cerebellum.likelihoods.panTro4, by= "V1")
+colnames(Cerebellum.pvals) <- c('chromosome', 'pval.human', 'pval.chimp')
+
+write.table(Cerebellum.pvals, file ="adaptiphy.pvals.tab", row.names=F, col.names=T, quote=F) 
+
+
+# lets's exit the R environment
+q()
+```
+
+Copy resulting file into working directory
+
+```bash
+cd ..
+cd ..
+
+cp test/res/adaptiphy.pvals.tab .
+```
+
+
+
+
+
+
