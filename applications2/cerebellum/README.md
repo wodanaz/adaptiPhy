@@ -624,8 +624,8 @@ colnames(Cerebellum_R)
 
 Cerebellum.zeta <- merge(Cerebellum_Q, Cerebellum_R, by= "V1")
 
-rate1 <- Cerebellum.zeta$V6.x / Cerebellum.zeta$V6.y # human
-rate2 <- Cerebellum.zeta$V5.x / Cerebellum.zeta$V5.y # chimp
+rate1 <- Cerebellum.zeta$V2.x / Cerebellum.zeta$V2.y # human
+rate2 <- Cerebellum.zeta$V3.x / Cerebellum.zeta$V3.y # chimp
 
 
 Cerebellum_selection <- data.frame(Cerebellum.zeta$V1 , rate1, rate2)
