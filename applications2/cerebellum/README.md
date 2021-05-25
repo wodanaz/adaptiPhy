@@ -616,26 +616,23 @@ R
 ```
 
 ```R
-K562_Q = as.data.frame(read.table("Q.hky85.Branches.sorted.tab", header = F)) # read tab file 
+Cerebellum_Q = as.data.frame(read.table("Q.hky85.Branches.sorted.tab", header = F)) # read tab file 
 #colnames(K562_data) <- c('chromosome', 'pval.human', 'zeta.human', 'pval.chimp', 'zeta.chimp','phastcons')
-K562_R= as.data.frame(read.table("R.hky85.Branches.sorted.tab", header = F)) # read tab file 
-colnames(K562_Q) 
-colnames(K562_R) 
+Cerebellum_R= as.data.frame(read.table("R.hky85.Branches.sorted.tab", header = F)) # read tab file 
+colnames(Cerebellum_Q) 
+colnames(Cerebellum_R) 
 
-K562.zeta <- merge(K562_Q, K562_R, by= "V1")
+Cerebellum.zeta <- merge(Cerebellum_Q, Cerebellum_R, by= "V1")
 
-rate1 <- K562.zeta$V6.x / K562.zeta$V6.y # human
-rate2 <- K562.zeta$V5.x / K562.zeta$V5.y # chimp
-
-
-K562_selection <- data.frame(K562.zeta$V1 , rate1, rate2)
-colnames(K562_selection) <- c('chromosome', 'zeta.human', 'zeta.chimp')
+rate1 <- Cerebellum.zeta$V6.x / Cerebellum.zeta$V6.y # human
+rate2 <- Cerebellum.zeta$V5.x / Cerebellum.zeta$V5.y # chimp
 
 
-K562_selection <- data.frame(K562.zeta$V1 , rate1, rate2)
-colnames(K562_selection) <- c('chromosome', 'zeta.human', 'zeta.chimp')
+Cerebellum_selection <- data.frame(Cerebellum.zeta$V1 , rate1, rate2)
+colnames(Cerebellum_selection) <- c('chromosome', 'zeta.human', 'zeta.chimp')
 
-write.table(K562_selection, file ="PhyloFit.K562.data", row.names=F, col.names=T, quote=F) 
+
+write.table(Cerebellum_selection, file ="PhyloFit.Cerebellum.data", row.names=F, col.names=T, quote=F) 
 
 
 ```
