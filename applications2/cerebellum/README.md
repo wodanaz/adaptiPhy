@@ -797,6 +797,86 @@ sed -r 's/.average.wig:/\t/g'  output.wig.txt | sed -r '/\./s/\./:/' |  sort -k1
 sbatch dophastcons_final.sh
 ```
 
+# Obtain GREAT annotations
+
+Upload a bed file of the tested queries (queries.bed) in the form: 
+
+>chr	start	end	chr:start-end
+
+
+
+
+
+
+```bash
+
+awk '{print $1 "\t" $2 "\t" $3 "\t" $1 ":" $2 "-" $3 }' queries.bed  > cerebellum.bed2great.bed
+```
+
+Upload to GREAT at: http://great.stanford.edu/
+
+And examine the closest single TSS within 10000 kb
+
+Then download the resulting file
+
+
+```bash
+sed -ie "1d" cerebellum_great.txt 
+sed -r 's/ \(\+/\t/g' cerebellum_great.txt | sed -r 's/ \(/\t/g'  | sed -r 's/\)/\t/g' | awk '{print $1 "\t" $2 "\t" $3 }' > cerebellum.great.data
+
+grep "NONE" cerebellum.great.data -v > cerebellum.great.nonones.data 
+
+
+```
+
+
+Upload it to HARDAC
+
+
+### Consolidate all results in a single table
+
+
+```bash
+module load R
+R
+```
+
+```R
+
+adaptiphy = as.data.frame(read.table("AdaptiPhy.Cerebellum.data", header = F)) # read tab file 
+head(adaptiphy)
+colnames(adaptiphy) <- c("genome_location",   )
+
+
+PhyloFit = as.data.frame(read.table("PhyloFit.Cerebellum.data", header = T)) # read tab file 
+head(PhyloFit)
+colnames(PhyloFit) <- c("genome_location",  )
+
+
+cerebellum_adaptiphy <- merge(PhyloFit, adaptiphy, by= c('genome_location'))
+head(cerebellum_adaptiphy)
+
+
+PhastCons = as.data.frame(read.table("cerebellum.phastCons.data", header = T)) # read tab file 
+head(PhastCons)
+colnames(PhastCons) <- c("genome_location",  )
+
+cerebellum_adaptiphy2 <- merge(cerebellum_adaptiphy, PhastCons, by= c('genome_location'))
+head(cerebellum_adaptiphy2)
+
+
+
+GREAT = as.data.frame(read.table("cerebellum.great.nonones.data", header = T)) # read tab file 
+head(GREAT)
+colnames(GREAT) <- c("genome_location",  )
+
+
+cerebellum_adaptiphy3 <- merge(cerebellum_adaptiphy2, GREAT, by= c('genome_location'), all.x = T)
+head(cerebellum_adaptiphy3)
+
+
+write.table(cerebellum_adaptiphy3 , file ="cerebellum.selection.data", row.names=F, col.names=T, quote=F) 
+```
 
 
 
