@@ -843,32 +843,35 @@ R
 
 ```R
 
-adaptiphy = as.data.frame(read.table("AdaptiPhy.Cerebellum.data", header = F)) # read tab file 
+adaptiphy = as.data.frame(read.table("AdaptiPhy.Cerebellum.data", header = T)) # read tab file 
 head(adaptiphy)
-colnames(adaptiphy) <- c("genome_location",   )
+colnames(adaptiphy) <- c("genome_location",  "pval.human",  "pval.chimp" )
 
 
 PhyloFit = as.data.frame(read.table("PhyloFit.Cerebellum.data", header = T)) # read tab file 
 head(PhyloFit)
-colnames(PhyloFit) <- c("genome_location",  )
-
+colnames(PhyloFit) <- c("genome_location",  "zeta.human",  "zeta.chimp" )
+head(PhyloFit)
 
 cerebellum_adaptiphy <- merge(PhyloFit, adaptiphy, by= c('genome_location'))
 head(cerebellum_adaptiphy)
 
 
-PhastCons = as.data.frame(read.table("cerebellum.phastCons.data", header = T)) # read tab file 
+PhastCons = as.data.frame(read.table("cerebellum.phastCons.data", header = F)) # read tab file 
 head(PhastCons)
-colnames(PhastCons) <- c("genome_location",  )
+colnames(PhastCons) <- c("genome_location", "PhastCons"  )
+head(PhastCons)
+dim(PhastCons)
+
 
 cerebellum_adaptiphy2 <- merge(cerebellum_adaptiphy, PhastCons, by= c('genome_location'))
 head(cerebellum_adaptiphy2)
+dim(cerebellum_adaptiphy2)
 
 
-
-GREAT = as.data.frame(read.table("cerebellum.great.nonones.data", header = T)) # read tab file 
+GREAT = as.data.frame(read.table("cerebellum.great.nonones.data", header = F)) # read tab file 
 head(GREAT)
-colnames(GREAT) <- c("genome_location",  )
+colnames(GREAT) <- c("genome_location", "gene_id" , "dTSS" )
 
 
 cerebellum_adaptiphy3 <- merge(cerebellum_adaptiphy2, GREAT, by= c('genome_location'), all.x = T)
