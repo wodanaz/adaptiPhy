@@ -765,6 +765,7 @@ For predicting:
 ```bash
 
 mkdir SCORES
+mkdir MOSTCONS
 nano dophastcons_prediction.sh
 #!/usr/bin/env bash
 #SBATCH --mail-type=END
