@@ -739,6 +739,61 @@ cp test/res/adaptiphy.pvals.tab .
 
 
 
+# PhastCons from scratch:
+Here a way to determine the degree of conservation among primates.
+
+```bash
+
+mkdir -p TREES
+rm -f TREES/*      # in case old versions left over
+
+
+nano dophastcons_train.sh
+#!/usr/bin/env bash
+#SBATCH --mail-type=END
+#SBATCH --mail-user=alebesc@gmail.com
+#SBATCH -N 1
+for file in `cat ref.list` ; do
+phastCons -i FASTA --estimate-trees TREES/$file query/$file.fa.prunned ref/MODELS_HKY85/$file.mod --no-post-probs
+done;
+```
+```bash
+sbatch dophastcons_train.sh 
+```
+
+For predicting:
+```bash
+
+mkdir SCORES
+nano dophastcons_prediction.sh
+#!/usr/bin/env bash
+#SBATCH --mail-type=END
+#SBATCH --mail-user=alebesc@gmail.com
+#SBATCH -N 1
+for file in `cat ref.list` ; do
+phastCons -i FASTA $file.fa.prunned --most-conserved MOSTCONS/$.bed TREES/$file.cons.mod,TREES/$file.noncons.mod > SCORES/$file.wig
+done;
+```
+```bash
+sbatch cons_prediction.sh
+```
+
+
+For consolidating in a table:
+```bash
+cd SCORES
+nano dophastcons_final.sh
+#!/usr/bin/env bash
+#SBATCH --mail-type=END
+#SBATCH --mail-user=alebesc@gmail.com
+#SBATCH -N 1
+#SBATCH -n 1
+for file in *wig ; do root=`basename $file .wig`;  sed -i -e "1d" $file  ; awk '{ sum += $1; n++ } END { if (n > 0) print sum / n; }' $file >  $root.average.wig ; done
+for filename in *average.wig; do grep -H "" $filename ; done > output.wig.txt
+sed -r 's/.average.wig:/\t/g'  output.wig.txt | sed -r '/\./s/\./:/' |  sort -k1 -V > cerebellum.phastCons.data
+```
+
+
 
 
 
