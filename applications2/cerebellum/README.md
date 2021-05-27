@@ -776,7 +776,7 @@ phastCons -i FASTA query/$file.fa.prunned --most-conserved MOSTCONS/$.bed TREES/
 done;
 ```
 ```bash
-sbatch cons_prediction.sh
+sbatch dophastcons_prediction.sh
 ```
 
 
@@ -792,6 +792,9 @@ nano dophastcons_final.sh
 for file in *wig ; do root=`basename $file .wig`;  sed -i -e "1d" $file  ; awk '{ sum += $1; n++ } END { if (n > 0) print sum / n; }' $file >  $root.average.wig ; done
 for filename in *average.wig; do grep -H "" $filename ; done > output.wig.txt
 sed -r 's/.average.wig:/\t/g'  output.wig.txt | sed -r '/\./s/\./:/' |  sort -k1 -V > cerebellum.phastCons.data
+```
+```bash
+sbatch dophastcons_final.sh
 ```
 
 
