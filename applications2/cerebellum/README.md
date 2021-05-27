@@ -772,7 +772,7 @@ nano dophastcons_prediction.sh
 #SBATCH --mail-user=alebesc@gmail.com
 #SBATCH -N 1
 for file in `cat ref.list` ; do
-phastCons -i FASTA query/$file.fa.prunned --most-conserved MOSTCONS/$.bed TREES/$file.cons.mod,TREES/$file.noncons.mod > SCORES/$file.wig
+phastCons -i FASTA query/$file.fa.prunned --most-conserved MOSTCONS/$file.bed TREES/$file.cons.mod,TREES/$file.noncons.mod > SCORES/$file.wig
 done;
 ```
 ```bash
