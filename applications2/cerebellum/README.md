@@ -811,7 +811,7 @@ cp peaks_annotations.txt /data/wraycompute/alejo/NS_tests/Pha
 
 
 
-for chr in chr1 chr2 chr3 chr4 chr5 chr6 chr7 chr8 chr9 chr10 chr11 chr12 chr13 chr14 chr15 chr16 chr17 chr18 chr19 chr20 chr21 chr22 chrX chrY; do grep -w $chr peaks_annotations.txt > cerebellum_v2.$chr.bed ; done
+for chr in chr1 chr2 chr3 chr4 chr5 chr6 chr7 chr8 chr9 chr10 chr11 chr12 chr13 chr14 chr15 chr16 chr17 chr18 chr19 chr20 chr21 chr22 chrX chrY; do grep -w $chr queries.bed > cerebellum_v2.$chr.bed ; done
 
 nano getphastconsMedians.cerebellum_v2.sh
 #!/usr/bin/env bash
@@ -825,8 +825,7 @@ for i in chr1 chr2 chr3 chr4 chr5 chr6 chr7 chr8 chr9 chr10 chr11 chr12 chr13 ch
 
 
 bedops --everything cerebellum_v2.phastcons.*.bed > cerebellum_v2_with_median_phastcons.bed
-awk  '{ print $1 "\t" $2 "\t" $3 "\t" $1 ":" $2 "-" $3 }' cerebellum_v2_with_median_phastcons.bed > cerebellum_v2_tested.bed
-awk -F"|" '{ print $1 "\t" $2 }' cerebellum_v2_with_median_phastcons.bed | awk '{ print  $1 ":" $2 "-" $3 "\t" $4 "\t" $5}' > cerebellum_v2_with_median_phastcons.list
+sed -r 's/|//g' cerebellum_v2_with_median_phastcons.bed | awk '{ print  $1 ":" $2 "-" $3 "\t" $4 "\t" $5}' > cerebellum_v2_vertebrate_phastcons.list
 
 
 ```
