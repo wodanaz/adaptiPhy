@@ -739,7 +739,7 @@ cp test/res/adaptiphy.pvals.tab .
 
 
 
-# PhastCons from scratch:
+# Primate PhastCons from scratch:
 Here a way to determine the degree of conservation among primates.
 
 ```bash
@@ -797,13 +797,47 @@ sed -r 's/.average.wig:/\t/g'  output.wig.txt | sed -r '/\./s/\./:/' |  sort -k1
 sbatch dophastcons_final.sh
 ```
 
+# Vertebrate PhastCons from pre-computed table by UCSC-Encode :
+Here a way to determine the degree of conservation among vertebrates.
+
+```bash
+
+cp peaks_annotations.txt /data/wraycompute/alejo/NS_tests/Pha
+
+
+
+########################### 
+#  Pull down PhastCons data
+
+
+
+for chr in chr1 chr2 chr3 chr4 chr5 chr6 chr7 chr8 chr9 chr10 chr11 chr12 chr13 chr14 chr15 chr16 chr17 chr18 chr19 chr20 chr21 chr22 chrX chrY; do grep -w $chr peaks_annotations.txt > cerebellum_v2.$chr.bed ; done
+
+nano getphastconsMedians.cerebellum_v2.sh
+#!/usr/bin/env bash
+#SBATCH --mail-type=END
+#SBATCH --mail-user=alebesc@gmail.com
+#SBATCH -N 1
+#SBATCH --mem=200G
+for i in chr1 chr2 chr3 chr4 chr5 chr6 chr7 chr8 chr9 chr10 chr11 chr12 chr13 chr14 chr15 chr16 chr17 chr18 chr19 chr20 chr21 chr22 chrX chrY; do echo "mapping signal for chromosome ${i}..."; phastConFn="${i}.phastCons100way.wigFix.starch"; bedmap --echo --median --chrom ${i}  cerebellum_v2.${i}.bed ${phastConFn} > cerebellum_v2.phastcons.${i}.bed; done
+
+
+
+
+bedops --everything cerebellum_v2.phastcons.*.bed > cerebellum_v2_with_median_phastcons.bed
+awk  '{ print $1 "\t" $2 "\t" $3 "\t" $1 ":" $2 "-" $3 }' cerebellum_v2_with_median_phastcons.bed > cerebellum_v2_tested.bed
+awk -F"|" '{ print $1 "\t" $2 }' cerebellum_v2_with_median_phastcons.bed | awk '{ print  $1 ":" $2 "-" $3 "\t" $4 "\t" $5}' > cerebellum_v2_with_median_phastcons.list
+
+
+```
+
+
+
 # Obtain GREAT annotations
 
 Upload a bed file of the tested queries (queries.bed) in the form: 
 
 >chr	start	end	chr:start-end
-
-
 
 
 
