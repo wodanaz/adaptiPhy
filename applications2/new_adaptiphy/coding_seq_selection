@@ -1,0 +1,15 @@
+
+
+# Load the environment
+
+
+```bash
+
+module load Anaconda3
+conda activate aleconda
+
+```
+
+
+
+
