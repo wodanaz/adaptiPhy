@@ -41,20 +41,36 @@ ChIP-seq.
 
 
 ### 1 Download genomewide alignments  ### 
-Download a multiZ alignment from UCSC (100way multiple alignment)
+Download hg19 multiZ alignment from UCSC (100way multiple alignment)
 
 ```bash
 for chr in chr1 chr2 chr3 chr4 chr5 chr6 chr7 chr8 chr9 chr10 chr11 chr12 chr13 chr14 chr15 chr16 chr17 chr18 chr19 chr20 chr21 chr22 chrX chrY; 
 do wget --timestamping 'http://hgdownload.cse.ucsc.edu/goldenPath/hg19/multiz100way/maf/'$chr.maf.gz; done
 ```
+or for hg38:
+
+```bash
+for chr in chr1 chr2 chr3 chr4 chr5 chr6 chr7 chr8 chr9 chr10 chr11 chr12 chr13 chr14 chr15 chr16 chr17 chr18 chr19 chr20 chr21 chr22 chrX chrY; 
+do wget --timestamping 'http://hgdownload.cse.ucsc.edu/goldenPath/hg38/multiz100way/maf/'$chr.maf.gz; done
+```
+
+
 
 ### 2 Download Referennce genome ###
-Download the human assembly reference for each MAF from UCSC
+Download the hg19 human assembly reference for each MAF from UCSC
 
 ```bash
 for chr in chr1 chr2 chr3 chr4 chr5 chr6 chr7 chr8 chr9 chr10 chr11 chr12 chr13 chr14 chr15 chr16 chr17 chr18 chr19 chr20 chr21 chr22 chrX chrY; 
 do wget --timestamping 'ftp://hgdownload.cse.ucsc.edu/goldenPath/hg19/chromosomes/'$chr.fa.gz; done ```
 ```
+or for hg38:
+
+```bash
+for chr in chr1 chr2 chr3 chr4 chr5 chr6 chr7 chr8 chr9 chr10 chr11 chr12 chr13 chr14 chr15 chr16 chr17 chr18 chr19 chr20 chr21 chr22 chrX chrY; 
+do wget --timestamping 'ftp://hgdownload.cse.ucsc.edu/goldenPath/hg38/chromosomes/'$chr.fa.gz; done ```
+```
+
+
 
 #### note: for the originl identification of NFRs, we masked the maf and human reference using known annotations. The following link shows how to mask the genome with different features. https://github.com/wodanaz/adaptiPhy/blob/master/Masking_MAF.md
 
