@@ -89,6 +89,19 @@ done
 Note: Save in a directory called primate
 
 
+and for hg38:
+
+```bash
+mkdir -p primates
+for file in chr*.maf;  
+do root=`basename $file .maf`;
+maf_parse $file --seqs hg38,ponAbe2,gorGor3,panTro4,rheMac3 >  primates/$root.primates.maf; 
+done
+
+
+```
+Note: Save in a directory called primate
+
 ### 4 Extract query alignments ###
 Now, we can pull down query alignments into multiple fasta files according to your features directory. This is the list of locations of to scan for selection
 
