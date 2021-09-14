@@ -1,4 +1,30 @@
+# Extract Alignments
+To generate REFERENCE alignments for using blind features located 
+```bash
+module load bedtools2
 
+bedtools random -n 5000000 -l 300 -g hg19 > random.bed
+
+sort -k1,1 -k2,2n random.bed > random.sorted.bed
+#bedtools merge -i random.sorted.bed > random.merge.bed
+bedtools merge -i random.sorted.bed -c 1 -o count > random.merge.bed
+
+awk '{ if ( $4 == 1 ) print $1 "\t" $2 "\t" $3 }' random.merge.bed > random.300.bed
+
+wc -l random.300.bed # in unmasked version
+1894324 
+
+1893795 random.300.bed # in masked version
+
+
+mkdir features2
+
+for chr in chr1 chr2 chr3 chr4 chr5 chr6 chr7 chr8 chr9 chr10 chr11 chr12 chr13 chr14 chr15 chr16 chr17 chr18 chr19 chr20 chr21 chr22 chrX chrY ; 
+	do grep -w $chr neutralset.2.bed | awk '{print $1 "\t" $2 "\t" $3 }' | sort -k1,1 -k2,2 -V > features2/$chr.feat.bed; 
+done
+
+
+```
 
 # To create a subset list of putative neutral elements:
 
