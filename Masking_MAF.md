@@ -50,10 +50,9 @@ cd ..
 
 
 To sample random genomic regions that can be considered putatively neutral. 
-We need to mask genomic regions that are 
+We need to mask genomic regions that are functional in the maf files
 
-To sample random genomic regions that can be considered putatively neutral. 
-We need to mask genomic regions that are 
+
 
 
 ```bash
@@ -63,6 +62,17 @@ root=`basename $primates .primate.maf`;
 maf_parse $primates --features functional_feat/featBEDv3/$root.feat.bed --mask-features hg19,ponAbe2,gorGor3,panTro4,rheMac3 > maskedv3/$root.masked.maf;   
 done
 ```
+
+And for Hg38 do:
+
+```bash
+mkdir maskedv3
+for primates in chr*.maf ; do
+root=`basename $primates .primate.maf`;
+maf_parse $primates --features functional_feat/featBEDv3/$root.feat.bed --mask-features hg38,ponAbe2,gorGor3,panTro4,rheMac3 > maskedv3/$root.masked.maf;   
+done
+```
+
 
 #### Don't forget to mask the same genomic regions in the reference chromosomes as well
 
