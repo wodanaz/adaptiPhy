@@ -27,18 +27,18 @@ done
 1. Extract Alignments from features
 
 ```bash
-nano do_data.sh
-#!/usr/bin/env bash
-#SBATCH --mail-type=END
-#SBATCH --mail-user=alebesc@gmail.com
-#SBATCH -N 1
-#SBATCH -n 24
-#SBATCH --mem-per-cpu=2000
-for chr in chr1 chr2 chr3 chr4 chr5 chr6 chr7 chr8 chr9 chr10 chr11 chr12 chr13 chr14 chr15 chr16 chr17 chr18 chr19 chr20 chr21 chr22 chrX chrY;
-do msa_split $chr.masked.maf  --refseq $chr.masked.fa --gap-strip ANY -q --in-format MAF  --features features/$chr.feat.bed --for-features --out-root  neutral_alignments/$chr; done
+
+for chr in chr1 chr2 chr3 chr4 chr5 chr6 chr7 chr8 chr9 chr10 chr11 chr12 chr13 chr14 chr15 chr16 chr17 chr18 chr19 chr20 chr21 chr22 chrX chrY; do
+echo '#!/usr/bin/env bash' > $chr.do_data.sh;
+echo '#SBATCH --mail-type=END' >> $chr.do_data.sh;
+echo '#SBATCH --mail-user=alebesc@gmail.com' >> $chr.do_data.sh;
+echo '#SBATCH -N 1' >> $chr.do_data.sh;
+echo "msa_split $chr.masked.maf  --refseq $chr.masked.fa --gap-strip ANY -q --in-format MAF  --features features/$chr.feat.bed --for-features --out-root  neutral_alignments/$chr;"    >> $chr.do_data.sh;
+done
+
+for file in *do_data.sh ; do sbatch $file ; done
 
 
-sbatch do_data.sh
 
 ```
 
