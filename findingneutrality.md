@@ -7,7 +7,7 @@ bedtools random -n 5000000 -l 300 -g hg19 > random.bed
 
 sort -k1,1 -k2,2n random.bed > random.sorted.bed
 
-awk '{ print $1 "/t" $2 -1 "\t" $3 }' random.sorted.bed > random.300.bed 
+awk '{ print $1 "\t" $2 - 1 "\t" $3 }' random.sorted.bed > random.300.bed 
 
 wc -l random.300.bed # in masked version
 5000000 
