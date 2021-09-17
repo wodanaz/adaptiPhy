@@ -42,10 +42,101 @@ for file in *do_data.sh ; do sbatch $file ; done
 
 ```
 
+First, we need to filter and select the sequences with fully homologous sequences and 300bp long:
+
+
+```bash
+
+nano makelists.sh
+#!/usr/bin/env bash
+#SBATCH --mail-type=END
+#SBATCH --mail-user=alebesc@gmail.com
+#SBATCH -N 1
+for chr in chr1 chr2 chr3 chr4 chr5 chr6 chr7 chr8 chr9 chr10 chr11 chr12 chr13 chr14 chr15 chr16 chr17 chr18 chr19 chr20 chr21 chr22 chrX chrY; do
+        echo $chr.*fa >> $chr.list;
+	sed -ri 's/ /\n/g' $chr.list
+done
+```
+
+Number of regions extracted
+
+```bash
+wc -l chr*list
+   216410 chr10.list
+   218074 chr11.list
+   215652 chr12.list
+   185533 chr13.list
+   173391 chr14.list
+   165023 chr15.list
+   146168 chr16.list
+   134329 chr17.list
+   130789 chr18.list
+    94301 chr19.list
+   403181 chr1.list
+   104160 chr20.list
+    75389 chr21.list
+    82617 chr22.list
+   390814 chr2.list
+   320722 chr3.list
+   307558 chr4.list
+   293864 chr5.list
+   276362 chr6.list
+   257769 chr7.list
+   234542 chr8.list
+   223761 chr9.list
+   252409 chrX.list
+    93081 chrY.list
+  4995899 total
+```
 
 
 
-First, we need to compute the substitution rate among each node and tip of the three. Here, we used PhyloFit to do this.
+
+```bash
+
+for chr in chr1 chr2 chr3 chr4 chr5 chr6 chr7 chr8 chr9 chr10 chr11 chr12 chr13 chr14 chr15 chr16 chr17 chr18 chr19 chr20 chr21 chr22 chrX chrY; do
+echo '#!/usr/bin/env bash' > $chr.prunning.sh;
+echo '#SBATCH --mail-type=END' >> $chr.prunning.sh;
+echo '#SBATCH --mail-user=alebesc@gmail.com' >> $chr.prunning.sh;
+echo '#SBATCH -N 1' >> $chr.prunning.sh;
+echo "python2 prunning.py ${chr}.list"    >> $chr.prunning.sh;
+done
+
+for file in *prunning.sh ; do sbatch $file ; done
+
+
+```
+
+
+```bash
+
+
+nano makelists2.sh
+#!/usr/bin/env bash
+#SBATCH --mail-type=END
+#SBATCH --mail-user=alebesc@gmail.com
+#SBATCH -N 1
+for chr in chr1 chr2 chr3 chr4 chr5 chr6 chr7 chr8 chr9 chr10 chr11 chr12 chr13 chr14 chr15 chr16 chr17 chr18 chr19 chr20 chr21 chr22 chrX chrY; do
+        echo $chr.*prunned >> $chr.prun.list;
+	sed -ri 's/ /\n/g' $chr.prun.list
+done
+
+
+for chr in chr1 chr2 chr3 chr4 chr5 chr6 chr7 chr8 chr9 chr10 chr11 chr12 chr13 chr14 chr15 chr16 chr17 chr18 chr19 chr20 chr21 chr22 chrX chrY; do
+echo '#!/usr/bin/env bash' > $chr.filtering.sh;
+echo '#SBATCH --mail-type=END' >> $chr.filtering.sh;
+echo '#SBATCH --mail-user=alebesc@gmail.com' >> $chr.filtering.sh;
+echo '#SBATCH -N 1' >> $chr.filtering.sh;
+echo "python filtering_p3.py  ${chr}.prun.list" >> $chr.filtering.sh;
+done
+
+for file in *filtering.sh ; do sbatch $file ; done
+
+
+
+```
+
+Next, we need to compute the substitution rate among each node and tip of the three. Here, we used PhyloFit to do this.
 
 ```bash
 
