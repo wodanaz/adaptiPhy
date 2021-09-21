@@ -28,6 +28,11 @@ Copy and transfer all the bed files with boundary information to this new direct
  
 ```bash
 cat 5_UTR_Exons.bed 3_UTR_Exons.bed lincRNA.bed humanmRNA.bed tRNA.bed wgRNA.bed  OpenChromSynth.master.bed thurman.master.bed honeybadger.master.bed vistaEnhancer.bed CpGislands.bed microsats.bed InterruptedRpts.bed NumtS.bed simplerepeats.bed | sort -k1,1 -k2,2n -V | awk '{ print $1 "\t" $2 "\t" $3 }' > functional.feat.bed
+
+#for hg38, I masked with
+
+cat hg38.trf.bed encodecCREs.bed gencode_V36.bed refseq_funcEle.bed tRNA.bed simpleRepeats.bed DHS_cleaned.bed microsatellites.bed CpG_islands.bed | awk '{ print $1 "\t" $2 "\t" $3 }' >  functional.feat.bed
+
 ```
 
 
