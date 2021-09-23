@@ -158,19 +158,10 @@ cd MODELS_HKY85
 
 #For Reference
 for filename in *.mod; do grep -H "TREE:" $filename; done > output.hky85.txt
-cat output.hky85.txt | awk -F":" '{print $1 "\t" $4 "\t" $5 "\t" $6 "\t" $7 "\t" $8 "\t" $9 "\t" $10 "\t" $11  }' | \
-awk -F"," '{print $1 "\t" $2  "\t" $3 "\t" $4 "\t" $5 "\t" $6 "\t" $7 "\t" $8 "\t" $9 "\t" $10  }'  | \
-awk -F")" '{print $1 "\t" $2  "\t" $3 "\t" $4 "\t" $5 "\t" $6 "\t" $7 "\t" $8 "\t" $9 "\t" $10  }'  | \
-awk '{print $1 "\t" $2 "\t" $4 "\t" $6 "\t" $8 "\t" $10 "\t" $11 "\t" $12 "\t" $13 }'  > BranchLenghts.tab
-# Let's stop here for a while.... we need to check the table and make sure it's looking good
 
-# we need to further modify column 1 alone -> I don't like the dots, it would be nicer to have chromosome and location in separate columns
 
-awk -F"." '{print $1 ":" $2  }' BranchLenghts.tab > chr_pos.tab
+sed -r 's/\.mod:TREE: \(/\t/g' output.hky85.txt | sed -r 's/:/\t/g' | sed -r 's/,\(/\t/g' | sed -r 's/,/\t/g' | sed -r 's/\);//g' |  sed -r 's/\)//g' |  awk '{ print $1  "\t" $3  "\t" $5  "\t" $7 "\t" $9  "\t" $11 "\t" $12 "\t" $13 "\t" $14 }' |  sed -r 's/\./:/' | sed 1i"chromosome\trheMac3\tponAbe2\tgorGor3\tpanTro4\thg38\tPanHomo\tPanHomoGor\tPanHomoGorPon" > Branches.mask.data
 
-paste chr_pos.tab BranchLenghts.tab  | column -s '\t' -t | awk '{print $1 "\t" $3 "\t" $4 "\t" $5 "\t" $6 "\t" $7 "\t" $8 "\t" $9 "\t" $10 }'  > Branches.tab
-
-sed 1i"chromosome\trheMac3\tponAbe2\tgorGor3\tpanTro4\thg19\tPanHomo\tPanHomoGor\tPanHomoGorPon" Branches.tab > Branches.mask.data
 
 
 ```
