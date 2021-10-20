@@ -1,0 +1,15 @@
+name: aleconda
+channels:
+  - bioconda
+  - conda-forge
+dependencies:
+  - seqtk
+  - cactus
+  - bedtools
+  - perl
+  - hyphy
+  - paml
+  - phast
+  - biopython
+  - bedops
+  - raxml-ng
