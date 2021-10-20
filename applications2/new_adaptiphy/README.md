@@ -10,11 +10,12 @@ The Adaptiphy Slurm pipeline is based on [legacy.md](https://github.com/wodanaz/
 _By default __conda__ is provided via the [Anaconda3/2019.10-gcb02](https://github.com/Duke-GCB/helmod/blob/master/rpmbuild/SPECS/Anaconda3-2019.10-gcb02.spec) environment module. This module name can be overridden via the `ANACONDAMODULE` environment variable._
 
 ### Staging Data Requirements
-It is required to have a set of putatively neutral alignments and masked genome-wide alignment of the species of interest
+It is required to have a set of putatively neutral alignments and a masked and unmasked genome-wide alignment of the species of interest. 
+An alignment of between 3-10 species should work well.
 
 ### Conda Environment
-The pipeline requires a conda environment named `escapevariants`.
-See [environment.yml](environment.yml) for details.
+The pipeline requires a conda environment named `adaptiphy`.
+See [environment.yml](adaptiphy.yml) for details.
 
 ## Installation
 Clone this repository onto a shared location in your Slurm cluster. 
@@ -31,27 +32,28 @@ cp example-config.sh config.sh
 On HARDAC the Anaconda3 module provides the conda command.
 From an interactive session you can use the Anaconda3 module to create the `adaptiphy` conda environment by running:
 ```
-module load Anaconda3/2019.10-gcb02
-conda env create -f environment.yml
+module load Anaconda3
+conda env create -f adaptiphy.yml
 ```
 
 ### General Installation Instructions
 Using an Anaconda or Miniconda installallation create the `adaptiphy` conda environment by running:
 ```
-conda env create -f environment.yml
+conda env create -f adaptiphy.yml
 ```
 
 ## Setup
 Before the pipeline can be run the input genome-alignment MAF files must be processed by [extract_alignments.sh](https://github.com/wodanaz/x/x/x/x/setup-xxxxx.sh).
-The setup script will extract the query alignments and create its respective concatenated genome references used by the adaptiphy pipeline. The output files will be created in different directories named query and ref.
+The setup script will extract the query alignments, query regions without perfect homology between species and create its respective concatenated genome references used in the second step of the adaptiphy pipeline. The output files of this setup step will be created in two directories named query and ref.
+
 For example, to process a genome-wide aligment file named `genomewide_alignment.maf` run:
 ```
-./setup-escape-variants.sh -g genomewide_alignment.maf -b file.bed
+./setup-queries_and_references.sh -g genomewide_alignment.maf -b file.bed
 ```
 
 ## Running
-The `run-adaptiphys.sh` script is used to run the pipeline.
-By default this script will stage input data and upload results, but this functionality can be disabled.
+The `run-adaptiphy.sh` script is used to run the pipeline.
+By default this script will take input data and produce a results table with a pvalue for each region of the genome that has .
 
 The script requires the following arguments:
 1. query alignment files
@@ -65,18 +67,18 @@ The data directory will have two subdirectories created to hold various files.
 - `/output` - Contains a subdirectories for each output project containing output files created by the pipeline.
 
 
-### Run including staging data
+### Run
 Given 
-- Use "NC_045512.fasta" as your genome
+- Use "chrX_alignment.maf" as your genome wide alignments per chromosome
 - Use directory "data" to as your data directory
-- DDS project named "CVExample" containing *.fastq.gz files in the top level directory
-- Run in "duke" mode
-- A datetab(TSV) file named date.tab
+- xxxxxxxxxxxxxxxxxx xxx xxxxxxx xxxxxxxx xxxxxxxxxxx
+- Run in "xxxxx" mode
+- x xxx xxxxx x
 - Receive an email at username@example.com when the entire pipeline completes
 
-The pipeline can be run using the NC_045512.fasta genome like so:
+The pipeline can be run using the MAF genome alignment like so:
 ```
-./run-escape-variants.sh -g NC_045512.fasta -d data -i CVExample -m duke -D date.tab -e username@example.com
+./run-adaptiphy.sh -g chrX_alignment.maf -e username@example.com
 ```
 The above command will do the following
 1. Create the following directories
@@ -89,24 +91,9 @@ The above command will do the following
 4. Send an email to username@example.com when the pipeline completes.
 
 
-### Run without staging data
-To run without staging data you must ensure the input fastq.gz files are in a project specific directory.  
-So if you want to use "sarscv" as your project name and use "data" as your data directory place your input *.fastq.gz files in a directory named `data/input/sarscv".
-Run the pipeline skipping the download and upload steps like so: 
-```
-./run-escape-variants.sh -g NC_045512.fasta -d data -i sarscv -m duke -D date.tab -s -S
-```
-The `-s` argument causes run-escape-variants.sh to skip the download input data step.
-The `-S` argument causes run-escape-variants.sh to skip the upload output data step.
-
-
-#### Debugging
-The pipeline creates a temp directory that contains all intermediate files. By default this directory is deleted when the pipeline completes successfully.
-If you want to preserve the temp directory pass the `-k` argument.
-
 Example:
 ```
-./run-escape-variants.sh -g NC_045512.fasta -d data -i jpb-cv-example2 -m duke -D date.tab -k
+./run-adaptiphy.sh -g genome.maf 
 ```
 
 #### Help
