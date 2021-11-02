@@ -915,7 +915,7 @@ R
 
 ```R
 
-adaptiphy = as.data.frame(read.table("AdaptiPhy.Cerebellum.data", header = T)) # read tab file 
+adaptiphy = as.data.frame(read.table("adaptiphy.pvals.tab", header = T)) # read tab file 
 head(adaptiphy)
 colnames(adaptiphy) <- c("genome_location",  "pval.human",  "pval.chimp" )
 
@@ -950,10 +950,10 @@ cerebellum_adaptiphy3 <- merge(cerebellum_adaptiphy2, GREAT, by= c('genome_locat
 head(cerebellum_adaptiphy3)
 
 
-write.table(cerebellum_adaptiphy3 , file ="cerebellum.selection.data", row.names=F, col.names=T, quote=F) 
+#write.table(cerebellum_adaptiphy3 , file ="cerebellum.selection.data", row.names=F, col.names=T, quote=F) 
 
 
-peaks = as.data.frame(read.table("cerebellum.great.nonones.data", header = T)) # read tab file 
+peaks = as.data.frame(read.table("overlap_all_peaks.tab", header = T)) # read tab file 
 head(peaks)
 
 
