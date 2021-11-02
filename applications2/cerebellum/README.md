@@ -866,7 +866,46 @@ grep "NONE" cerebellum.great.data -v > cerebellum.great.nonones.data
 Upload it to HARDAC
 
 
+Annotating table with bedtools 
+
+```bash
+
+
+sort -k 1,1 -k2,2n CN.bed > CN.sorted.bed
+sort -k 1,1 -k2,2n Endo.bed > Endo.sorted.bed
+sort -k 1,1 -k2,2n GABA_2.bed > GABA_2.sorted.bed
+sort -k 1,1 -k2,2n GABA.bed > GABA.sorted.bed
+sort -k 1,1 -k2,2n GABA_prog.bed > GABA_prog.sorted.bed
+sort -k 1,1 -k2,2n GNP.bed > GNP.sorted.bed
+sort -k 1,1 -k2,2n Mgl.bed > Mgl.sorted.bed
+sort -k 1,1 -k2,2n Peri.bed > Peri.sorted.bed
+sort -k 1,1 -k2,2n Progenitors.bed > Progenitors.sorted.bed
+sort -k 1,1 -k2,2n Purk_1.bed > Purk_1.sorted.bed
+sort -k 1,1 -k2,2n Purk_2.bed > Purk_2.sorted.bed
+sort -k 1,1 -k2,2n RGL.bed > RGL.sorted.bed
+sort -k 1,1 -k2,2n RP.bed > RP.sorted.bed 
+sort -k 1,1 -k2,2n unannotated.bed > unannotated.sorted.bed
+sort -k 1,1 -k2,2n uRL.bed > uRL.sorted.bed
+sort -k 1,1 -k2,2n VZ_prog.bed > VZ_prog.sorted.bed
+
+
+bedtools annotate -i All_peaks.bed -files CN.sorted.bed GABA.sorted.bed Progenitors.sorted.bed RP.sorted.bed Endo.sorted.bed GNP.sorted.bed Purk_1.sorted.bed GABA_2.sorted.bed Mgl.sorted.bed Purk_2.sorted.bed uRL.sorted.bed GABA_prog.sorted.bed Peri.sorted.bed RGL.sorted.bed VZ_prog.sorted.bed unannotated.sorted.bed -names CN Endo GABA_2 GABA_prog GABA GNP Mgl Peri Progenitors Purk_1 Purk_2 RGL RP uRL VZ_prog unannotated -counts > overlap_all_peaks.bed
+
+
+awk  '{ print $1 ":" $2 "-" $3 "\t" $5 "\t" $6 "\t" $7 "\t" $8 "\t" $9 "\t" $10 "\t" $11 "\t" $12 "\t" $13 "\t" $14 "\t" $15 "\t" $16 "\t" $17 "\t" $18 "\t" $19  "\t" $20 "\t" $21  }' overlap_all_peaks.bed > overlap_all_peaks.tab
+
+scp overlap_all_peaks.tab  ab620@hardac-xfer.genome.duke.edu:/data/wraycompute/alejo/PS_tests/primate/Cerebellum_v3
+
+
+```
+
+
+
+
+
 ### Consolidate all results in a single table
+
+
 
 
 ```bash
@@ -912,6 +951,20 @@ head(cerebellum_adaptiphy3)
 
 
 write.table(cerebellum_adaptiphy3 , file ="cerebellum.selection.data", row.names=F, col.names=T, quote=F) 
+
+
+peaks = as.data.frame(read.table("cerebellum.great.nonones.data", header = T)) # read tab file 
+head(peaks)
+
+
+cerebellum_adaptiphy4 <- merge(cerebellum_adaptiphy3, peaks, by= c('genome_location'), all.x = T)
+head(cerebellum_adaptiphy4)
+
+
+write.table(cerebellum_adaptiphy4 , file ="cerebellum.selection.data", row.names=F, col.names=T, quote=F) 
+
+
+
 ```
 
 
