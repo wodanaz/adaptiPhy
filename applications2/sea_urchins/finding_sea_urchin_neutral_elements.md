@@ -46,3 +46,31 @@ done
 
 
 ```
+
+
+To extract a set of non-functional elements that can be used as  putatively neutral loci
+
+```bash
+module load bedtools2
+
+bedtools random -n 5000000 -l 300 -g He > random.bed
+
+sort -k1,1 -k2,2n random.bed > random.sorted.bed
+
+awk '{ print $1 "\t" $2 - 1 "\t" $3 }' random.sorted.bed > random.300.bed 
+
+wc -l random.300.bed # in masked version
+5000000 
+
+
+mkdir features
+
+for chr in chr1 chr2 chr3 chr4 chr5 chr6 chr7 chr8 chr9 chr10 chr11 chr12 chr13 chr14 chr15 chr16 chr17 chr18 chr19 chr20 chr21 chr22 chrX chrY ; 
+	do grep -w $chr random.300.bed | awk '{print $1 "\t" $2 "\t" $3 }' | sort -k1,1 -k2,2 -V > features/$chr.feat.bed; 
+done
+
+```
+
+
+
+
