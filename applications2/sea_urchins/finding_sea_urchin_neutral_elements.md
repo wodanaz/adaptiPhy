@@ -50,6 +50,7 @@ done
 
 To extract a set of non-functional elements that can be used as  putatively neutral loci
 
+
 ```bash
 module load bedtools2
 
@@ -65,9 +66,43 @@ wc -l random.300.bed # in masked version
 
 mkdir features
 
-for chr in chr1 chr2 chr3 chr4 chr5 chr6 chr7 chr8 chr9 chr10 chr11 chr12 chr13 chr14 chr15 chr16 chr17 chr18 chr19 chr20 chr21 chr22 chrX chrY ; 
+for chr in chr1 chr2 chr3 chr4 chr5 chr6 chr7 chr8 chr9 chr10 chr11 chr12 chr13 chr14 chr15 chr16 chr17 chr18 chr19 chr20 chr21 ; 
 	do grep -w $chr random.300.bed | awk '{print $1 "\t" $2 "\t" $3 }' | sort -k1,1 -k2,2 -V > features/$chr.feat.bed; 
 done
+
+```
+
+Note: to run the previous lines, it is necessary to have a genome file with the lenghts of each chromosome. To create it, do:
+
+```bash
+
+for chr in chr1 chr2 chr3 chr4 chr5 chr6 chr7 chr8 chr9 chr10 chr11 chr12 chr13 chr14 chr15 chr16 chr17 chr18 chr19 chr20 chr21; do
+	bioawk -c fastx '{ print $name, length($seq) }' < $chr.He.fa
+done
+
+nano He
+chr1	78554062
+chr2	71715399
+chr3	56650573
+chr4	56843197
+chr5	52154090
+chr6	54795018
+chr7	49373989
+chr8	49071437
+chr9	53544062
+chr10	55791632
+chr11	60414877
+chr12	51325886
+chr13	39571473
+chr14	46128125
+chr15	42174613
+chr16	43151226
+chr17	37624446
+chr18	41902230
+chr19	37017750
+chr20	37187759
+chr21	48917100
+
 
 ```
 
