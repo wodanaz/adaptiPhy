@@ -1,4 +1,7 @@
-# To find neutral elements, we need to mask the genome-wide alignments (maf) using all known functional sequences and repetitive DNA
+# Analysis of Positive Selection in Sea Urchins
+
+
+To find neutral elements, we need to mask the genome-wide alignments (maf) using all known functional sequences and repetitive DNA
 
 ```bash
 
