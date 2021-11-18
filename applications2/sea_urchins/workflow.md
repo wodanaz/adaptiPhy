@@ -66,8 +66,7 @@ nano prun.py.sh
 #SBATCH --mail-user=alebesc@gmail.com
 #SBATCH -N 1
 #SBATCH --mem=200
-module load Anaconda/1.9.2-fasrc01
-python prunning.py 
+python2 prunning.py 
 ```
 Run it
 
