@@ -507,5 +507,5 @@ write.table(neutralset.txt, file ="neutralset.txt", row.names=F, col.names=F, qu
 
 ```
 
-
+With the previous pipeline, I identified  21318 putatively neutral elements that can be used for testing selection
 
