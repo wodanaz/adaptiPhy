@@ -198,7 +198,7 @@ missing = '[(+*)]'
 ambiguous = '[N]'
 
 
-badseqssNs = []
+badseqsNs = []
 badseqsAsk = []
 goodseqs = []
 
@@ -207,7 +207,7 @@ for i in reflist:
 	mydata = myfile.read()
 	fasta = AlignIO.read(i, "fasta")
 	myfile.close()
-	if fasta.get_alignment_length() > 200 : 
+	if fasta.get_alignment_length() > 250 : 
 		maxNs = len(re.findall(ambiguous, str(mydata), re.I))
 		maxAsk = len(re.findall(missing, str(mydata), re.I))
 		if maxNs > 2:
