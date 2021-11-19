@@ -279,7 +279,7 @@ sbatch filtering.sh
 ```bash
 cd ..
 cat query/goodalignments.txt | awk -F"." '{ print $1 "\t" $2}' | awk -F"-" '{ print $1 "\t" $2 "\t" $3}' | sort -k1,1 -k2,2 -V > queries.bed  #100K
-cat query/goodalignments.txt > queries_cerebelum.list
+cat query/goodalignments.txt > queries_urchins.list
 
 
 cp queries_seaurchins.list /data/wraycompute/alejo/PS_tests/Sea_urchin_evolution/selection_test/neutral_set
