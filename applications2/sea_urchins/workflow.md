@@ -291,7 +291,7 @@ cd /data/wraycompute/alejo/PS_tests/Sea_urchin_evolution/selection_test/neutral_
 
 
 ```bash
-ano DictGen.py
+nano DictGen.py
 import re # for Regular expressions
 from Bio import AlignIO
 import sys
@@ -306,7 +306,7 @@ from Bio.Align import MultipleSeqAlignment
 
 
 keys= "goodalignments.txt"
-values= "neutral_Set.txt"
+values= "neutralset.txt"
 
 
 with open(keys) as f:
@@ -359,6 +359,7 @@ nano genDict.sh
 #SBATCH --mail-type=END
 #SBATCH --mail-user=alebesc@gmail.com
 #SBATCH -N 1
+module load Anaconda/1.9.2-fasrc01
 python DictGen.py
 
 ```
