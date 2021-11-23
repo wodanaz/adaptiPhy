@@ -372,10 +372,14 @@ sbatch genDict.sh
 
 ```bash
 
-awk -F"." '{print $1 "." $2 }' goodalignments.txt  > ref.list
+awk -F"." '{print $1 "." $2 }' neutral_set/goodalignments.txt  > ref.list
 
-
-for file in `cat ref.list`; do for i in {0..9} ; do awk '{if($1 ~ /^>/){split($1,a,"\t"); print a[1]}else{print}}' $file.fa.$i.ref > $file.$i.ref.fa; done; done
+nano convert.sh
+#!/usr/bin/env bash
+#SBATCH --mail-type=END
+#SBATCH --mail-user=alebesc@gmail.com
+#SBATCH -N 1
+for file in `cat ref.list`; do for i in {0..9} ; do awk '{if($1 ~ /^>/){split($1,a,"\t"); print a[1]}else{print}}' $file.fa.prunned.$i.ref > /data/wraycompute/alejo/PS_tests/Sea_urchin_evolution/selection_test/ref/$file.$i.ref.fa; done; done
 
 
 cd ..
@@ -412,9 +416,9 @@ for replicate in range(10):
 		for urchin in branches:
 			for i in querylist:
 				k = random.randint(1,1000);
-				f = open('%s.%s.%s.%i.bf' % (i,virus,lrt,replicate), 'w')
+				f = open('%s.%s.%s.%i.bf' % (i,urchin,lrt,replicate), 'w')
 				f.write('random_seed=%i;\n' % k)
-				f.write('quer_seq_file= "/data/wraycompute/alejo/PS_tests/Sea_urchin_evolution/selection_test/query%s.fa";\n' % i)
+				f.write('quer_seq_file= "/data/wraycompute/alejo/PS_tests/Sea_urchin_evolution/selection_test/query/%s.fa.prunned";\n' % i)
 				f.write('ref_seq_file = "/data/wraycompute/alejo/PS_tests/Sea_urchin_evolution/selection_test/ref/%s.%i.ref.fa";\n' % (i,replicate))
 				f.write('fit_repl_count = 20;\n')
 				f.write('tree= "((He,Ht),Lv)";\n')
@@ -433,12 +437,26 @@ for replicate in range(10):
 
 
 ```bash
+
+
+nano dobf.sh
+#!/usr/bin/env bash
+#SBATCH --mail-type=END
+#SBATCH --mail-user=alebesc@gmail.com
+#SBATCH --mem=150
+module load Anaconda/1.9.2-fasrc01
 python bfgenerator_global.py ref.list
 
 
+
+
+nano lists.sh
+#!/usr/bin/env bash
+#SBATCH --mail-type=END
+#SBATCH --mail-user=alebesc@gmail.com
+#SBATCH --mem=150
 for i in {0..9} ; do echo *He.alt.$i.bf >> alt.He.$i.list ; done
 for i in {0..9} ; do echo *He.null.$i.bf >> null.He.$i.list ; done
-
 for i in {0..9} ; do echo *Ht.alt.$i.bf >> alt.Ht.$i.list ; done
 for i in {0..9} ; do echo *Ht.null.$i.bf >> null.Ht.$i.list ; done
 ```
@@ -448,6 +466,11 @@ The following script will generate launchers for each branch and query
 
 
 ```bash
+
+module load Anaconda3
+conda activate aleconda
+
+
 nano shgenerator.py
 import sys
 import csv
@@ -464,7 +487,7 @@ for replicate in range(10):
 		for urchin in branches:
 			f = open('%s.%s.%i.sh' % (urchin,lct, replicate), 'w')
 			f.write('#!/usr/bin/env bash\n')
-			f.write('for file in `cat %s.%s.%i.list`; do root=`basename $file .%s.%s.%i.bf`; HYPHYMP $file > HYPHY/$root.%s.%s.%i.out;done\n' % (lct,urchin,replicate,urchin,lct,replicate,urchin,lct,replicate))
+			f.write('for file in `cat %s.%s.%i.list`; do root=`basename $file .%s.%s.%i.bf`; hyphy $file > HYPHY/$root.%s.%s.%i.out;done\n' % (lct,urchin,replicate,urchin,lct,replicate,urchin,lct,replicate))
 
 
 
@@ -491,9 +514,14 @@ python shgenerator.py
 mkdir HYPHY
 mkdir res
 
-module load hyphy
 
-for file in *sh ; do sbatch $file ; done
+for file in Ht*sh ; do sbatch $file ; done
+for file in He*sh ; do sbatch $file ; done
+
+
+
+
+
 ```
 
 ```bash
@@ -512,7 +540,7 @@ nano domodel_query.sh
 #SBATCH --mail-type=END
 #SBATCH --mail-user=your_email@email.com
 for file in `cat ref.list` ; do
-phyloFit $file.fa --tree "(Lv, (Ht,He))" -i FASTA --subst-mod HKY85 --out-root MODELS_HKY85_query/$file; # HKY85 model, It runs fast and it also the model applied in HYPHY
+phyloFit $file.fa.prunned --tree "(Lv, (Ht,He))" -i FASTA --subst-mod HKY85 --out-root MODELS_HKY85_query/$file; # HKY85 model, It runs fast and it also the model applied in HYPHY
 done #exit nano ctrl+O ENTER ctrl+x
 
 
