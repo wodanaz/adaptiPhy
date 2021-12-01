@@ -568,8 +568,171 @@ sbatch domodel_ref.sh
 sbatch domodel_query.sh
 ```
 
-Measure local compositional complexity (LCC) of DNA sequence
+Retrieving the MLEs and preform Likelihood Ratio Test (LRT)
 
+```bash
+for file in *He.null.*.res; do echo $file >>null.He.log; done;
+for file in *He.alt.*.res; do echo $file >>alt.He.log; done;
+
+for file in *Ht.null.*.res; do echo $file >>null.Ht.log; done;
+for file in *Ht.alt.*.res; do echo $file >>alt.Ht.log; done;
+
+
+
+wc -l *log
+
+
+for filename in `cat alt.He.log`; do grep -H "BEST LOG-L:" $filename >> alt.He.tab; done;
+for filename in `cat null.He.log`; do grep -H "BEST LOG-L:" $filename >> null.He.tab; done;
+
+for filename in `cat alt.Ht.log`; do grep -H "BEST LOG-L:" $filename >> alt.Ht.tab; done;
+for filename in `cat null.Ht.log`; do grep -H "BEST LOG-L:" $filename >> null.Ht.tab; done;
+
+
+sed -r 's/.He.alt./\t/g' alt.He.tab | sed -r 's/.res:BEST LOG-L://g' | awk '{ print $1 "\t" $2 "\t" $3 "\t" "He" }'  |  sort -k1 -V  > alt_mle.He.tab
+sed -r 's/.He.null./\t/g' null.He.tab | sed -r 's/.res:BEST LOG-L://g' | awk '{ print $1 "\t" $2 "\t" $3 "\t" "He" }'  |  sort -k1 -V  > null_mle.He.tab
+ 
+sed -r 's/.Ht.alt./\t/g' alt.Ht.tab | sed -r 's/.res:BEST LOG-L://g' | awk '{ print $1 "\t" $2 "\t" $3 "\t" "Ht" }'  |  sort -k1 -V  > alt_mle.Ht.tab
+sed -r 's/.Ht.null./\t/g' null.Ht.tab | sed -r 's/.res:BEST LOG-L://g' | awk '{ print $1 "\t" $2 "\t" $3 "\t" "Ht" }'  |  sort -k1 -V  > null_mle.Ht.tab
+ 
+
+R
+```
+
+```R
+He_null = read.table("null_mle.He.tab", header = F)  # read tab file
+He_alt = read.table("alt_mle.He.tab", header = F)  # read tab file
+
+He_likelihoods <-  merge(He_null, He_alt, by= c('V1', 'V2', 'V4'))
+
+Ht_null = read.table("null_mle.Ht.tab", header = F)  # read tab file
+Ht_alt = read.table("alt_mle.Ht.tab", header = F)  # read tab file
+
+Ht_likelihoods <-  merge(Ht_null, Ht_alt, by= c('V1', 'V2', 'V4'))
+
+likelihoods <- rbind(He_likelihoods, Ht_likelihoods)
+colnames(likelihoods) <- c('genome_location' , 'repeat', 'species', 'lnull' , 'lalt')
+
+
+LRT <- -2*(likelihoods$lnull - likelihoods$lalt)
+pval <- 1-pchisq(LRT, 1)
+l_pvals <- cbind(likelihoods, pval, -log(pval))
+write.table(l_pvals, file ="likelihoods.pvals.tab", row.names=F, col.names=T, quote=F) 
+
+
+# lets's exit the R environment
+q()
+
+```
+
+```bash
+
+
+cd ..
+cd ..
+cp test/res/likelihoods.pvals.tab urchins.adaptiphy.data
+
+awk '{ print $1 "\t" $2 "\t" $6 "\t" $3}' urchins.adaptiphy.data | sed -r 's/\./:/' > urchins.adaptiphy.edited.data
+
+```
+
+
+
+
+# Compute Evolutionary Ratio (zeta)
+
+
+```bash
+cd /query/MODELS_HKY85_query
+
+for filename in *mod; do grep -H "TREE:" $filename; done > output.hky85.txt
+
+sed -r 's/\.mod:TREE: \(/\t/g' output.hky85.txt | sed -r 's/:/\t/g' | sed -r 's/,\(/\t/g' | sed -r 's/,/\t/g' | sed -r 's/\);//g' |  sed -r 's/\)//g' |  awk '{ print $1  "\t" $3  "\t" $5  "\t" $7 "\t" $8  }' |  sed -r 's/\./:/' | sed 1i"genome_location\tLv\tHt\tHe\tHt_He" > Q.hky85.Branches.tab
+
+cd ..
+cd ..
+
+cd ref/MODELS_HKY85_ref
+
+for filename in *mod; do grep -H "TREE:" $filename; done > output.hky85.txt
+
+sed -r 's/\.mod:TREE: \(/\t/g' output.hky85.txt | sed -r 's/:/\t/g' |  sed -r 's/\./:/' |  sed -r 's/\./\t/' | sed -r 's/,\(/\t/g' | sed -r 's/,/\t/g' | sed -r 's/\);//g' |  sed -r 's/\)//g' | awk '{ print $1 "\t" $2  "\t" $4  "\t" $6  "\t" $8 "\t" $9  }' | sed 1i"genome_location\treplicate\tLv\tHt\tHe\tHt_He" > R.hky85.Branches.tab
+
+
+cd ..
+cd ..
+
+
+cp query/MODELS_HKY85_query/Q.hky85.Branches.tab .
+cp ref/MODELS_HKY85_ref/R.hky85.Branches.tab .
+
+
+wc -l Q.hky85.Branches.tab
+wc -l R.hky85.Branches.tab
+
+
+
+sed -i -e "1d" Q.hky85.Branches.tab 
+sed -i -e "1d" R.hky85.Branches.tab
+
+
+sort -k1 -V  Q.hky85.Branches.tab > Q.hky85.sorted.tab 
+sort -k1 -V  R.hky85.Branches.tab > R.hky85.sorted.tab 
+
+join -t $'\t' -j 1 -o 1.1 2.2 1.2 2.3 1.3 2.4 1.4 2.5 1.5 2.6  Q.hky85.sorted.tab R.hky85.sorted.tab > join_trans.tab
+
+head join_trans.tab
+chr1:72806-73556	0	0.12833	0.138674	0.0823195	0.0300661	0.0623223	0.034622	0.12833	0.138674
+chr1:72806-73556	1	0.12833	0.150726	0.0823195	0.0353043	0.0623223	0.0376183	0.12833	0.150726
+chr1:72806-73556	2	0.12833	0.147326	0.0823195	0.0357258	0.0623223	0.0386072	0.12833	0.147326
+chr1:72806-73556	3	0.12833	0.159169	0.0823195	0.0337531	0.0623223	0.0395536	0.12833	0.159169
+
+
+awk '{  rate1 = $3 / $4 ;   print $1 "\t" $2  "\t" $3  "\t"  $4  "\t"  rate1  "\t" "Lv"  }' join_trans.tab  > PhyloFit.Lv.tab
+awk '{  rate2 = $5 / $6 ;   print $1 "\t" $2  "\t" $5  "\t"  $6  "\t"  rate2  "\t" "Ht" }' join_trans.tab  > PhyloFit.Ht.tab
+awk '{  rate3 = $7 / $8 ;   print $1 "\t" $2  "\t" $7  "\t"  $8  "\t"  rate3  "\t" "He" }' join_trans.tab  > PhyloFit.He.tab
+awk '{  rate3 = $9 / $10 ;   print $1 "\t" $2  "\t" $7  "\t"  $8  "\t"  rate3  "\t" "Ht_He" }' join_trans.tab  > PhyloFit.Ht_He.tab
+
+
+
+cat PhyloFit.Lv.tab PhyloFit.Ht.tab PhyloFit.He.tab PhyloFit.Ht_He.tab |  sort -k1 -k2,2n  -V | sed 1i"genome_location\trepeat\tQsubsRate\tRsubsRate\tzeta\turchin" > urchins.phyloFit.data
+
+
+
+```
+
+
+```R
+
+
+urchins_hyphy = as.data.frame(read.table("urchins.adaptiphy.edited.data", header = T)) # read tab file 
+colnames(urchins_hyphy) <- c("genome_location", "replicate",   "pval", "species")
+urchins_zeta = as.data.frame(read.table("urchins.phyloFit.data", header = T)) # read tab file 
+colnames(urchins_zeta) <- c("genome_location", "replicate",  "QsubsRate" , "RsubsRate"   ,  "zeta", "species")
+
+head(urchins_hyphy)
+head(urchins_zeta)
+
+
+urchins.selection.data <- merge(urchins_zeta, urchins_hyphy, by= c('genome_location', 'replicate', 'species'))
+head(urchins.selection.data)
+
+library(reshape)
+urchins.selection.wide.data <- reshape(urchins.selection.data, idvar = c("genome_location", "replicate"), timevar = "species", direction = "wide")
+head(urchins.selection.wide.data)
+
+write.table(urchins.selection.wide.data , file ="urchins.full_selection.data", row.names=F, col.names=T, quote=F) 
+
+
+library(dplyr)
+
+means_table <- urchins.selection.wide.data  %>% group_by(genome_location) %>% mutate(fdr.He =p.adjust(pval.He   , method="fdr") , fdr.Ht =p.adjust(pval.Ht   , method="fdr"))  %>% select(genome_location, replicate, zeta.He, pval.He, fdr.He, zeta.Ht, pval.Ht, fdr.Ht) %>% summarize(zeta.He = mean(zeta.He), pval.He = mean(pval.He),  fdr.He= mean(fdr.He), zeta.Ht = mean(zeta.Ht), pval.Ht = mean(pval.Ht),  fdr.Ht= mean(fdr.Ht))
+
+write.table(means_table , file ="urchins.selection.data", row.names=F, col.names=T, quote=F) 
+
+```
+
+Measure local compositional complexity (LCC) of DNA sequence
 
 ```bash 
 
