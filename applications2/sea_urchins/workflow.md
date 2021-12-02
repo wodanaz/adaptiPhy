@@ -9,7 +9,7 @@ https://github.com/wodanaz/adaptiPhy/blob/master/applications2/sea_urchins/findi
 
 The list of neutral regions contains about 21K akignments longer that 200 bp and they are saved at: 
 
-```bash
+```bas
 
 
 cat allcis.bed alltrans.bed > allpeaks.bed
