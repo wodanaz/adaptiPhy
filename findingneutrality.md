@@ -31,7 +31,7 @@ done
 for chr in chr1 chr2 chr3 chr4 chr5 chr6 chr7 chr8 chr9 chr10 chr11 chr12 chr13 chr14 chr15 chr16 chr17 chr18 chr19 chr20 chr21 chr22 chrX chrY; do
 echo '#!/usr/bin/env bash' > $chr.do_data.sh;
 echo '#SBATCH --mail-type=END' >> $chr.do_data.sh;
-echo '#SBATCH --mail-user=alebesc@gmail.com' >> $chr.do_data.sh;
+echo '#SBATCH --mail-user=your.email.com' >> $chr.do_data.sh;
 echo '#SBATCH -N 1' >> $chr.do_data.sh;
 echo "msa_split $chr.masked.maf  --refseq $chr.masked.fa --gap-strip ANY -q --in-format MAF  --features features/$chr.feat.bed --for-features --out-root  neutral_alignments/$chr;"    >> $chr.do_data.sh;
 done
@@ -50,7 +50,7 @@ First, we need to filter and select the sequences with fully homologous sequence
 nano makelists.sh
 #!/usr/bin/env bash
 #SBATCH --mail-type=END
-#SBATCH --mail-user=alebesc@gmail.com
+#SBATCH --mail-user=your.email.com
 #SBATCH -N 1
 for chr in chr1 chr2 chr3 chr4 chr5 chr6 chr7 chr8 chr9 chr10 chr11 chr12 chr13 chr14 chr15 chr16 chr17 chr18 chr19 chr20 chr21 chr22 chrX chrY; do
         echo $chr.*fa >> $chr.list;
@@ -97,7 +97,7 @@ wc -l chr*list
 for chr in chr1 chr2 chr3 chr4 chr5 chr6 chr7 chr8 chr9 chr10 chr11 chr12 chr13 chr14 chr15 chr16 chr17 chr18 chr19 chr20 chr21 chr22 chrX chrY; do
 echo '#!/usr/bin/env bash' > $chr.prunning.sh;
 echo '#SBATCH --mail-type=END' >> $chr.prunning.sh;
-echo '#SBATCH --mail-user=alebesc@gmail.com' >> $chr.prunning.sh;
+echo '#SBATCH --mail-user=your.email.com' >> $chr.prunning.sh;
 echo '#SBATCH -N 1' >> $chr.prunning.sh;
 echo "python2 prunning.py ${chr}.list"    >> $chr.prunning.sh;
 done
@@ -114,7 +114,7 @@ for file in *prunning.sh ; do sbatch $file ; done
 nano makelists2.sh
 #!/usr/bin/env bash
 #SBATCH --mail-type=END
-#SBATCH --mail-user=alebesc@gmail.com
+#SBATCH --mail-user=your.email.com
 #SBATCH -N 1
 for chr in chr1 chr2 chr3 chr4 chr5 chr6 chr7 chr8 chr9 chr10 chr11 chr12 chr13 chr14 chr15 chr16 chr17 chr18 chr19 chr20 chr21 chr22 chrX chrY; do
         echo $chr.*prunned >> $chr.prun.list;
@@ -125,7 +125,7 @@ done
 for chr in chr1 chr2 chr3 chr4 chr5 chr6 chr7 chr8 chr9 chr10 chr11 chr12 chr13 chr14 chr15 chr16 chr17 chr18 chr19 chr20 chr21 chr22 chrX chrY; do
 echo '#!/usr/bin/env bash' > $chr.filtering.sh;
 echo '#SBATCH --mail-type=END' >> $chr.filtering.sh;
-echo '#SBATCH --mail-user=alebesc@gmail.com' >> $chr.filtering.sh;
+echo '#SBATCH --mail-user=your.email.com' >> $chr.filtering.sh;
 echo '#SBATCH -N 1' >> $chr.filtering.sh;
 echo "python filtering_p3.py  ${chr}.prun.list" >> $chr.filtering.sh;
 done
@@ -146,7 +146,7 @@ nano domodel.sh
 #SBATCH -n 24
 #SBATCH --mem-per-cpu=100
 #SBATCH --mail-type=END
-#SBATCH --mail-user=alebesc@gmail.com
+#SBATCH --mail-user=your.email.com
 for file in *.fa ; 
 do root=`basename $file .fa`; 
 phyloFit $file --tree "(rheMac3,(ponAbe2,(gorGor3,(panTro4,hg19))))" --subst-mod HKY85 --out-root MODELS_HKY85/$root; # HKY85 model, It runs fast and it also the model applied in HYPHY
