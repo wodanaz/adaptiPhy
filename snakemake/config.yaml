@@ -1,0 +1,23 @@
+# INPUT SPLITS #######################################################################################
+windows: "data/allpeaks2.bed"
+
+# TREE TOPOLOGY ########################################################################################
+tree_topology: "(Lv, (Ht, He))"
+foreground_branches: ["Ht", "He"]
+
+# GENOME TARGET FILES ##################################################################################
+#provide the input file to be split by phast's msa_split here. this file can be in a .fasta, phylip, mpm, maf, or ss file format. msa_split will try to guess the contents.
+#if this fails, the snakefile may need to be modified to have an --in-format parameter specifying the file type. We typically provide a MAF file.
+maf_pattern: "data/maf_files/{chrom}.He.maf"
+#if providing a MAF file, provide the reference sequence location here.
+fa_pattern: "data/maf_files/{chrom}.He.fa"
+
+# LOCAL VS GLOBAL RUN SPECIFICATION ####################################################################
+#if running a local version of adaptiphy, no neutral sequence is required. Set the parameter below to "goodalignments.txt". If running a global version of adaptiphy, provide a neutral set file.
+#Keep in mind that if you perform a local run of adaptiphy (meaning that you set neutral_set to "goodalignments.txt") in a global (whole-genome) run, your neutral set
+#is a random sampling of the genome, which may not have a significant effect (see Berrio et. al. BMC) but caveat emptor.
+neutral_set: "data/neutralset.txt"
+#options are: local = "goodalignments.txt", global = path to neutral set
+chromosomes: ["chr1"]
+#"chr" if one sequence (i.e. viral genome, one chromosome only in the file provided") or specific chromosomes to target if using a multi-chromosome genome (i.e. "chr19", etc)
+

@@ -1,0 +1,336 @@
+import os
+import yaml
+
+# Load configuration
+with open("config.yaml", "r") as f:
+    config = yaml.safe_load(f)
+
+TREE_TOPOLOGY = config["tree_topology"]
+FOREGROUND_BRANCHES = config["foreground_branches"]
+CHROMOSOMES = config["chromosomes"]
+NUM_REPLICATES = 10
+
+# Function to get base names from ref.list
+def get_base_names(wildcards):
+    checkpoint_output = checkpoints.make_ref_list.get(**wildcards).output[0]
+    with open(checkpoint_output, "r") as f:
+        return [line.strip() for line in f if line.strip()]
+
+# Function to get .bf basenames from bf_list.txt
+def get_bf_names(wildcards):
+    checkpoint_output = checkpoints.make_bf_list.get(**wildcards).output[0]
+    with open(checkpoint_output, "r") as f:
+        return [line.strip().replace("bf_dir/", "").replace(".bf", "") for line in f if line.strip()]
+
+##################################################
+
+rule all:
+    input:
+        "DONE_SUMMARY.txt"
+
+rule init_dirs:
+    output:
+        touch("res/.dir_ready"),
+        touch("HYPHY/.dir_ready"),
+        directory("MODELS_HKY85/query"),
+        directory("MODELS_HKY85/ref"),
+        "bf_dir/alt4-fgrnd_spec.model",
+        "bf_dir/null4-fgrnd_spec.model"
+    shell:
+        """
+        mkdir -p res HYPHY logs MODELS_HKY85/query MODELS_HKY85/ref bf_dir/
+        cp scripts/null4-fgrnd_spec.model scripts/alt4-fgrnd_spec.model bf_dir/
+        cp -r data/neutral_set ./
+        cp data/neutralset.txt ./
+        """
+
+rule features:
+    input:
+        bed=config["windows"]
+    output:
+        "features/{chrom}.feat.bed"
+    log:
+        "logs/features_{chrom}.log"
+    shell:
+        """
+        mkdir -p features
+        grep -w {wildcards.chrom} {input.bed} | \
+          awk '{{printf "%s\\t%d\\t%s\\n", $1, ($2 - 1), $3}}' | \
+          sort -k1,1 -k2,2 -V > {output} 2> {log}
+        test -f {output} || touch {output}
+        """
+
+rule query:
+    input:
+        maf=config["maf_pattern"],
+        fa=config["fa_pattern"],
+        feat="features/{chrom}.feat.bed"
+    output:
+        "query/{chrom}/done.txt"
+    conda:
+        "envs/biopython.yaml"
+    log:
+        "logs/query_{chrom}.log"
+    shell:
+        """
+        mkdir -p query/{wildcards.chrom}
+        msa_split {input.maf} \
+                  --refseq {input.fa} \
+                  --gap-strip ANY -q \
+                  --features {input.feat} --for-features \
+                  --out-root query/{wildcards.chrom} > {log} 2>&1
+        touch {output}
+        """
+
+rule prun_all:
+    input:
+        expand("query/{chrom}/done.txt", chrom=CHROMOSOMES)
+    output:
+        "all.prunned.list"
+    log:
+        "logs/prun_all.log"
+    shell:
+        """
+        echo "Searching for FASTA files to prune..." > {log}
+        find query/ -maxdepth 2 -type f -name '*.fa' ! -name '*.prunned' >> {log}
+        for file in $(find query/ -maxdepth 2 -type f -name '*.fa' ! -name '*.prunned'); do
+            echo "Processing $file" >> {log}
+            echo "$file" > temp.list
+            python scripts/prunning.py temp.list >> {log} 2>&1
+        done
+        rm -f temp.list
+        echo "Collecting all prunned files..." >> {log}
+        find query/ -maxdepth 2 -type f -name '*.fa.prunned' > {output} 2>> {log}
+        """
+
+rule filter_alignments:
+    input:
+        prunned_list="all.prunned.list"
+    output:
+        good="goodalignments.txt",
+        ambiguous="ambiguous.txt"
+    conda:
+        "envs/biopython.yaml"
+    log:
+        "logs/filter_alignments.log"
+    shell:
+        """
+        python3 scripts/filtering_p3.py {input.prunned_list} > {log} 2>&1
+        """
+
+checkpoint make_query_list:
+    input:
+        good="goodalignments.txt"
+    output:
+        "query.list"
+    shell:
+        """
+        while read line; do
+            filename=$(basename "$line")
+            base=$(echo "$filename" | sed 's/\\.fa\\.prunned$//')
+            echo "$base" >> {output}
+        done < {input.good}
+        """
+
+rule dict_gen:
+    message: "!!!!!NOTE!!!!! if {input.neutral} is equal to {input.good}, this is equivalent to running a local Adaptiphy test."
+    input:
+        good="goodalignments.txt",
+        neutral=config["neutral_set"]
+    output:
+        dict="global.dict",
+        ref_list="reference.list"
+    conda:
+        "envs/biopython.yaml"
+    shell:
+        """
+        python scripts/DictGen.py {input.neutral}
+        """
+
+checkpoint make_ref_list:
+    input:
+        good="goodalignments.txt",
+        ref_list="reference.list"
+    output:
+        "ref.list"
+    shell:
+        """
+        while read line; do
+            filename=$(basename "$line")
+            base=$(echo "$filename" | sed 's/\\.fa\\.prunned$//')
+            echo "$base" >> {output}
+        done < {input.good}
+        """
+
+rule bfgenerator:
+    input:
+        ref_list="ref.list",
+        script="scripts/bf_generator.py",
+        model_alt="bf_dir/alt4-fgrnd_spec.model",
+        model_null="bf_dir/null4-fgrnd_spec.model"
+    output:
+        flag="bf_dir/bf_generated.flag"
+    conda:
+        "envs/biopython.yaml"
+    log:
+        "logs/bfgenerator.log"
+    shell:
+        """
+        python {input.script} {input.ref_list} > {log} 2>&1 || {{ echo "bf_generator.py failed" >> {log}; exit 1; }}
+        touch {output.flag}
+        """
+
+checkpoint make_bf_list:
+    input:
+        "bf_dir/bf_generated.flag"
+    output:
+        "bf_list.txt"
+    shell:
+        """
+        ls bf_dir/*.bf > {output} 2>/dev/null || {{ echo "No .bf files found in bf_dir/" >&2; exit 1; }}
+        """
+
+rule run_hyphy:
+    input:
+        bf="bf_dir/{name}.bf"
+    output:
+        out="HYPHY/{name}.out"
+    conda:
+        "envs/biopython.yaml"
+    log:
+        "logs/hyphy_{name}.log"
+    shell:
+        """
+        hyphy {input.bf} > {output.out} 2> {log} || {{ echo "HyPhy failed for {input.bf}" >> {log}; exit 1; }}
+        """
+
+rule aggregate_hyphy_outputs:
+    input:
+        bf_list="bf_list.txt",
+        hyphy_out=lambda wc: expand("HYPHY/{name}.out", name=get_bf_names(wc))
+    output:
+        touch("hyphy_outputs.done")
+    shell:
+        """
+        echo "Aggregated HyPhy outputs"
+        """
+
+rule extract_results:
+    input:
+        "hyphy_outputs.done"
+    output:
+        "summary_table.txt"
+    conda:
+        "envs/biopython.yaml"
+    log:
+        "logs/extract_results.log"
+    shell:
+        """
+        python scripts/extract_res.py > {output} 2> {log}
+        """
+
+rule run_phylofit_query:
+    input:
+        fa="query/{base}.fa.prunned",
+        query_list="query.list"
+    output:
+        mod="MODELS_HKY85/query/{base}.mod"
+    conda:
+        "envs/biopython.yaml"
+    log:
+        "logs/phylofit_query_{base}.log"
+    shell:
+        """
+        phyloFit {input.fa} --tree "{TREE_TOPOLOGY}" -i FASTA --subst-mod HKY85 --out-root MODELS_HKY85/query/{wildcards.base} > {log} 2>&1
+        """
+
+rule run_phylofit_ref:
+    input:
+        references="ref/{ref}.{replicate}.ref"
+    output:
+        mod="MODELS_HKY85/ref/{ref}.{replicate}.mod"
+    conda:
+        "envs/biopython.yaml"
+    log:
+        "logs/phylofit_ref_{ref}.{replicate}.log"
+    shell:
+        """
+        phyloFit {input.references} --tree "{TREE_TOPOLOGY}" -i FASTA --subst-mod HKY85 --out-root MODELS_HKY85/ref/{wildcards.ref}.{wildcards.replicate} > {log} 2>&1
+        """
+
+rule aggregate_query_mods:
+    input:
+        query_mods=lambda wc: expand("MODELS_HKY85/query/{base}.mod", base=get_base_names(wc))
+    output:
+        touch("query_mods.done")
+    shell:
+        """
+        echo "Aggregated query mods"
+        """
+
+rule aggregate_refs:
+    input:
+        ref_mods=lambda wc: expand("MODELS_HKY85/ref/{base}.{replicate}.mod", base=get_base_names(wc), replicate=range(NUM_REPLICATES))
+    output:
+        touch("ref_mods.done")
+    shell:
+        """
+        echo "Aggregated ref mods"
+        """
+
+rule calculate_zeta:
+    input:
+        ref_list="ref.list",
+        query_mods="query_mods.done",
+        ref_mods="ref_mods.done",
+        summary="summary_table_branch.txt" if os.path.exists("summary_table_branch.txt") else []
+    output:
+        updated_summary="summary_table_branch.txt"
+    conda:
+        "envs/biopython.yaml"
+    log:
+        "logs/calculate_zeta.log"
+    shell:
+        """
+        python scripts/calculate_zeta.py {input.ref_list} MODELS_HKY85/query MODELS_HKY85/ref {output.updated_summary} --log {log}
+        """
+
+rule merge_summaries:
+    input:
+        branch_table="summary_table_branch.txt",
+        summary_table="summary_table.txt"
+    output:
+        merged_table="merged_summary_table.txt"
+    conda:
+        "envs/biopython.yaml"
+    log:
+        "logs/merge_summaries.log"
+    shell:
+        """
+        python -c 'import pandas as pd; \
+        branch_df = pd.read_csv("{input.branch_table}", sep="\\t"); \
+        summary_df = pd.read_csv("{input.summary_table}", sep="\\t"); \
+        merged_df = pd.merge(branch_df, summary_df, how="left", on=["NAME", "BRANCH", "REPL"]); \
+        merged_df.to_csv("{output.merged_table}", sep="\\t", index=False)' > {log} 2>&1
+        """
+
+rule cleanup:
+    input:
+        merged_table="merged_summary_table.txt"
+    output:
+        donefile="DONE_SUMMARY.txt"
+    log:
+        "logs/cleanup-done.log"
+    shell:
+        """
+        mkdir -p PhyloFit && mv MODELS_HKY85/ PhyloFit/
+        mv hyphy_outputs.done query_mods.done ref_mods.done logs/
+        mv query.list query/
+        rm global.dict
+        mv reference.list ref.list ref/
+        mv neutral_set neutralset.txt data/
+        mkdir -p intermediate_files/ && mv all.prunned.list ambiguous.txt goodalignments.txt bf_list.txt intermediate_files/
+        mv features/ bf_dir/ query/ ref/ res/ intermediate_files/
+        mkdir -p OUTPUT_FINAL/ && mv summary_table_branch.txt summary_table.txt merged_summary_table.txt OUTPUT_FINAL/
+        touch DONE_SUMMARY.txt && ls > DONE_SUMMARY.txt
+        """
