@@ -328,7 +328,7 @@ rule cleanup:
         mv query.list query/
         rm global.dict
         mv reference.list ref.list ref/
-        mv neutral_set neutralset.txt data/
+        rm -rf neutral_set neutralset.txt
         mkdir -p intermediate_files/ && mv all.prunned.list ambiguous.txt goodalignments.txt bf_list.txt intermediate_files/
         mv features/ bf_dir/ query/ ref/ res/ intermediate_files/
         mkdir -p OUTPUT_FINAL/ && mv summary_table_branch.txt summary_table.txt merged_summary_table.txt OUTPUT_FINAL/

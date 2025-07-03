@@ -1,0 +1,17 @@
+name: biopython
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  - python=3.8  # or whichever version you need
+  - biopython
+  - bcftools 
+  - samtools
+  - bedtools
+  - phast
+  - hyphy
+  - scipy
+  - statsmodels
+  - numpy
+  - pandas
+  - pyyaml
