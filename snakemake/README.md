@@ -8,7 +8,9 @@ This code updates the existing AdaptiPhy 2.0 pipeline to run using snakemake, al
 
 To clone this repo from the command line into your working directory, use:
 
-```git clone https://github.com/wodanaz/adaptiPhy```
+```bash
+git clone https://github.com/wodanaz/adaptiPhy
+```
 
 You will need to add your files to the ```data/``` directory before running the snakemake pipeline for the first time.
 
