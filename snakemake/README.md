@@ -3,6 +3,9 @@
 This code updates the existing AdaptiPhy 2.0 pipeline to run using snakemake, allowing the user to plug in data at the beginning of the pipeline & performing the intervening steps automatically.
 
 ## Installing the AdaptiPhy pipeline to run with snakemake ##
+
+### Clone the git repo ###
+
 To clone this repo from the command line into your working directory, use:
 
 ```git clone https://github.com/wodanaz/adaptiPhy```
@@ -31,7 +34,9 @@ Although this is a minimal environment, it's a good idea to store a .yml copy of
 ### Change the necessary file parameters ###
 list of files that require changes
 
-### Generating an appropriate neutral proxy set ###
+## Generating data ##
+
+### Building an appropriate neutral proxy set ###
 running separate snakemake to generate  neutral set file (second snakemake)
 
 ### Running the pipeline ###
