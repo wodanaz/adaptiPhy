@@ -4,20 +4,21 @@ This code updates the existing AdaptiPhy 2.0 pipeline to run using snakemake, al
 
 ### Installing the AdaptiPhy pipeline to run with snakemake ###
 To clone this repo, use:
-```git clone```
-List of files that the user should add/make directories for
+```git clone https://github.com/wodanaz/adaptiPhy```
+You will need to add your files to the ```data/``` directory before running the snakemake pipeline for the first time.
 
 ### Loading a conda env ###
 The majority of the conda packages required in the pipeline will be loaded automatically, and you will not need to do any sort of manual install. You will only need to create an environment that contains snakemake and python in order to run this pipeline.
 
 * Dependencies:
 
-1. Anaconda/conda 24.x.x
-1. python 3.x.x
-1. snakemake 9.x.x
-1. Unix/linux environment
-1. Slurm (optional)
+  * Anaconda/conda 24.x.x
+  * python 3.x.x
+  * snakemake 9.x.x
+  * Unix/linux environment
+  * Slurm (optional)
 
+To create a fresh conda env for this purpose from the command line with Anaconda, use something like:
 ```conda create --name <my-env> python=3.6 snakemake```
 
 ### Change the necessary file parameters ###
