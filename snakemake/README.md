@@ -4,7 +4,9 @@ This code updates the existing AdaptiPhy 2.0 pipeline to run using snakemake, al
 
 ### Installing the AdaptiPhy pipeline to run with snakemake ###
 To clone this repo, use:
+
 ```git clone https://github.com/wodanaz/adaptiPhy```
+
 You will need to add your files to the ```data/``` directory before running the snakemake pipeline for the first time.
 
 ### Loading a conda env ###
