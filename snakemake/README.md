@@ -9,7 +9,16 @@ List of files that the user should add/make directories for
 
 ### Loading a conda env ###
 The majority of the conda packages required in the pipeline will be loaded automatically, and you will not need to do any sort of manual install. You will only need to create an environment that contains snakemake and python in order to run this pipeline.
-```instructions for making conda env```
+
+* Dependencies:
+
+1. Anaconda/conda 24.x.x
+1. python 3.x.x
+1. snakemake 9.x.x
+1. Unix/linux environment
+1. Slurm (optional)
+
+```conda create --name <my-env> python=3.6 snakemake```
 
 ### Change the necessary file parameters ###
 list of files that require changes
