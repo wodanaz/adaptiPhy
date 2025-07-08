@@ -21,7 +21,12 @@ The majority of the conda packages required in the pipeline will be loaded autom
   * Slurm (optional)
 
 To create a fresh conda env for this purpose from the command line with Anaconda, use something like:
+
 ```conda create --name <my-env> python=3.6 snakemake```
+
+Although this is a minimal environment, it's a good idea to store a .yml copy of your environment somewhere for replicability. To do this, activate your new environment and run:
+
+``` conda env export --from-history > <yourname>.yml```
 
 ### Change the necessary file parameters ###
 list of files that require changes
