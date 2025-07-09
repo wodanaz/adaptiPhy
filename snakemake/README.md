@@ -96,7 +96,25 @@ goodalignments vs neutral_set
 running separate snakemake to generate  neutral set file (second snakemake)
 
 ### Running the pipeline ###
-sbatch the pipeline or run interactively if on a non-slurm cluster (provide link to instructions for snakemake on other clusters)
+
+Option A: running the snakemake pipeline as a batch job on SLURM
+* It is typically a good idea to do a dry run of the snakemake pipeline interactively (`snakemake -n --latency-wait=300 --use-conda`) to check for syntax errors before submitting the final job to a job scheduler. 
+* When you're ready, submit your batch job from the top-level directory as:
+
+  ```bash
+   sbatch slurm-launch-snakemake.sh
+   ```
+  
+* This will source parameters for daughter jobs from `slurm_general/config.yaml`. The resulting SLURM log file will be written to `slurm.test.%j.out`. Individual rule logs will primarily be written to `logs/`.
+
+Option B: running the snakemake pipeline interactively
+* If you are not using a job scheduler and/or wish to run snakemake interactively, first log in to a virtual machine or other processor with sufficient memory to run the pipeline efficiently. Then run the pipeline from the top-level directory as:
+   ```bash
+   snakemake --latency-wait=300 --use-conda
+   ```
+
+Option C: running the snakemake pipeline on other job schedulers
+ * we currently don't have support for this option. If you'd like to explore this option, check out the documentation for snakemake on other cluster systems [here] (https://snakemake.readthedocs.io/en/v5.6.0/executable.html) with more examples [here] (https://github.com/snakemake-profiles/doc).
 
 ### AdaptiPhy output ###
 understanding the file structure and output table
