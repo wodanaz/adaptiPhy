@@ -97,7 +97,7 @@ running separate snakemake to generate  neutral set file (second snakemake)
 
 ### Running the pipeline ###
 
-Option A: running the snakemake pipeline as a batch job on SLURM
+**Option A:** running the snakemake pipeline as a batch job on SLURM
 * It is typically a good idea to do a dry run of the snakemake pipeline interactively (`snakemake -n --latency-wait=300 --use-conda`) to check for syntax errors before submitting the final job to a job scheduler. 
 * When you're ready, submit your batch job from the top-level directory as:
 
@@ -107,17 +107,28 @@ Option A: running the snakemake pipeline as a batch job on SLURM
   
 * This will source parameters for daughter jobs from `slurm_general/config.yaml`. The resulting SLURM log file will be written to `slurm.test.%j.out`. Individual rule logs will primarily be written to `logs/`.
 
-Option B: running the snakemake pipeline interactively
+**Option B:** running the snakemake pipeline interactively
 * If you are not using a job scheduler and/or wish to run snakemake interactively, first log in to a virtual machine or other processor with sufficient memory to run the pipeline efficiently. Then run the pipeline from the top-level directory as:
    ```bash
    snakemake --latency-wait=300 --use-conda
    ```
 
-Option C: running the snakemake pipeline on other job schedulers
+**Option C:** running the snakemake pipeline on other job schedulers
  * we currently don't have support for this option. If you'd like to explore this option, check out the documentation for snakemake on other cluster systems [here] (https://snakemake.readthedocs.io/en/v5.6.0/executable.html) with more examples [here] (https://github.com/snakemake-profiles/doc).
 
 ### AdaptiPhy output ###
-understanding the file structure and output table
+
+If the snakemake pipeline completes with no errors, your file structure should look something like this:
+```bash
+ls
+config.yaml data/ DONE_SUMMARY.txt HYPHY/ intermediate_files/ logs/ OUTPUT_FINAL/ PhyloFit/ scripts/ slurm_general/ slurm-launch-snakemake.sh slurm.test.1234567.out Snakefile
+```
+* The pipeline has generated the files `DONE_SUMMARY.txt HYPHY/ intermediate_files/ logs/ OUTPUT_FINAL/ PhyloFit/ slurm.test.1234567.out`. 
+* The not important stuff: The `DONE_SUMMARY.txt` file simply contains the list of files in this directory after the final cleanup step. The `slurm.test.1234567.out` file will only exist if you ran the snakemake as a batch job on SLURM, and contains the breakdown of submitted SLURM jobs with information about step success, step order, and log file locations. The `logs/` directory contains logs from each individual rule run in the pipeline. the `intermediate_files` directory contains all intermediate files generated in the pipeline, which may be helpful for troubleshooting.
+* The semi-important stuff: this snakemake runs the HyPhy as well as PhyloFit programs. All of the typical output files from these two tools are deposited in `HYPHY/` and `PhyloFit/`, respectively.
+* The important stuff: the directory `OUTPUT_FINAL/` contains the formatted output tables from AdaptiPhy. The major results table is stored in `merged_summary_table.txt`.
+
+__provide details here on how to interpret this table!__
 
 ### Citation
 If you use this pipeline, please cite:
