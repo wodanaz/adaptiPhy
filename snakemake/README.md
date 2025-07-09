@@ -48,17 +48,17 @@ To run the snakemake pipeline either interactively or through a job manager like
    * ```neutral_set```: provide a path to a .txt file that contains paths to neutral proxy files, or set this parameter to "goodalignments.txt" if running AdaptiPhy in local mode. More on this later!
    * ```chromosomes```: provide a vector of chromosomes to examine.
    
-  Example:
-
-   ```bash
-      windows: "data/allpeaks2.bed"
-      tree_topology: "(Lv, (Ht, He))"
-      foreground_branches: ["Ht", "He"]
-      maf_pattern: "data/maf_files/{chrom}.He.maf"
-      fa_pattern: "data/maf_files/{chrom}.He.fa"
-      neutral_set: "data/neutralset.txt"
-      chromosomes: ["chr1"]
-   ```
+     Example:
+   
+      ```bash
+         windows: "data/allpeaks2.bed"
+         tree_topology: "(Lv, (Ht, He))"
+         foreground_branches: ["Ht", "He"]
+         maf_pattern: "data/maf_files/{chrom}.He.maf"
+         fa_pattern: "data/maf_files/{chrom}.He.fa"
+         neutral_set: "data/neutralset.txt"
+         chromosomes: ["chr1"]
+      ```
     
  3. ```data/```: your input data lives in this folder. To run the AdaptiPhy pipeline, this folder must contain:
     * a folder containing MAF and .fa files, matching the specified 'pattern' paths in your ```config.yaml``` file from the previous step
@@ -72,7 +72,8 @@ To run the snakemake pipeline either interactively or through a job manager like
        ```
 
  4. ```./slurm-launch-snakemake.sh``` (optional): update this script if you are planning on using SLURM as a job manager to run the AdaptiPhy snakemake (preferred).
-    * modify the header of this file to point to your snakemake conda env and email. Example:
+    * modify the header of this file to point to your snakemake conda env and email.
+       Example:
 
       ```bash
        #SBATCH --mail-user=apm58@duke.edu
