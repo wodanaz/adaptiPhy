@@ -90,10 +90,16 @@ To run the snakemake pipeline either interactively or through a job manager like
 ## Generating data ##
 
 ### Running a local vs. global AdaptiPhy test ###
-goodalignments vs neutral_set
+
+AdaptiPhy can be run in two modes.
+
+**Local mode**: This is appropriate for performing a local scan for selection, e.g. examining one chromosome or a section of one chromosome. To run this mode, your chromosome target in the `config.yaml` file should point to only one chromosome, and the `neutral_set` parameter should additionally be set to `goodalignments.txt`. The neutral proxy in local mode is a series of concatenated random regions from your target window. This test is good for determining whether a large region that is putatively under selection is actually homogenously experiencing a higher mutation rate, etc. or whether there is truly a specific small region driving the signal selection. It is also good for detecting selection if your genome is very small (e.g. viral) and/or no neutral set is available.
+
+**Global mode**: This is appropriate for performing a genome-wide scan for selection. To run this mode, your chromosome target in the `config.yaml` file should point to a subset of chromosomes or the entire list of chromosomes in your genome. The `neutral_set` parameter should additionally be set to a file such as `data/neutralset.txt`, which contains paths to a series of files in a `neutral_set` directory. To build this directory and file, proceed to the "Building an appropriate neutral proxy set" section. This test is good for scanning an entire large genome for regions under selection relative to a background genome-wide neutral evolution rate.
 
 ### Building an appropriate neutral proxy set ###
-running separate snakemake to generate  neutral set file (second snakemake)
+
+**running separate snakemake to generate  neutral set file (second snakemake)**
 
 ### Running the pipeline ###
 
@@ -124,9 +130,9 @@ ls
 config.yaml data/ DONE_SUMMARY.txt HYPHY/ intermediate_files/ logs/ OUTPUT_FINAL/ PhyloFit/ scripts/ slurm_general/ slurm-launch-snakemake.sh slurm.test.1234567.out Snakefile
 ```
 * The pipeline has generated the files `DONE_SUMMARY.txt HYPHY/ intermediate_files/ logs/ OUTPUT_FINAL/ PhyloFit/ slurm.test.1234567.out`. 
-* The not important stuff: The `DONE_SUMMARY.txt` file simply contains the list of files in this directory after the final cleanup step. The `slurm.test.1234567.out` file will only exist if you ran the snakemake as a batch job on SLURM, and contains the breakdown of submitted SLURM jobs with information about step success, step order, and log file locations. The `logs/` directory contains logs from each individual rule run in the pipeline. the `intermediate_files` directory contains all intermediate files generated in the pipeline, which may be helpful for troubleshooting.
-* The semi-important stuff: this snakemake runs the HyPhy as well as PhyloFit programs. All of the typical output files from these two tools are deposited in `HYPHY/` and `PhyloFit/`, respectively.
-* The important stuff: the directory `OUTPUT_FINAL/` contains the formatted output tables from AdaptiPhy. The major results table is stored in `merged_summary_table.txt`.
+* _ _The not important stuff_ _: The `DONE_SUMMARY.txt` file simply contains the list of files in this directory after the final cleanup step. The `slurm.test.1234567.out` file will only exist if you ran the snakemake as a batch job on SLURM, and contains the breakdown of submitted SLURM jobs with information about step success, step order, and log file locations. The `logs/` directory contains logs from each individual rule run in the pipeline. the `intermediate_files` directory contains all intermediate files generated in the pipeline, which may be helpful for troubleshooting.
+* _ _The semi-important stuff_ _: this snakemake runs the HyPhy as well as PhyloFit programs. All of the typical output files from these two tools are deposited in `HYPHY/` and `PhyloFit/`, respectively.
+* _ _The important stuff_ _: the directory `OUTPUT_FINAL/` contains the formatted output tables from AdaptiPhy. The major results table is stored in `merged_summary_table.txt`.
 
 __provide details here on how to interpret this table!__
 
