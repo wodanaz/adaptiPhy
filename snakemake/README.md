@@ -47,7 +47,8 @@ To run the snakemake pipeline either interactively or through a job manager like
    * ```maf_pattern``` and ```fa_pattern```: provide paths to files (wildcards permitted) for one or many chromosomes. Note that both the .maf (multi alignment) and .fa (nucleotide) files are required.
    * ```neutral_set```: provide a path to a .txt file that contains paths to neutral proxy files, or set this parameter to "goodalignments.txt" if running AdaptiPhy in local mode. More on this later!
    * ```chromosomes```: provide a vector of chromosomes to examine.
-   Example:
+   
+  Example:
 
     ```bash
    windows: "data/allpeaks2.bed"
@@ -63,26 +64,26 @@ To run the snakemake pipeline either interactively or through a job manager like
    * a folder containing MAF and .fa files, matching the specified 'pattern' paths in your ```config.yaml``` file from the previous step
    * a file of target windows/peak calls, matching the 'windows' path in  your ```config.yaml``` file from the previous step
    * if running AdaptiPhy in global mode (more on this later), a .txt file containing a list of paths to neutral proxy .fa files and a directory containing those neutral proxy .fa files
-   Example:
-  
-   ```bash
+   
+  Example:
+  ```bash
    ls data/
    allpeaks.bed maf_fa/ neutral_set/ neutralset.txt
-   ```
+  ```
 
  4. ```./slurm-launch-snakemake.sh``` (optional): update this script if you are planning on using SLURM as a job manager to run the AdaptiPhy snakemake (preferred).
-   * modify the header of this file to point to your snakemake conda env and email. example:
+    * modify the header of this file to point to your snakemake conda env and email. example:
 
-     ```bash
-      #SBATCH --mail-user=apm58@duke.edu
-      ...
-      source activate /path/to/conda/envs/env_name
-      ```
+      ```bash
+       #SBATCH --mail-user=apm58@duke.edu
+       ...
+       source activate /path/to/conda/envs/env_name
+       ```
      
  4. ```slurm_general/config.yaml``` (optional): update this file if you are planning on using SLURM as a job manager to run the AdaptiPhy snakemake (preferred). Do not modify this file's name or relative directory location.
-   * update your ```slurm_partition``` and ```slurm_account``` to point to the correct partition and account.
-   * set the ```tmpdir``` path to point to a scratch or work directory if available/desired.
-   * the ```latency_wait``` and ```use-conda``` variables should not be altered. The other parameters can be optimized for your job scheduler system and memory needs.
+    * update your ```slurm_partition``` and ```slurm_account``` to point to the correct partition and account.
+    * set the ```tmpdir``` path to point to a scratch or work directory if available/desired.
+    * the ```latency_wait``` and ```use-conda``` variables should not be altered. The other parameters can be optimized for your job scheduler system and memory needs.
 
 
 ## Generating data ##
