@@ -42,11 +42,11 @@ conda env export --from-history > <yourname>.yml
 To run the snakemake pipeline either interactively or through a job manager like SLURM, you will need to update some file paths and other information in the cloned repository.
 
 1. ```./config.yaml```: This is the file where you will need to update the most information. You will need:
-  * ```windows```: a list of ATAC peaks or similar targets in BED file format
-  * ```tree_topology``` and ```foreground_branches```: provide a phylogenetic tree in Newick format and specify which branches are focal. For the first parameter, use standard Newick format. For the second, provide a vector of the focal branch names from the Newick tree.
-  * ```maf_pattern``` and ```fa_pattern```: provide paths to files (wildcards permitted) for one or many chromosomes. Note that both the .maf (multi alignment) and .fa (nucleotide) files are required.
-  * ```neutral_set```: provide a path to a .txt file that contains paths to neutral proxy files, or set this parameter to "goodalignments.txt" if running AdaptiPhy in local mode. More on this later!
-  * ```chromosomes```: provide a vector of chromosomes to examine.
+   * ```windows```: a list of ATAC peaks or similar targets in BED file format
+   * ```tree_topology``` and ```foreground_branches```: provide a phylogenetic tree in Newick format and specify which branches are focal. For the first parameter, use standard Newick format. For the second, provide a vector of the focal branch names from the Newick tree.
+   * ```maf_pattern``` and ```fa_pattern```: provide paths to files (wildcards permitted) for one or many chromosomes. Note that both the .maf (multi alignment) and .fa (nucleotide) files are required.
+   * ```neutral_set```: provide a path to a .txt file that contains paths to neutral proxy files, or set this parameter to "goodalignments.txt" if running AdaptiPhy in local mode. More on this later!
+   * ```chromosomes```: provide a vector of chromosomes to examine.
 
 ## Generating data ##
 
