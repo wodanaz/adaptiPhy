@@ -51,7 +51,6 @@ conda env create -f snakemake.yml
 conda activate snakemake
 ```
 
-or, 
 
 ### 3. Change the necessary file parameters ###
 
