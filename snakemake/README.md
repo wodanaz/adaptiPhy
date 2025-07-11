@@ -47,7 +47,7 @@ dependencies:
 Now run:
 
 ```bash
-conda env create -f snakemake.yml --prefix ./envs/snakemake/
+conda env create -f snakemake.yml --prefix path/to/your/envs/folder/snakemake/
 conda activate snakemake
 ```
 
