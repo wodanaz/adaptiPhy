@@ -158,7 +158,8 @@ __provide details here on how to interpret this table!__
 
 ### Resetting AdaptiPhy to run again ###
 
-If you'd like to rerun AdaptiPhy again, make sure to remove the following files: `DONE_SUMMARY.txt HYPHY/ intermediate_files/ logs/ PhyloFit/ slurm.test.1234567.out`
+If you'd like to rerun AdaptiPhy again, make sure to remove the following files: `DONE_SUMMARY.txt HYPHY/ intermediate_files/ logs/ PhyloFit/`. You can also remove the `slurm.test.1234567.out` if you wish.
+
 DO NOT remove the following directories and files unless you know what you're doing: `data/ config.yaml scripts/ slurm_general/ slurm-launch-snakemake.sh Snakefile`. Remove the `OUTPUT_FINAL` directory only if you're sure you don't need its contents anymore! 
 
 ### Citation
