@@ -156,6 +156,11 @@ config.yaml data/ DONE_SUMMARY.txt HYPHY/ intermediate_files/ logs/ OUTPUT_FINAL
 
 __provide details here on how to interpret this table!__
 
+### Resetting AdaptiPhy to run again ###
+
+If you'd like to rerun AdaptiPhy again, make sure to remove the following files: `DONE_SUMMARY.txt HYPHY/ intermediate_files/ logs/ PhyloFit/ slurm.test.1234567.out`
+DO NOT remove the following directories and files unless you know what you're doing: `data/ config.yaml scripts/ slurm_general/ slurm-launch-snakemake.sh Snakefile`. Remove the `OUTPUT_FINAL` directory only if you're sure you don't need its contents anymore! 
+
 ### Citation
 If you use this pipeline, please cite:
 Berrio, A., Haygood, R. & Wray, G.A. Identifying branch-specific positive selection throughout the regulatory genome using an appropriate proxy neutral. BMC Genomics 21, 359 (2020). https://doi.org/10.1186/s12864-020-6752-4
