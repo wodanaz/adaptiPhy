@@ -55,6 +55,8 @@ conda env create -f snakemake.yml --prefix path/to/your/envs/folder/snakemake/
 conda activate snakemake
 ```
 
+Advanced: If you don't set a `--prefix`, make sure that your `.condarc` file has a specified location to save environments to. If you are using a shared computing space, not specifying a stable install location can result in a loss of environment files.
+
 ### 3. Change the necessary file parameters ###
 
 To run the snakemake pipeline either interactively or through a job manager like SLURM, you will need to update some file paths and other information in the cloned repository.
