@@ -19,16 +19,16 @@ The majority of the conda packages required in the pipeline will be loaded autom
 
 * Dependencies:
 
-  * Anaconda/conda 24.x.x
-  * python 3.x.x
-  * snakemake 9.x.x
+  * Miniconda/conda 24.9.2
+  * python 3.11.7
+  * snakemake 9.1.6
   * Unix/linux environment
   * Slurm (optional)
 
-To create a fresh conda env for this purpose from the command line with Anaconda, use something like:
+To create a fresh conda env for this purpose from the command line with conda, use something like:
 
 ```bash
-conda create --name <my-env> python=3.6 snakemake
+conda create --name <my-env> python=3.11 snakemake=9.1
 ```
 
 Although this is a minimal environment, it's a good idea to store a .yml copy of your environment somewhere for replicability. To do this, activate your new environment and run:
