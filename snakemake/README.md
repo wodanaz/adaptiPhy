@@ -28,14 +28,30 @@ The majority of the conda packages required in the pipeline will be loaded autom
 To create a fresh conda env for this purpose from the command line with conda, use something like:
 
 ```bash
-conda create --name <my-env> python=3.11 snakemake=9.1
+touch snakemake.yml
 ```
 
-Although this is a minimal environment, it's a good idea to store a .yml copy of your environment somewhere for replicability. To do this, activate your new environment and run:
+Your file should look like this:
+
+```
+name: snakemake
+channels:
+  - conda-forge
+  - bioconda
+  - defaults
+dependencies:
+  - snakemake=9.1
+  - python=3.11
+```
+
+Now run:
 
 ```bash
-conda env export --from-history > <yourname>.yml
+conda env create -f snakemake.yml
+conda activate snakemake
 ```
+
+or, 
 
 ### 3. Change the necessary file parameters ###
 
