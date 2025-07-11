@@ -4,7 +4,11 @@ This code updates the existing AdaptiPhy 2.0 pipeline to run using snakemake, al
 
 ## Installing the AdaptiPhy pipeline to run with snakemake ##
 
-### 1. Clone the git repo ###
+### 1a. Recommended: Download the tarball release from the "Releases" page ###
+
+add information here when this option is ready
+
+### 1b. Not recommended: Clone the git repo ###
 
 To clone this repo from the command line into your working directory, use:
 
