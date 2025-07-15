@@ -28,6 +28,7 @@ The majority of the conda packages required in the pipeline will be loaded autom
   * snakemake 9.1.6
   * Unix/linux environment
   * Slurm (optional)
+  * If using Slurm, also include the conda package `snakemake-executor-plugin-slurm`.
 
 To create a fresh conda env for this purpose from the command line with conda, use something like:
 
