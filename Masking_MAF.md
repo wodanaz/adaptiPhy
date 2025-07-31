@@ -68,6 +68,13 @@ maf_parse $primates --features functional_feat/featBEDv3/$root.feat.bed --mask-f
 done
 ```
 
+or
+
+```bash
+for urchins in chr*.maf ; do root=`basename $urchins .He.maf`; maf_parse $urchins --features featBEDv3/$root.feat.bed --mask-features Lv,Ht,He  > maskedv3/$root.masked.maf;    done
+```
+
+
 And for Hg38 do:
 
 ```bash
