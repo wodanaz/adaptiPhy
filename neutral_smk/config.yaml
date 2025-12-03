@@ -1,5 +1,21 @@
+cat config.yaml 
 genome_fasta: "data/hg19.fa"
 maf_pattern:  "data/{chrom}.masked.maf"
 fa_pattern:   "data/{chrom}.masked.fa"
 tree_topology: "(rheMac3,(ponAbe2,(gorGor3,(panTro4,hg19))))"
 chrom_targets: ["chr1","chr2","chr3","chr4","chr5","chr6","chr7","chr8","chr9","chr10", "chr11","chr12","chr13","chr14","chr15","chr16","chr17","chr18", "chr19","chr20","chr21"]
+
+# Number of random windows to generate
+total_windows: 2500000
+
+# Size of each window (in bp)
+window_size: 300
+
+# Minimum bases required for good alignments
+min_bases: 275
+
+# Maximum number of alignments to keep
+max_keep: 250000
+
+# Batch size for phyloFit processing
+batch_size: 25000
