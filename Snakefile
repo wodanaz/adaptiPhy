@@ -52,7 +52,7 @@ def get_ref_fa_for_chrom(wildcards):
 ####################################################################################################
 rule all:
     input:
-        "DONE_SUMMARY.txt"
+        "ADAPTIPHY_DONE"
 
 rule init_dirs:
     output:
