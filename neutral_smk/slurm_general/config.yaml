@@ -1,0 +1,22 @@
+executor: slurm
+jobs: 100
+
+default-resources:
+  - slurm_partition=common
+  - slurm_account=yourlab
+  - runtime=1400 #around 24 hours
+  - mem_mb=10000
+  - cpus_per_task=1
+  - tmpdir='/path/to/tmp'
+  - qos=sbatch
+
+conda-prefix: /hpc/your/lab/home/conda
+use-conda: true
+conda-create-envs-only: false
+conda-cleanup-envs: false
+
+latency-wait: 60
+keep-going: true
+rerun-incomplete: true
+printshellcmds: true
+scheduler: greedy
