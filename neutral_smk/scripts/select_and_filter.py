@@ -47,7 +47,7 @@ def file_is_valid(path: Path, min_real: int) -> bool:
         return False
 
 def find_fasta_files(root: Path) -> List[Path]:
-    patterns = ("**/*.fa", "**/*.fasta", "**/*.fa.prunned", "**/*.fa.good.fa")
+    patterns = ("**/*.fa", "**/*.fasta")
     out = []
     for pat in patterns:
         out.extend([p for p in root.glob(pat) if p.is_file()])
