@@ -13,13 +13,13 @@ GENOME_NAME   = os.path.splitext(os.path.basename(GENOME))[0]
 CHROM_SIZES   = f"{GENOME_NAME}.chrom.sizes"
 
 # Scale settings
-TOTAL_WINDOWS = 1000000
-WINDOW_SIZE   = 300
-MIN_BASES     = 275
-MAX_KEEP      = 100000
+TOTAL_WINDOWS = config["total_windows"]
+WINDOW_SIZE   = config["window_size"]
+MIN_BASES     = config["min_bases"]
+MAX_KEEP      = config["max_keep"]
 
 # BATCH SIZE
-BATCH_SIZE = 100000
+BATCH_SIZE = config["batch_size"]
 
 # =============================================================================
 # FINAL TARGET
@@ -36,6 +36,8 @@ rule get_sizes:
     output: sizes = CHROM_SIZES
     conda: "envs/biopython.yaml"
     log: "logs/get_sizes.log"
+    resources:
+        mem_mb = 2000
     shell:
         """
         mkdir -p logs
@@ -52,6 +54,8 @@ rule bed_random:
     threads: 24
     conda: "envs/biopython.yaml"
     log: "logs/bed_random.log"
+    resources:
+        mem_mb = 1000
     shell:
         """
         mkdir -p features logs
@@ -89,6 +93,8 @@ rule msa_split:
         "pruned_neutral/{chrom}/done.txt"
     conda: "envs/biopython.yaml"
     log: "logs/msa_split/{chrom}.log"
+    resources:
+        mem_mb = 10000
     shell:
         """
         mkdir -p pruned_neutral/{wildcards.chrom} logs/msa_split
@@ -112,6 +118,8 @@ checkpoint select_good:
         max_keep  = MAX_KEEP
     conda: "envs/biopython.yaml"
     log: "logs/select_and_filter.log"
+    resources:
+        mem_mb = 1000
     shell:
         """
         mkdir -p good_alignments logs
@@ -188,6 +196,8 @@ rule aggregate:
         "output.hky85.neutral.txt"
     log:
         "logs/aggregate.log"
+    resources:
+        mem_mb = 1000
     shell:
         """
         mkdir -p logs $(dirname {output})
@@ -210,6 +220,8 @@ rule parse_neutral:
     output: "neutral_table.txt", "neutralset.txt", "neutral_table_full.tsv"
     conda: "envs/biopython.yaml"
     log: "logs/parse_neutral.log"
+    resources:
+        mem_mb = 5000
     shell:
         """
         mkdir -p logs
@@ -226,6 +238,8 @@ rule collect_neutral_proxy:
         neutralset = "neutralset.txt"
     output:
         directory("neutral_proxy")
+    resources:
+        mem_mb = 2000
     shell:
         """
         mkdir -p {output}
@@ -251,6 +265,8 @@ rule cleanup:
         "neutral_proxy"
     output:
         touch("snakemake.done")
+    resources:
+        mem_mb = 1000
     shell:
         """
         mkdir -p intermediate_files
