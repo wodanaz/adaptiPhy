@@ -122,7 +122,7 @@ checkpoint select_good:
     log:
         "logs/select_and_filter.log"
     resources:
-        mem_mb = 500
+        mem_mb = 2000
     shell:
         """
         mkdir -p good_alignments 
