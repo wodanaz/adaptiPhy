@@ -119,7 +119,7 @@ checkpoint select_good:
     conda: "envs/biopython.yaml"
     log: "logs/select_and_filter.log"
     resources:
-        mem_mb = 1000
+        mem_mb = 2000
     shell:
         """
         mkdir -p good_alignments logs
