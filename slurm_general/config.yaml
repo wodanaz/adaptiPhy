@@ -4,11 +4,11 @@ jobs: 150
 default-resources:
   - slurm_partition=common
   - slurm_account=wraylab
-  - runtime=720
+  - runtime=14000
   - mem_mb=10000
   - cpus_per_task=1
   - tmpdir='/scratch/xxxxx'
-  - qos=normal
+  - qos=normal # run sacctmgr show qos (or sacctmgr list qos) on your HPC login node to list available QoS values
 
 conda-prefix: /your/path/to/conda
 use-conda: true
