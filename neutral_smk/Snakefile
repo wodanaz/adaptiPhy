@@ -4,73 +4,71 @@ from pathlib import Path
 configfile: "config.yaml"
 
 # =============================================================================
-# CONFIG
+# CONFIGURATION
 # =============================================================================
-TREE_TOPOLOGY = config["tree_topology"]
-CHROMS        = config["chrom_targets"]
-GENOME        = config["genome_fasta"]
-GENOME_NAME   = os.path.splitext(os.path.basename(GENOME))[0]
-CHROM_SIZES   = f"{GENOME_NAME}.chrom.sizes"
+TREE_TOPOLOGY = config["tree_topology"]  # your input tree
+CHROMS = config["chrom_targets"] # from chromosome/scaffold id on config.yaml
+if isinstance(CHROMS, str):
+    CHROMS = [CHROMS]
+GENOME = config["genome_fasta"] # YOur reference genome
+GENOME_NAME = os.path.splitext(os.path.basename(GENOME))[0] by input id
+CHROM_SIZES = f"{GENOME_NAME}.chrom.sizes" # by input id
+TOTAL_WINDOWS = config["total_windows"] # this can be any number > 1 Million. For the primate alignment. we optained nearly 30000 neutral proxy after the pipeline finish running. Be aware this depends upon genome qulity and how well the species align in your genome-wide alignment.
+WINDOW_SIZE = config["window_size"] # define the window size. we define 300 bp as the minimal size.
+MIN_BASES = config["min_bases"] # define the minimal number of bases that are necesarry to pass as a good alignment.
+BATCH_SIZE = config["batch_size"] # DEfine equaly sized batches to run phylofit. Find a relative number based on your cores available and search size, in example 2 million alignments of 300 bp are processed in 2 hours in a hpc system.
 
-# Scale settings
-TOTAL_WINDOWS = config["total_windows"]
-WINDOW_SIZE   = config["window_size"]
-MIN_BASES     = config["min_bases"]
-MAX_KEEP      = config["max_keep"]
-
-# BATCH SIZE
-BATCH_SIZE = config["batch_size"]
-
-# =============================================================================
 # FINAL TARGET
-# =============================================================================
 rule all:
     input:
         "snakemake.done"
 
-# =============================================================================
-# 1. Get chrom sizes
-# =============================================================================
+# 1. Get chromosome sizes
 rule get_sizes:
-    input: genome = GENOME
-    output: sizes = CHROM_SIZES
-    conda: "envs/biopython.yaml"
-    log: "logs/get_sizes.log"
-    resources:
-        mem_mb = 2000
+    input:
+        genome = GENOME
+    output:
+        sizes = CHROM_SIZES
+    conda:
+        "envs/biopython.yaml"
+    log:
+        "logs/get_sizes.log"
     shell:
         """
         mkdir -p logs
         samtools faidx {input.genome}
-        cut -f1,2 {input.genome}.fai > {output.sizes}
+        cut -f1,2 {input.genome}.fai > {output.sizes} 2> {log}
         """
 
-# =============================================================================
-# 2. Random BED — 10K windows
-# =============================================================================
+# 2. Random windows
 rule bed_random:
-    input: chrom_sizes = CHROM_SIZES
-    output: "random.sorted.bed"
+    input:
+        chrom_sizes = CHROM_SIZES
+    output:
+        "random.sorted.bed"
     threads: 24
-    conda: "envs/biopython.yaml"
-    log: "logs/bed_random.log"
-    resources:
-        mem_mb = 1000
+    conda:
+        "envs/biopython.yaml"
+    log:
+        "logs/bed_random.log"
     shell:
         """
         mkdir -p features logs
-        bedtools random -n {TOTAL_WINDOWS} -l {WINDOW_SIZE} -g {input.chrom_sizes} > random.bed
-        sort -k1,1 -k2,2n random.bed > {output}
+        bedtools random -n {TOTAL_WINDOWS} -l {WINDOW_SIZE} -g {input} > random.bed
+        sort -k1,1 -k2,2n random.bed > {output} 2> {log}
+        rm -f random.bed
         """
 
-# =============================================================================
-# 3. Split by chrom
-# =============================================================================
+# 3. Split by chromosome
 rule individual_feats:
-    input: "random.sorted.bed"
-    output: "features/{chrom}.feat.bed"
-    conda: "envs/biopython.yaml"
-    log: "logs/individual_feats/{chrom}.log"
+    input:
+        "random.sorted.bed"
+    output:
+        "features/{chrom}.feat.bed"
+    conda:
+        "envs/biopython.yaml"
+    log:
+        "logs/individual_feats/{chrom}.log"
     resources:
         mem_mb = 1000
     shell:
@@ -81,170 +79,163 @@ rule individual_feats:
         sort -k2,2n > {output} 2> {log}
         """
 
-# =============================================================================
-# 4. msa_split
-# =============================================================================
+# 4. Extract alignments — writes to pruned_neutral/{chrom}/...
 rule msa_split:
     input:
         bed_feats = "features/{chrom}.feat.bed",
-        mask_maf  = config["maf_pattern"],
-        mask_fa   = config["fa_pattern"]
+        mask_maf = config["maf_pattern"],
+        mask_fa = config["fa_pattern"]
     output:
         "pruned_neutral/{chrom}/done.txt"
-    conda: "envs/biopython.yaml"
-    log: "logs/msa_split/{chrom}.log"
-    resources:
-        mem_mb = 10000
+    conda:
+        "envs/biopython.yaml"
+    log:
+        "logs/msa_split/{chrom}.log"
     shell:
         """
         mkdir -p pruned_neutral/{wildcards.chrom} logs/msa_split
         msa_split {input.mask_maf} --refseq {input.mask_fa} --gap-strip ANY -q \
             --in-format MAF --features {input.bed_feats} \
-            --for-features --out-root pruned_neutral/{wildcards.chrom} \
+            --for-features \
+            --out-root pruned_neutral/{wildcards.chrom}/{wildcards.chrom} \
             > {log} 2>&1
         touch {output}
         """
 
-# =============================================================================
-# 5. Select good alignments → ~10K
-# =============================================================================
-checkpoint select_good:
-    input: expand("pruned_neutral/{chrom}/done.txt", chrom=CHROMS)
+# 5. Copy good alignments — safe, no deletion
+rule filter_good_per_chrom:
+    input:
+        "pruned_neutral/{chrom}/done.txt"
     output:
-        goodlist = "goodalignments.txt",
-        dir      = directory("good_alignments")
+        touch("filter/{chrom}.done")
     params:
-        min_bases = MIN_BASES,
-        max_keep  = MAX_KEEP
-    conda: "envs/biopython.yaml"
-    log: "logs/select_and_filter.log"
-    resources:
-        mem_mb = 2000
-    shell:
-        """
-        mkdir -p good_alignments logs
-        python3 scripts/select_and_filter.py \
-            --input pruned_neutral \
-            --min-bases {params.min_bases} \
-            --max-keep {params.max_keep} \
-            --out good_alignments \
-            --good-list {output.goodlist} \
-            > {log} 2>&1 || touch {output.goodlist}
-        """
-
-# =============================================================================
-# Helper: Get selected regions + batch count
-# =============================================================================
-def get_selected_regions():
-    manifest = checkpoints.select_good.get().output.goodlist
-    if not Path(manifest).exists():
-        return []
-    with open(manifest) as f:
-        return [
-            Path(line.strip()).stem
-            for line in f
-            if line.strip() and line.strip().endswith(('.fa', '.fasta', '.fas'))
-        ]
-
-def get_batch_count():
-    n = len(get_selected_regions())
-    return (n + BATCH_SIZE - 1) // BATCH_SIZE if n > 0 else 0
-
-# =============================================================================
-# 6. For Loop in PhyloFit Rule 
-# =============================================================================
-checkpoint batch_phylofit:
-    input:
-        "goodalignments.txt",
-        lambda wc: [
-            f"good_alignments/{r}.fa"
-            for r in get_selected_regions()[
-                int(wc.i) * BATCH_SIZE : (int(wc.i) + 1) * BATCH_SIZE
-            ]
-        ]
-    output:
-        directory("MODELS_HKY85/batch_{i}")
-    conda: "envs/biopython.yaml"
-    resources:
-        mem_mb = 8000,
-        runtime = 1800
-    log: "logs/batch_phylofit/batch_{i}.log"
-    shell:
-        """
-        mkdir -p {output} logs/batch_phylofit
-        for fa in {input}; do
-            [[ -f "$fa" ]] || continue
-            r=$(basename "$fa" .fa)
-            phyloFit "$fa" \
-                --tree "{TREE_TOPOLOGY}" \
-                -i FASTA \
-                --subst-mod HKY85 \
-                --out-root "$(pwd)/{output}/$r" \
-                --init-random \
-                >> "{log}" 2>&1 || echo "FAILED: $r" >> "{log}"
-            touch "{output}/$r.mod"
-        done
-        """
-
-# =============================================================================
-# 7. Aggregate *.MOD files
-# =============================================================================
-rule aggregate:
-    input:
-        lambda wc: expand("MODELS_HKY85/batch_{i}", i=range(get_batch_count()))
-    output:
-        "output.hky85.neutral.txt"
+        min_bases = MIN_BASES
+    conda:
+        "envs/biopython.yaml"
     log:
-        "logs/aggregate.log"
+        "logs/filter_{chrom}.log"
     resources:
-        mem_mb = 1000
+        mem_mb = 12000
     shell:
         """
-        mkdir -p logs $(dirname {output})
-        > {output}
-        for batch_dir in {input}; do
-            for m in "$batch_dir"/*.mod; do
-                [[ -f "$m" ]] || continue
-                grep -H '^TREE:' "$m" >> {output} || true
-            done
-        done
-        echo "Aggregated $(wc -l < {output}) models into {output}" >> {log}
+        python3 scripts/select_and_filter_neutral.py \
+            --input pruned_neutral/{wildcards.chrom} \
+            --min-bases {params.min_bases} \
+            --out good_alignments \
+            >> {log} 2>&1 || true
+        touch {output}
+        """
+
+# 6. CHECKPOINT — collects good_alignments list
+checkpoint collect_good_alignments:
+    input:
+        expand("filter/{chrom}.done", chrom=CHROMS)
+    output:
+        "goodalignments.txt"
+    resources: mem_mb = 1000
+    shell:
+        """
+        mkdir -p good_alignments
+        find good_alignments -name "*.fa" -type f | sort > {output}
+        echo "[DEBUG] Wrote {output} with $(wc -l < {output}) entries" >&2
         touch {output}
         """
 
 # =============================================================================
-# 8. Parse putatively neutral models
+# Dynamic helpers
 # =============================================================================
-rule parse_neutral:
-    input: "output.hky85.neutral.txt"
-    output: "neutral_table.txt", "neutralset.txt", "neutral_table_full.tsv"
-    conda: "envs/biopython.yaml"
-    log: "logs/parse_neutral.log"
+def get_good_regions(wildcards):
+    # checkpoint has no wildcards; call get() without args
+    ck = checkpoints.collect_good_alignments.get()
+    listfile = ck.output[0]
+    if not Path(listfile).exists():
+        return []
+    with open(listfile) as f:
+        # Accept either full paths or basenames; return stems (basename without suffix)
+        return [Path(l.strip()).stem for l in f if l.strip()]
+
+def get_batch_count(wildcards):
+    n = len(get_good_regions(wildcards))
+    return max(1, (n + BATCH_SIZE - 1) // BATCH_SIZE) if n > 0 else 1
+
+# 7. phyloFit — run batches
+rule batch_phylofit:
+    input:
+        listfile = "goodalignments.txt",
+        files = lambda wc: [
+            f"good_alignments/{r}.fa"
+            for r in get_good_regions(wc)[
+                int(wc.i)*BATCH_SIZE : (int(wc.i)+1)*BATCH_SIZE
+            ]
+        ]
+    output:
+        directory("MODELS_HKY85/batch_{i}")
+    conda:
+        "envs/biopython.yaml"
     resources:
-        mem_mb = 5000
+        mem_mb = 8000,
+        runtime = 1800
+    log:
+        "logs/batch_phylofit/batch_{i}.log"
     shell:
         """
-        mkdir -p logs
+        mkdir -p {output}
+        for fa in {input.files}; do
+            [[ -f "$fa" ]] || continue
+            r=$(basename "$fa" .fa)
+            phyloFit "$fa" --tree "{TREE_TOPOLOGY}" -i FASTA --subst-mod HKY85 \
+                --out-root "{output}/$r" --init-random \
+                >> {log} 2>&1 || echo "FAILED $r" >> {log}
+            touch "{output}/$r.mod"
+        done
+        """
+
+# 8. Aggregate
+rule aggregate:
+    input:
+        lambda wc: expand("MODELS_HKY85/batch_{i}", i=range(get_batch_count(wc)))
+    output:
+        "output.hky85.neutral.txt"
+    log:
+        "logs/aggregate.log"
+    shell:
+        """
+        > {output}
+        for d in {input}; do
+            grep -H '^TREE:' "$d"/*.mod 2>/dev/null || true
+        done >> {output}
+        echo "Aggregated $(wc -l < {output}) models" >> {log}
+        """
+
+# 9. Parse
+rule parse_neutral:
+    input:
+        "output.hky85.neutral.txt"
+    output:
+        "neutral_table.txt", "neutralset.txt", "neutral_table_full.tsv"
+    conda:
+        "envs/biopython.yaml"
+    log:
+        "logs/parse_neutral.log"
+    shell:
+        """
         python3 scripts/parse_neutral.py {input} {output[0]} {output[1]} \
-            --log {log} --full-table {output[2]} > {log} 2>&1 || touch {output}
+            --full-table {output[2]} > {log} 2>&1
         """
 
 # =============================================================================
-# 9. Collect FASTA from neutralset.txt → neutral_proxy/
+# 10. Collect FASTA from neutralset.txt → neutral_proxy/
 # =============================================================================
 rule collect_neutral_proxy:
     input:
-        alignments = "good_alignments",
         neutralset = "neutralset.txt"
     output:
         directory("neutral_proxy")
-    resources:
-        mem_mb = 2000
     shell:
         """
         mkdir -p {output}
         while IFS= read -r region; do
-            src="{input.alignments}/${{region}}"
+            src="good_alignments/${{region}}"
             if [[ -f "$src" ]]; then
                 cp "$src" {output}/
             else
@@ -255,7 +246,7 @@ rule collect_neutral_proxy:
         """
 
 # =============================================================================
-# 10. Cleanup
+# 11. Cleanup
 # =============================================================================
 rule cleanup:
     input:
@@ -265,12 +256,10 @@ rule cleanup:
         "neutral_proxy"
     output:
         touch("snakemake.done")
-    resources:
-        mem_mb = 1000
     shell:
         """
         mkdir -p intermediate_files
-        rm -rf pruned_neutral selected_alignments
+        rm -rf pruned_neutral filter goodalignments.txt neutral_table.txt neutral_table_full.tsv || true
         mv -f good_alignments features \
               random.* *.chrom.sizes logs \
               output.hky85.neutral.txt MODELS_HKY85 \
