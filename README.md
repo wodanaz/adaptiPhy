@@ -118,15 +118,32 @@ chr12.primate.maf  chr16.fa           chr19.primate.maf  chr22.fa           chr4
 chr13.fa           chr16.primate.maf  chr1.fa            chr22.primate.maf  chr5.fa           chr8.primate.maf  hg19
 ```
 
- 4. ```./slurm-launch-snakemake.sh``` (optional): update this script if you are planning on using SLURM as a job manager to run the AdaptiPhy snakemake (preferred).
+ 4. ```./adaptiphy-launch-slurm.py ``` (optional): update this script if you are planning on using SLURM as a job manager to run the AdaptiPhy snakemake (preferred).
     * modify the header of this file to point to your snakemake conda env and email.
        Example:
 
-      ```bash
-       #SBATCH --mail-user=apm58@duke.edu
-       ...
-       source activate /path/to/conda/envs/env_name
-       ```
+```bash
+#!/usr/bin/env bash
+#SBATCH --mail-type=END
+#SBATCH --mail-user=email@university.edu
+#SBATCH -N 1
+#SBATCH --account=sciencelab
+#SBATCH --partition=common
+#SBATCH --mem=10G
+#SBATCH -J adaptiphy
+#SBATCH --time=3-00:00:00
+
+set -euo pipefail
+
+source ~/miniconda3/etc/profile.d/conda.sh
+conda activate snakemake
+
+snakemake \
+  --profile slurm_general \
+  --use-conda \
+  --conda-prefix /path/to/your/conda/directories \
+  --keep-going
+```
      
  4. ```slurm_general/config.yaml``` (optional): update this file if you are planning on using SLURM as a job manager to run the AdaptiPhy snakemake (preferred). Do not modify this file's name or relative directory location.
     * update your ```slurm_partition``` and ```slurm_account``` to point to the correct partition and account.
