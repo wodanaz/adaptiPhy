@@ -71,18 +71,20 @@ To run the snakemake pipeline either interactively or through a job manager like
      Example:
    
 ```bash
-# INPUT SPLITS #######################################################################################
+# INPUT SPLITS ##############################################################################################################
 windows: "data/thurman.bed"
 num_replicates: 10
 min_frac: 0.9
 
-# TREE TOPOLOGY ########################################################################################
+# TREE TOPOLOGY #############################################################################################################
 tree_topology: "(rheMac3,(ponAbe2,(gorGor3,(panTro4,hg19))))"
 foreground_branches: ["hg19"]
 
-# GENOME TARGET FILES ##################################################################################
-#provide the input file to be split by phast's msa_split here. this file can be in a .fasta, phylip, mpm, maf, or ss file format. msa_split will try to guess the contents.
-#if this fails, the snakefile may need to be modified to have an --in-format parameter specifying the file type. We typically provide a MAF file.
+# GENOME TARGET FILES #######################################################################################################
+# provide the input file to be split by phast's msa_split here. this file can be in a .fasta, phylip, mpm, maf, or ss file
+# format. msa_split will try to guess the contents.
+# if this fails, the snakefile may need to be modified to have an --in-format parameter specifying the file type. We typically
+# provide a MAF file.
 maf_pattern: "data/{chrom}.primate.maf"
 #if providing a MAF file, provide the reference sequence location here.
 fa_pattern: "data/{chrom}.fa"
