@@ -266,7 +266,7 @@ If the snakemake pipeline completes with no errors, your file structure should l
 |-- scripts
 |-- slurm-xxxxxxxxx.out
 |-- slurm_general
-|-- adaptiphy-launch-slurm.py
+|-- adaptiphy-launch-slurm.sh
 |-- Snakefile
 |-- .snakemake
 `-- ADAPTIPHY_DONE
@@ -281,9 +281,9 @@ __provide details here on how to interpret this table!__
 
 ### Resetting AdaptiPhy to run again ###
 
-If you'd like to rerun AdaptiPhy again, make sure to remove the following files: `DONE_SUMMARY.txt HYPHY/ intermediate_files/ logs/ PhyloFit/`. You can also remove the `slurm.test.1234567.out` if you wish.
+If you'd like to rerun AdaptiPhy again, make sure to remove the some of the newly generated files: `ADAPTIPHY_DONE OUTPUT_FILES`. You can also remove the `slurm-XXXXXXX.out` if you wish.
 
-DO NOT remove the following directories and files unless you know what you're doing: `data/ config.yaml scripts/ slurm_general/ slurm-launch-neutral-smk.sh Snakefile`. Remove the `OUTPUT_FINAL` directory only if you're sure you don't need its contents anymore! 
+DO NOT remove the following directories and files unless you know what you're doing: `data/ config.yaml scripts/ slurm_general/ adaptiphy-launch-slurm.sh envs/ Snakefile`. Remove the `OUTPUT_FINAL` directory only if you're sure you don't need its contents anymore! 
 
 ### Citation
 If you use this pipeline, please cite:
