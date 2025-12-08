@@ -70,7 +70,7 @@ To run the snakemake pipeline either interactively or through a job manager like
    
      Example:
    
-      ```bash
+```bash
 # INPUT SPLITS #######################################################################################
 windows: "data/thurman.bed"
 num_replicates: 10
@@ -95,8 +95,7 @@ neutral_set: "neutral_smk/neutralset.txt"
 #options are: local = "goodalignments.txt", global = path to neutral set
 chromosomes: ["chr1","chr2","chr3","chr4","chr5","chr6","chr7","chr8","chr9","chr10","chr11","chr12","chr13","chr14","chr15","chr16","chr17","chr18","chr19","chr20","chr21","chr22", "chrX"]
 #"chr" if one sequence (i.e. viral genome, one chromosome only in the file provided") or specific chromosomes to target if using a multi-chromosome genome (i.e. "chr19", etc)
-
-      ```
+```
     
  3. ```data/```: your input data lives in this folder. To run the AdaptiPhy pipeline, this folder must contain:
     * a folder containing MAF and .fa files, matching the specified 'pattern' paths in your ```config.yaml``` file from the previous step
