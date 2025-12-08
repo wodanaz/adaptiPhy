@@ -5,11 +5,14 @@
 #SBATCH --account=yourlab
 #SBATCH --partition=common
 #SBATCH --cpus-per-task=2
-#SBATCH --mem=12G # modify if you need less or more
-#SBATCH -J build_neutral_proxy
+#SBATCH --mem=2G # modify if you need less or more
+#SBATCH -J neutrality_search
+
 set -euo pipefail
+
 source ~/miniconda3/etc/profile.d/conda.sh
 conda activate snakemake
+
 snakemake \
   --profile slurm_general \
   --use-conda \
