@@ -118,7 +118,7 @@ chr12.primate.maf  chr16.fa           chr19.primate.maf  chr22.fa           chr4
 chr13.fa           chr16.primate.maf  chr1.fa            chr22.primate.maf  chr5.fa           chr8.primate.maf  hg19
 ```
 
- 4. ```./adaptiphy-launch-slurm.py ``` (optional): update this script if you are planning on using SLURM as a job manager to run the AdaptiPhy snakemake (preferred).
+ 4. ```./adaptiphy-launch-slurm.py``` (optional): update this script if you are planning on using SLURM as a job manager to run the AdaptiPhy snakemake (preferred).
     * modify the header of this file to point to your snakemake conda env and email.
        Example:
 
@@ -150,6 +150,33 @@ snakemake \
     * set the ```tmpdir``` path to point to a scratch or work directory if available/desired.
     * the ```latency_wait``` and ```use-conda``` variables should not be altered. The other parameters can be optimized for your job scheduler system and memory needs.
 
+Example of slurm_general/config.yaml 
+
+```
+executor: slurm
+jobs: 150
+
+default-resources:
+  - slurm_partition=common
+  - slurm_account=yourlab
+  - runtime=720
+  - mem_mb=10000
+  - cpus_per_task=1
+  - tmpdir='/scratch/idxxx/'
+  - qos=normal
+
+conda-prefix: /path/to/your/conda/directories
+use-conda: true
+conda-create-envs-only: false
+conda-cleanup-envs: false
+
+latency-wait: 60
+keep-going: true
+rerun-incomplete: true
+printshellcmds: true
+scheduler: greedy
+```
+
 
 ## Generating data ##
 
@@ -172,7 +199,7 @@ AdaptiPhy can be run in two modes.
 * When you're ready, submit your batch job from the top-level directory as:
 
   ```bash
-   sbatch slurm-launch-snakemake.sh
+   sbatch adaptiphy-launch-slurm.py
    ```
   
 * This will source parameters for daughter jobs from `slurm_general/config.yaml`. The resulting SLURM log file will be written to `slurm.test.%j.out`. Individual rule logs will primarily be written to `logs/`.
