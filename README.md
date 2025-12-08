@@ -219,6 +219,37 @@ snakemake --cores $(nproc) --use-conda --latency-wait 120 --keep-going   --conda
  * we currently don't have support for this option. If you'd like to explore this option, check out the documentation for snakemake on other cluster systems [here] (https://snakemake.readthedocs.io/en/v5.6.0/executable.html) with more examples [here] (https://github.com/snakemake-profiles/doc).
  * It's possible to run this pipeline in a personal work machine. I tested it in a lenovo with linux and enough space to store data, 1 core and about 32 Gb of RAM.
 
+to run it, simply execute this in your laptops terminal and don't turn your computer off:
+
+```
+snakemake --cores $(nproc) --use-conda --latency-wait 120 --keep-going   --conda-prefix /home/youruser/conda/
+```
+
+### Neutral Proxy output ###
+
+If the snakemake pipeline completes with no errors, your file structure should look something like this:
+
+```
+.
+|-- config.yaml
+|-- data
+|-- .empty
+|-- envs
+|-- intermediate_files
+|-- neutral_proxy
+|-- neutralset.txt
+|-- scripts
+|-- slurm-xxxxxxxxx.out
+|-- slurm_general
+|-- slurm-launch-neutral-smk.sh
+|-- Snakefile
+|-- .snakemake
+`-- snakemake.done
+```
+
+Now, this directory can be used to run your global test of selection.
+
+
 ### AdaptiPhy output ###
 
 If the snakemake pipeline completes with no errors, your file structure should look something like this:
