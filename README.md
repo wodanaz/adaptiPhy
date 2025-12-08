@@ -18,25 +18,14 @@ git clone https://github.com/wodanaz/adaptiPhy
 
 You will need to add your files to the ```data/``` directory before running the snakemake pipeline for the first time. Read on for more info about the necessary file structure in this folder!
 
-### 2. Loading a conda env ###
-The majority of the conda packages required in the pipeline will be loaded automatically, and you will not need to do any sort of manual install. You will only need to create an environment that contains snakemake and python in order to run this pipeline.
+### 2. Installing snakemake as a conda environment ###
+The majority of the conda packages required in the pipeline will be loaded automatically, and you will not need to do any sort of manual install. However, you will only need to create an environment that contains snakemake and python in order to run this pipeline.
 
-* Dependencies:
+Please install it in your directory specified for conda environments:
 
-  * Miniconda/conda 24.9.2
-  * python 3.11.7
-  * snakemake 9.1.6
-  * Unix/linux environment
-  * Slurm (optional)
-  * If using Slurm, also include the conda package `snakemake-executor-plugin-slurm`.
-
-To create a fresh conda env for this purpose from the command line with conda, use something like:
-
-```bash
-touch snakemake.yml
 ```
-
-Your file should look like this:
+nano snakemake.yml 
+```
 
 ```
 name: snakemake
@@ -47,12 +36,22 @@ channels:
 dependencies:
   - snakemake=9.1
   - python=3.11
+  - snakemake-executor-plugin-slurm
+  - bedtools
+  - bedops
+  - bzip2
 ```
 
-Now run:
 
-```bash
-conda env create -f snakemake.yml --prefix path/to/your/envs/folder/snakemake/
+If you have conda in your system, please install this package:
+
+```
+conda env create --file snakemake.yml 
+```
+
+To invoke or activate do:
+
+```
 conda activate snakemake
 ```
 
@@ -72,13 +71,31 @@ To run the snakemake pipeline either interactively or through a job manager like
      Example:
    
       ```bash
-         windows: "data/allpeaks2.bed"
-         tree_topology: "(Lv, (Ht, He))"
-         foreground_branches: ["Ht", "He"]
-         maf_pattern: "data/maf_files/{chrom}.He.maf"
-         fa_pattern: "data/maf_files/{chrom}.He.fa"
-         neutral_set: "data/neutralset.txt"
-         chromosomes: ["chr1"]
+# INPUT SPLITS #######################################################################################
+windows: "data/thurman.bed"
+num_replicates: 10
+min_frac: 0.9
+
+# TREE TOPOLOGY ########################################################################################
+tree_topology: "(rheMac3,(ponAbe2,(gorGor3,(panTro4,hg19))))"
+foreground_branches: ["hg19"]
+
+# GENOME TARGET FILES ##################################################################################
+#provide the input file to be split by phast's msa_split here. this file can be in a .fasta, phylip, mpm, maf, or ss file format. msa_split will try to guess the contents.
+#if this fails, the snakefile may need to be modified to have an --in-format parameter specifying the file type. We typically provide a MAF file.
+maf_pattern: "data/{chrom}.primate.maf"
+#if providing a MAF file, provide the reference sequence location here.
+fa_pattern: "data/{chrom}.fa"
+
+# LOCAL VS GLOBAL RUN SPECIFICATION ####################################################################
+#if running a local version of adaptiphy, no neutral sequence is required. Set the parameter below to "goodalignments.txt". If running a global version of adaptiphy, provide a neutral set file.
+#Keep in mind that if you perform a local run of adaptiphy (meaning that you set neutral_set to "goodalignments.txt") in a global (whole-genome) run, your neutral set
+#is a random sampling of the genome, which may not have a significant effect (see Berrio et. al. BMC) but caveat emptor.
+neutral_set: "neutral_smk/neutralset.txt"
+#options are: local = "goodalignments.txt", global = path to neutral set
+chromosomes: ["chr1","chr2","chr3","chr4","chr5","chr6","chr7","chr8","chr9","chr10","chr11","chr12","chr13","chr14","chr15","chr16","chr17","chr18","chr19","chr20","chr21","chr22", "chrX"]
+#"chr" if one sequence (i.e. viral genome, one chromosome only in the file provided") or specific chromosomes to target if using a multi-chromosome genome (i.e. "chr19", etc)
+
       ```
     
  3. ```data/```: your input data lives in this folder. To run the AdaptiPhy pipeline, this folder must contain:
