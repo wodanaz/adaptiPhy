@@ -89,14 +89,16 @@ maf_pattern: "data/{chrom}.primate.maf"
 #if providing a MAF file, provide the reference sequence location here.
 fa_pattern: "data/{chrom}.fa"
 
-# LOCAL VS GLOBAL RUN SPECIFICATION ####################################################################
-#if running a local version of adaptiphy, no neutral sequence is required. Set the parameter below to "goodalignments.txt". If running a global version of adaptiphy, provide a neutral set file.
-#Keep in mind that if you perform a local run of adaptiphy (meaning that you set neutral_set to "goodalignments.txt") in a global (whole-genome) run, your neutral set
-#is a random sampling of the genome, which may not have a significant effect (see Berrio et. al. BMC) but caveat emptor.
+# LOCAL VS GLOBAL RUN SPECIFICATION ##########################################################################################
+# If running a local version of adaptiphy, no neutral sequence is required. Set the parameter below to "goodalignments.txt".
+# If running a global version of adaptiphy, provide a neutral set file. Keep in mind that if you perform a local run of
+# adaptiphy (meaning that you set neutral_set to "goodalignments.txt") in a global (whole-genome) run, your neutral set
+# is a random sampling of the genome, which may not have a significant effect (see Berrio et. al. BMC) but caveat emptor.
 neutral_set: "neutral_smk/neutralset.txt"
 #options are: local = "goodalignments.txt", global = path to neutral set
 chromosomes: ["chr1","chr2","chr3","chr4","chr5","chr6","chr7","chr8","chr9","chr10","chr11","chr12","chr13","chr14","chr15","chr16","chr17","chr18","chr19","chr20","chr21","chr22", "chrX"]
-#"chr" if one sequence (i.e. viral genome, one chromosome only in the file provided") or specific chromosomes to target if using a multi-chromosome genome (i.e. "chr19", etc)
+#"chr" if one sequence (i.e. viral genome, one chromosome only in the file provided") or specific chromosomes to target if
+# using a multi-chromosome genome (i.e. "chr19", etc)
 ```
     
  3. ```data/```: your input data lives in this folder. To run the AdaptiPhy pipeline, this folder must contain:
