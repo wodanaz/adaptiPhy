@@ -107,10 +107,16 @@ chromosomes: ["chr1","chr2","chr3","chr4","chr5","chr6","chr7","chr8","chr9","ch
     * if running AdaptiPhy in global mode (more on this later), a .txt file containing a list of paths to neutral proxy .fa files and a directory containing those neutral proxy .fa files
    
        Example:
-       ```bash
-        ls data/
-        allpeaks.bed maf_fa/ neutral_set/ neutralset.txt
-       ```
+```bash
+ls  data/
+chr10.fa           chr13.primate.maf  chr17.fa           chr1.primate.maf   chr2.fa           chr5.primate.maf  chr9.fa           ncHAE.v2.bed
+chr10.primate.maf  chr14.fa           chr17.primate.maf  chr20.fa           chr2.primate.maf  chr6.fa           chr9.primate.maf
+chr11.fa           chr14.primate.maf  chr18.fa           chr20.primate.maf  chr3.fa           chr6.primate.maf  chrX.fa           thurman.bed
+chr11.primate.maf  chr15.fa           chr18.primate.maf  chr21.fa           chr3.primate.maf  chr7.fa           chrX.primate.maf
+chr12.fa           chr15.primate.maf  chr19.fa           chr21.primate.maf  chr4.fa           chr7.primate.maf  chrY.fa
+chr12.primate.maf  chr16.fa           chr19.primate.maf  chr22.fa           chr4.primate.maf  chr8.fa           chrY.primate.maf
+chr13.fa           chr16.primate.maf  chr1.fa            chr22.primate.maf  chr5.fa           chr8.primate.maf  hg19
+```
 
  4. ```./slurm-launch-snakemake.sh``` (optional): update this script if you are planning on using SLURM as a job manager to run the AdaptiPhy snakemake (preferred).
     * modify the header of this file to point to your snakemake conda env and email.
