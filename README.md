@@ -188,30 +188,36 @@ AdaptiPhy can be run in two modes.
 
 **Global mode**: This is appropriate for performing a genome-wide scan for selection. To run this mode, your chromosome target in the `config.yaml` file should point to a subset of chromosomes or the entire list of chromosomes in your genome. The `neutral_set` parameter should additionally be set to a file such as `data/neutralset.txt`, which contains paths to a series of files in a `neutral_set` directory. To build this directory and file, proceed to the "Building an appropriate neutral proxy set" section. This test is good for scanning an entire large genome for regions under selection relative to a background genome-wide neutral evolution rate.
 
+
+
 ### Building an appropriate neutral proxy set ###
 
-**running separate snakemake to generate  neutral set file (second snakemake)**
+**running separate snakemake to generate  neutral set file (second snakemake)**: The most important part of a Global test is to have an appropriate neutral proxy. We have proposed a criteria with a series of steps to be able to identify neutral proxy from random regions in the genome that are masked for functional sequence accordin to a genome of reference.  First you need to mask your maf alignment and we have instructions in ...... Minimally, you should mask all the known coding sequences for yout reference genome.
 
 ### Running the pipeline ###
 
 **Option A:** running the snakemake pipeline as a batch job on SLURM
-* It is typically a good idea to do a dry run of the snakemake pipeline interactively (`snakemake -n --latency-wait=300 --use-conda`) to check for syntax errors before submitting the final job to a job scheduler. 
+
 * When you're ready, submit your batch job from the top-level directory as:
 
   ```bash
-   sbatch adaptiphy-launch-slurm.py
+   sbatch slurm-launch-neutral-smk.sh
    ```
   
-* This will source parameters for daughter jobs from `slurm_general/config.yaml`. The resulting SLURM log file will be written to `slurm.test.%j.out`. Individual rule logs will primarily be written to `logs/`.
+* This will source parameters for daughter jobs from `slurm_general/config.yaml`. The resulting SLURM log file will be written to `slurm-<JOBID>out`. Individual rule logs will primarily be written to `logs/`.
 
 **Option B:** running the snakemake pipeline interactively
 * If you are not using a job scheduler and/or wish to run snakemake interactively, first log in to a virtual machine or other processor with sufficient memory to run the pipeline efficiently. Then run the pipeline from the top-level directory as:
-   ```bash
-   snakemake --latency-wait=300 --use-conda
-   ```
 
-**Option C:** running the snakemake pipeline on other job schedulers
+```bash
+srun --cpus-per-task=64 --mem=64G --pty bash
+conda activate snakemake
+snakemake --cores $(nproc) --use-conda --latency-wait 120 --keep-going   --conda-prefix /hpc/your/lab/conda   
+```
+
+**Option C:** running the snakemake pipeline on your personal computer or other systems
  * we currently don't have support for this option. If you'd like to explore this option, check out the documentation for snakemake on other cluster systems [here] (https://snakemake.readthedocs.io/en/v5.6.0/executable.html) with more examples [here] (https://github.com/snakemake-profiles/doc).
+ * It's possible to run this pipeline in a personal work machine. I tested it in a lenovo with linux and enough space to store data, 1 core and about 32 Gb of RAM.
 
 ### AdaptiPhy output ###
 
@@ -220,8 +226,8 @@ If the snakemake pipeline completes with no errors, your file structure should l
 ls
 config.yaml data/ DONE_SUMMARY.txt HYPHY/ intermediate_files/ logs/ OUTPUT_FINAL/ PhyloFit/ scripts/ slurm_general/ slurm-launch-snakemake.sh slurm.test.1234567.out Snakefile
 ```
-The pipeline has generated the files `DONE_SUMMARY.txt HYPHY/ intermediate_files/ logs/ OUTPUT_FINAL/ PhyloFit/ slurm.test.1234567.out`. 
-* _The not important stuff_: The `DONE_SUMMARY.txt` file simply contains the list of files in this directory after the final cleanup step. The `slurm.test.1234567.out` file will only exist if you ran the snakemake as a batch job on SLURM, and contains the breakdown of submitted SLURM jobs with information about step success, step order, and log file locations. The `logs/` directory contains logs from each individual rule run in the pipeline. the `intermediate_files` directory contains all intermediate files generated in the pipeline, which may be helpful for troubleshooting.
+The pipeline has generated the files `ADAPTIPHY_DONE HYPHY/ intermediate_files/ logs/ OUTPUT_FINAL/ PhyloFit/ slurm-xxxxxxx.out`. 
+* _The not important stuff_: The `ADAPTIPHY_DONE` file simply contains the list of files in this directory after the final cleanup step. The `slurm.test.1234567.out` file will only exist if you ran the snakemake as a batch job on SLURM, and contains the breakdown of submitted SLURM jobs with information about step success, step order, and log file locations. The `logs/` directory contains logs from each individual rule run in the pipeline. the `intermediate_files` directory contains all intermediate files generated in the pipeline, which may be helpful for troubleshooting.
 * _The semi-important stuff_: this snakemake runs the HyPhy as well as PhyloFit programs. All of the typical output files from these two tools are deposited in `HYPHY/` and `PhyloFit/`, respectively.
 * _The important stuff_: the directory `OUTPUT_FINAL/` contains the formatted output tables from AdaptiPhy. The major results table is stored in `merged_summary_table.txt`.
 
@@ -231,7 +237,7 @@ __provide details here on how to interpret this table!__
 
 If you'd like to rerun AdaptiPhy again, make sure to remove the following files: `DONE_SUMMARY.txt HYPHY/ intermediate_files/ logs/ PhyloFit/`. You can also remove the `slurm.test.1234567.out` if you wish.
 
-DO NOT remove the following directories and files unless you know what you're doing: `data/ config.yaml scripts/ slurm_general/ slurm-launch-snakemake.sh Snakefile`. Remove the `OUTPUT_FINAL` directory only if you're sure you don't need its contents anymore! 
+DO NOT remove the following directories and files unless you know what you're doing: `data/ config.yaml scripts/ slurm_general/ slurm-launch-neutral-smk.sh Snakefile`. Remove the `OUTPUT_FINAL` directory only if you're sure you don't need its contents anymore! 
 
 ### Citation
 If you use this pipeline, please cite:
