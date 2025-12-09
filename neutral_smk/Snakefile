@@ -184,7 +184,7 @@ rule batch_phylofit:
             [[ -f "$fa" ]] || continue
             r=$(basename "$fa" .fa)
             phyloFit "$fa" --tree "{TREE_TOPOLOGY}" -i FASTA --subst-mod HKY85 \
-                --out-root "{output}/$r" --init-random \
+                --out-root "{output}/$r"  --init-random --precision HIGH \
                 >> {log} 2>&1 || echo "FAILED $r" >> {log}
             touch "{output}/$r.mod"
         done
