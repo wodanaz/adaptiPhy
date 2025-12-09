@@ -274,7 +274,7 @@ rule run_phylofit_query:
         """
         for fa in {input.fas}; do
             base=$(basename "$fa" .fa)
-            phyloFit "$fa" --tree "{TREE_TOPOLOGY}" -i FASTA --subst-mod HKY85 \
+            phyloFit "$fa" --tree "{TREE_TOPOLOGY}" -i FASTA --subst-mod HKY85 --init-random --precision HIGH \
                      --out-root MODELS_HKY85/query/"$base" >> {log} 2>&1
         done
         """
@@ -297,7 +297,7 @@ rule run_phylofit_ref:
         """
         for fa in {input.fas}; do
             ref_rep=$(basename "$fa" .ref)
-            phyloFit "$fa" --tree "{TREE_TOPOLOGY}" -i FASTA --subst-mod HKY85 \
+            phyloFit "$fa" --tree "{TREE_TOPOLOGY}" -i FASTA --subst-mod HKY85 --init-random --precision HIGH \
                      --out-root MODELS_HKY85/ref/"$ref_rep" >> {log} 2>&1
         done
         """
