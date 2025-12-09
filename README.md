@@ -1,7 +1,6 @@
-<!-- -->
-<div align="center">
-![Adaptiphy_logo](adaptiphy_logo.png)
-</div>
+<p align="center">
+  ![Adaptiphy logo](adaptiphy_logo.png)
+</p>
 
 # AdaptiPhy: Implementation with snakemake
 
