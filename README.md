@@ -1,3 +1,4 @@
+<!-- -->
 <div align="center">
 ![Adaptiphy_logo](adaptiphy_logo.png)
 </div>
