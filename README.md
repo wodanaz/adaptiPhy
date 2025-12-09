@@ -1,3 +1,6 @@
+![Adaptiphy_logo](adaptiphy_logo.png)
+
+
 # AdaptiPhy: Implementation with snakemake
 
 This code updates the existing AdaptiPhy 2.0 pipeline to run using snakemake, allowing the user to plug in data at the beginning of the pipeline & performing the intervening steps automatically. We have deprecated the original version and has been moved into a new directory named 'deprecated'.
