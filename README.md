@@ -6,13 +6,15 @@
 
 # AdaptiPhy: Implementation with snakemake
 
-This code updates the existing AdaptiPhy 2.0 pipeline to run using snakemake, allowing the user to plug in data at the beginning of the pipeline & performing the intervening steps automatically. We have deprecated the original version and has been moved into a new directory named 'deprecated'.
+This code updates the existing AdaptiPhy 2.0 pipeline to run using snakemake, allowing the user to plug in data at the beginning of the pipeline & performing the intermediate steps automatically and reproducibly. 
 
-## Installing the AdaptiPhy pipeline to run with snakemake ##
+If you are a snakemake 1.0 user, we have deprecated the original version and those files can be found in this repo under the folder 'deprecated'.
+
+## 1. Downloading the AdaptiPhy pipeline 2.0 to run with snakemake ##
 
 ### 1a. Recommended: Download the tarball release from the "Releases" page ###
 
-This option is ready, please download and unzip the file.
+To use the AdaptiPhy 2.0 compressed static release, please navigate to the [Releases](https://github.com/wodanaz/adaptiPhy/releases/tag/v2.0.0) menu on the right-hand side of this README landing page. Please note that the test data to confirm that AdaptiPhy is functioning properly must be separately downloaded from Zenodo and moved into a subdirectory called "data". This option is ready, please download and unzip the file.
 
 ### 1b. Not 100% recommended: Clone the git repo ###
 
@@ -22,12 +24,12 @@ To clone this repo from the command line into your working directory, use:
 git clone https://github.com/wodanaz/adaptiPhy
 ```
 
-You will need to add your files to the ```data/``` directory before running the snakemake pipeline for the first time. Read on for more info about the necessary file structure in this folder!
+You will need to add your files to the ```data/``` directory before running the snakemake pipeline for the first time (or download the test data from Zenodo as described above). Read on for more info about the necessary file structure in this folder!
 
-### 2. Installing snakemake as a conda environment ###
-The majority of the conda packages required in the pipeline will be loaded automatically, and you will not need to do any sort of manual install. However, you will only need to create an environment that contains snakemake and python in order to run this pipeline.
+### 2. Dependencies: Installing snakemake in a conda environment ###
+The majority of the conda packages required in the pipeline will be loaded automatically, and you will not need to do any sort of manual install. However, you will need to create a top-level environment that contains snakemake and python in order to run this pipeline.
 
-Please install it in your directory specified for conda environments:
+Please install it in a directory of your choosing where you keep conda environments. You can use the following .yaml file structure:
 
 ```
 nano snakemake.yml 
@@ -46,14 +48,16 @@ dependencies:
   - bzip2
 ```
 
+Note that `snakemake-executor-plugin-slurm` and `bzip2` may be excluded if you have no intention of running AdaptiPhy on a SLURM-managed computing cluster and/or prefer to decompress files with a tool other than bzip2.
 
-If you have conda in your system, please install this package:
+
+To initialize a conda environment from this .yaml file:
 
 ```
 conda env create --file snakemake.yml 
 ```
 
-To invoke or activate do:
+To invoke or activate this environment to run AdaptiPhy 2.0, load it with:
 
 ```
 conda activate snakemake
@@ -63,10 +67,11 @@ Advanced: If you don't set a `--prefix`, make sure that your `.condarc` file has
 
 ### 3. Change the necessary file parameters ###
 
-To run the snakemake pipeline either interactively or through a job manager like SLURM, you will need to update some file paths and other information in the cloned repository.
+To run the snakemake pipeline either interactively or through a job manager like SLURM, you will need to update some file paths and other information in your copy of this repository.
 
 1. ```./config.yaml```: This is the file where you will need to update the most information. You will need:
-   * ```windows```: path to a list of ATAC peaks or similar targets in BED file format
+   * ```windows```: path to a list of ATAC peaks or similar targets (your query genome coordinates) in BED file format
+   * `num_replicates` and `min_frac`: most users will not need to adjust these parameters. `num_replicates` determines the number of reference alignments sampled by HyPhy to compare the query alignment against. `min_frac` determines the filter percentage for screening out high N/missing sequence alignments in the reference.
    * ```tree_topology``` and ```foreground_branches```: provide a phylogenetic tree in Newick format and specify which branches are focal. For the first parameter, use standard Newick format. For the second, provide a vector of the focal branch names from the Newick tree.
    * ```maf_pattern``` and ```fa_pattern```: provide paths to files (wildcards permitted) for one or many chromosomes. Note that both the .maf (multi alignment) and .fa (nucleotide) files are required.
    * ```neutral_set```: provide a path to a .txt file that contains paths to neutral proxy files, or set this parameter to "goodalignments.txt" if running AdaptiPhy in local mode. More on this later!
@@ -105,13 +110,13 @@ chromosomes: ["chr1","chr2","chr3","chr4","chr5","chr6","chr7","chr8","chr9","ch
 # using a multi-chromosome genome (i.e. "chr19", etc)
 ```
     
- 3. ```data/```: your input data lives in this folder. To run the AdaptiPhy pipeline, this folder must contain:
+ 2. ```data/```: your input data lives in this folder. To run the AdaptiPhy pipeline, this folder must contain:
     * a folder containing MAF and .fa files, matching the specified 'pattern' paths in your ```config.yaml``` file from the previous step
     * a file of target windows/peak calls, matching the 'windows' path in  your ```config.yaml``` file from the previous step
     * if running AdaptiPhy in global mode (more on this later), a .txt file containing a list of paths to neutral proxy .fa files and a directory containing those neutral proxy .fa files
    
-       In the example below, you can see how the data structure for a run to identify the neutral proxy and the regions evolving fast should be:
-```bash
+In the example below, you can see how the data structure for a run to identify the neutral proxy and the regions evolving fast should be:
+```
 .
 |-- adaptiphy-launch-slurm.sh
 |-- config.yaml
@@ -120,50 +125,7 @@ chromosomes: ["chr1","chr2","chr3","chr4","chr5","chr6","chr7","chr8","chr9","ch
 |   |-- chr10.primate.maf
 |   |-- chr11.fa
 |   |-- chr11.primate.maf
-|   |-- chr12.fa
-|   |-- chr12.primate.maf
-|   |-- chr13.fa
-|   |-- chr13.primate.maf
-|   |-- chr14.fa
-|   |-- chr14.primate.maf
-|   |-- chr15.fa
-|   |-- chr15.primate.maf
-|   |-- chr16.fa
-|   |-- chr16.primate.maf
-|   |-- chr17.fa
-|   |-- chr17.primate.maf
-|   |-- chr18.fa
-|   |-- chr18.primate.maf
-|   |-- chr19.fa
-|   |-- chr19.primate.maf
-|   |-- chr1.fa
-|   |-- chr1.primate.maf
-|   |-- chr20.fa
-|   |-- chr20.primate.maf
-|   |-- chr21.fa
-|   |-- chr21.primate.maf
-|   |-- chr22.fa
-|   |-- chr22.primate.maf
-|   |-- chr2.fa
-|   |-- chr2.primate.maf
-|   |-- chr3.fa
-|   |-- chr3.primate.maf
-|   |-- chr4.fa
-|   |-- chr4.primate.maf
-|   |-- chr5.fa
-|   |-- chr5.primate.maf
-|   |-- chr6.fa
-|   |-- chr6.primate.maf
-|   |-- chr7.fa
-|   |-- chr7.primate.maf
-|   |-- chr8.fa
-|   |-- chr8.primate.maf
-|   |-- chr9.fa
-|   |-- chr9.primate.maf
-|   |-- chrX.fa
-|   |-- chrX.primate.maf
-|   |-- chrY.fa
-|   |-- chrY.primate.maf
+     ...
 |   |-- hg19
 |   |-- ncHAE.v2.bed
 |   |-- ncHAE.v3.bed
@@ -183,50 +145,7 @@ chromosomes: ["chr1","chr2","chr3","chr4","chr5","chr6","chr7","chr8","chr9","ch
 |   |   |-- chr10.masked.maf
 |   |   |-- chr11.masked.fa
 |   |   |-- chr11.masked.maf
-|   |   |-- chr12.masked.fa
-|   |   |-- chr12.masked.maf
-|   |   |-- chr13.masked.fa
-|   |   |-- chr13.masked.maf
-|   |   |-- chr14.masked.fa
-|   |   |-- chr14.masked.maf
-|   |   |-- chr15.masked.fa
-|   |   |-- chr15.masked.maf
-|   |   |-- chr16.masked.fa
-|   |   |-- chr16.masked.maf
-|   |   |-- chr17.masked.fa
-|   |   |-- chr17.masked.maf
-|   |   |-- chr18.masked.fa
-|   |   |-- chr18.masked.maf
-|   |   |-- chr19.masked.fa
-|   |   |-- chr19.masked.maf
-|   |   |-- chr1.masked.fa
-|   |   |-- chr1.masked.maf
-|   |   |-- chr20.masked.fa
-|   |   |-- chr20.masked.maf
-|   |   |-- chr21.masked.fa
-|   |   |-- chr21.masked.maf
-|   |   |-- chr22.masked.fa
-|   |   |-- chr22.masked.maf
-|   |   |-- chr2.masked.fa
-|   |   |-- chr2.masked.maf
-|   |   |-- chr3.masked.fa
-|   |   |-- chr3.masked.maf
-|   |   |-- chr4.masked.fa
-|   |   |-- chr4.masked.maf
-|   |   |-- chr5.masked.fa
-|   |   |-- chr5.masked.maf
-|   |   |-- chr6.masked.fa
-|   |   |-- chr6.masked.maf
-|   |   |-- chr7.masked.fa
-|   |   |-- chr7.masked.maf
-|   |   |-- chr8.masked.fa
-|   |   |-- chr8.masked.maf
-|   |   |-- chr9.masked.fa
-|   |   |-- chr9.masked.maf
-|   |   |-- chrX.masked.fa
-|   |   |-- chrX.masked.maf
-|   |   |-- chrY.masked.fa
-|   |   |-- chrY.masked.maf
+         ...
 |   |   |-- hg19.fa
 |   |   `-- hg19.fa.fai
 |   |-- envs
@@ -249,11 +168,11 @@ chromosomes: ["chr1","chr2","chr3","chr4","chr5","chr6","chr7","chr8","chr9","ch
 |-- slurm_general
 |   `-- config.yaml
 `-- Snakefile
-
-
 ```
 
- 4. ```./adaptiphy-launch-slurm.py``` (optional): update this script if you are planning on using SLURM as a job manager to run the AdaptiPhy snakemake (preferred).
+The next two files to modify are only required if you intend to run AdaptiPhy 2.0 with the job handler SLURM. Ignore these if you will only be running AdaptiPhy locally, or on an interactive node/on a different job scheduler in interactive mode.
+
+ 3. ```./adaptiphy-launch-slurm.py``` (optional): update this script if you are planning on using SLURM as a job manager to run the AdaptiPhy snakemake (preferred).
     * modify the header of this file to point to your snakemake conda env and email.
        Example:
 
@@ -325,17 +244,18 @@ AdaptiPhy can be run in two modes.
 
 
 
-### Building an appropriate neutral proxy set ###
+### Global mode: Building an appropriate neutral proxy set ###
 
-Please make sure your masked data is deposited in the data subdirectory nested in neutral_smk.
+**Running the neutral_set snakemake pipeline to generate  neutral set file (second snakemake)**: The most important part of a global (genome-wide) AdaptiPhy test is to have an appropriate neutral proxy. This alignment set will represent the background/neutral substitution rate of your tree, calibrated to itself - one of the major advantages of using AdaptiPhy. In the neutral set snakemake included in this repo, we have proposed criteria with a series of steps to be able to identify neutral proxy from random regions in a genome that are masked for functional sequence, according to a genome of reference.  First you need to mask your maf alignment and we have instructions in ...... 
+Minimally, you should mask all the known coding sequences for your reference genome.
 
-**running separate snakemake to generate  neutral set file (second snakemake)**: The most important part of a Global test is to have an appropriate neutral proxy. We have proposed a criteria with a series of steps to be able to identify neutral proxy from random regions in the genome that are masked for functional sequence accordin to a genome of reference.  First you need to mask your maf alignment and we have instructions in ...... Minimally, you should mask all the known coding sequences for yout reference genome.
+Before getting started, please make sure your masked data is deposited in the data subdirectory nested in neutral_smk.
 
-### Running the pipeline ###
+### Global mode: Running the neutral set pipeline ###
 
 **Option A:** running the snakemake pipeline as a batch job on SLURM
 
-* When you're ready, submit your batch job from the top-level directory as:
+* When you're ready, submit your batch job from the neutral_smk top-level directory as:
 
   ```bash
    sbatch slurm-launch-neutral-smk.sh
@@ -344,23 +264,27 @@ Please make sure your masked data is deposited in the data subdirectory nested i
 * This will source parameters for daughter jobs from `slurm_general/config.yaml`. The resulting SLURM log file will be written to `slurm-<JOBID>out`. Individual rule logs will primarily be written to `logs/`.
 
 **Option B:** running the snakemake pipeline interactively
-* If you are not using a job scheduler and/or wish to run snakemake interactively, first log in to a virtual machine or other processor with sufficient memory to run the pipeline efficiently. Then run the pipeline from the top-level directory as:
+* If you are not using a job scheduler and/or wish to run snakemake interactively, first log in to a virtual machine or other processor with sufficient memory to run the pipeline efficiently. Then run the pipeline from the neutral_smk top-level directory as:
 
 ```bash
-srun --cpus-per-task=64 --mem=64G --pty bash
 conda activate snakemake
 snakemake --cores $(nproc) --use-conda --latency-wait 120 --keep-going   --conda-prefix /hpc/your/lab/conda   
 ```
+
+Note that the parameters `--keep-going` and `--conda-prefix` are optional. The first permits snakemake to continue running steps even if an earlier step fails, and the second specifies the install location of conda envs that will be built by the pipeline.
 
 **Option C:** running the snakemake pipeline on your personal computer or other systems
  * we currently don't have support for this option. If you'd like to explore this option, check out the documentation for snakemake on other cluster systems [here] (https://snakemake.readthedocs.io/en/v5.6.0/executable.html) with more examples [here] (https://github.com/snakemake-profiles/doc).
  * It's possible to run this pipeline in a personal work machine. I tested it in a lenovo with linux and enough space to store data, 1 core and about 32 Gb of RAM.
 
-to run it, simply execute this in your laptops terminal and don't turn your computer off:
+to run it, simply execute this in your laptop's terminal and don't turn your computer off, or use a tool such as tmux or nohup to ensure the pipeline continues to run even if the computer sleeps:
 
 ```
 snakemake --cores $(nproc) --use-conda --latency-wait 120 --keep-going   --conda-prefix /home/youruser/conda/
 ```
+
+Again, the flags `--keep-going` and `--conda-prefix` are user preference/
+
 
 ### Neutral Proxy output ###
 
@@ -369,22 +293,22 @@ If the snakemake pipeline completes with no errors, your file structure should l
 ```
 .
 |-- config.yaml
-|-- data
+|-- data/
 |-- .empty
-|-- envs
-|-- intermediate_files
-|-- neutral_proxy
+|-- envs/
+|-- intermediate_files/
+|-- neutral_proxy/
 |-- neutralset.txt
-|-- scripts
+|-- scripts/
 |-- slurm-xxxxxxxxx.out
-|-- slurm_general
+|-- slurm_general/
 |-- slurm-launch-neutral-smk.sh
 |-- Snakefile
-|-- .snakemake
+|-- .snakemake/
 `-- snakemake.done
 ```
 
-Now, this directory can be used to run your global test of selection.
+Now, this directory can be used to run your global test of selection. The `neutralset.txt` should be provided in the main AdaptiPhy snakemake config.yaml file as: `neutral_set: "neutral_smk/neutralset.txt"`.
 
 
 ### AdaptiPhy output ###
@@ -395,23 +319,22 @@ If the snakemake pipeline completes with no errors, your file structure should l
 ```
 .
 |-- config.yaml
-|-- data
+|-- data/
 |-- .empty
-|-- envs
-|-- OUTPUT_FINAL
-|-- neutral_smk2
-|-- scripts
+|-- envs/
+|-- OUTPUT_FINAL/
+|-- neutral_smk/
+|-- scripts/
 |-- slurm-xxxxxxxxx.out
-|-- slurm_general
+|-- slurm_general/
 |-- adaptiphy-launch-slurm.sh
 |-- Snakefile
-|-- .snakemake
+|-- .snakemake/
 `-- ADAPTIPHY_DONE
 ```
 
-The pipeline has generated the tables `summary_table*.txt merged_summary_table.txt`. Which will contain the values of zeta and p-values for each query and its reference replicate.
-* _The not important stuff_: The `ADAPTIPHY_DONE` file simply contains the list of files in this directory after the final cleanup step. The `slurm.test.1234567.out` file will only exist if you ran the snakemake as a batch job on SLURM, and contains the breakdown of submitted SLURM jobs with information about step success, step order, and log file locations. The `logs/` directory contains logs from each individual rule run in the pipeline. the `intermediate_files` directory contains all intermediate files generated in the pipeline, which may be helpful for troubleshooting.
-* _The semi-important stuff_: this snakemake runs the HyPhy as well as PhyloFit programs. All of the typical output files from these two tools are deposited in `HYPHY/` and `PhyloFit/`, respectively.
+Output information:
+* _The not important stuff_: The `ADAPTIPHY_DONE` file simply contains the list of files in this directory after the final cleanup step. The `slurm.test.1234567.out` file will only exist if you ran the snakemake as a batch job on SLURM, and contains the breakdown of submitted SLURM jobs with information about step success, step order, and log file locations. The `logs/` and `.snakemake/` directories contain logs from each individual rule run in the pipeline. the `intermediate_files` directory contains all intermediate files generated in the pipeline, which may be helpful for troubleshooting.
 * _The important stuff_: the directory `OUTPUT_FINAL/` contains the formatted output tables from AdaptiPhy. The major results table is stored in `merged_summary_table.txt`.
 
 __provide details here on how to interpret this table!__
