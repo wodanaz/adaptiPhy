@@ -12,9 +12,9 @@ This code updates the existing AdaptiPhy 2.0 pipeline to run using snakemake, al
 
 ### 1a. Recommended: Download the tarball release from the "Releases" page ###
 
-add information here when this option is ready
+This option is ready, please download and unzip the file.
 
-### 1b. Not recommended: Clone the git repo ###
+### 1b. Not 100% recommended: Clone the git repo ###
 
 To clone this repo from the command line into your working directory, use:
 
