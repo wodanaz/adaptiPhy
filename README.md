@@ -110,16 +110,147 @@ chromosomes: ["chr1","chr2","chr3","chr4","chr5","chr6","chr7","chr8","chr9","ch
     * a file of target windows/peak calls, matching the 'windows' path in  your ```config.yaml``` file from the previous step
     * if running AdaptiPhy in global mode (more on this later), a .txt file containing a list of paths to neutral proxy .fa files and a directory containing those neutral proxy .fa files
    
-       Example:
+       In the example below, you can see how the data structure for a run to identify the neutral proxy and the regions evolving fast should be:
 ```bash
-ls  data/
-chr10.fa           chr13.primate.maf  chr17.fa           chr1.primate.maf   chr2.fa           chr5.primate.maf  chr9.fa           ncHAE.v2.bed
-chr10.primate.maf  chr14.fa           chr17.primate.maf  chr20.fa           chr2.primate.maf  chr6.fa           chr9.primate.maf
-chr11.fa           chr14.primate.maf  chr18.fa           chr20.primate.maf  chr3.fa           chr6.primate.maf  chrX.fa           thurman.bed
-chr11.primate.maf  chr15.fa           chr18.primate.maf  chr21.fa           chr3.primate.maf  chr7.fa           chrX.primate.maf
-chr12.fa           chr15.primate.maf  chr19.fa           chr21.primate.maf  chr4.fa           chr7.primate.maf  chrY.fa
-chr12.primate.maf  chr16.fa           chr19.primate.maf  chr22.fa           chr4.primate.maf  chr8.fa           chrY.primate.maf
-chr13.fa           chr16.primate.maf  chr1.fa            chr22.primate.maf  chr5.fa           chr8.primate.maf  hg19
+.
+|-- adaptiphy-launch-slurm.sh
+|-- config.yaml
+|-- data
+|   |-- chr10.fa
+|   |-- chr10.primate.maf
+|   |-- chr11.fa
+|   |-- chr11.primate.maf
+|   |-- chr12.fa
+|   |-- chr12.primate.maf
+|   |-- chr13.fa
+|   |-- chr13.primate.maf
+|   |-- chr14.fa
+|   |-- chr14.primate.maf
+|   |-- chr15.fa
+|   |-- chr15.primate.maf
+|   |-- chr16.fa
+|   |-- chr16.primate.maf
+|   |-- chr17.fa
+|   |-- chr17.primate.maf
+|   |-- chr18.fa
+|   |-- chr18.primate.maf
+|   |-- chr19.fa
+|   |-- chr19.primate.maf
+|   |-- chr1.fa
+|   |-- chr1.primate.maf
+|   |-- chr20.fa
+|   |-- chr20.primate.maf
+|   |-- chr21.fa
+|   |-- chr21.primate.maf
+|   |-- chr22.fa
+|   |-- chr22.primate.maf
+|   |-- chr2.fa
+|   |-- chr2.primate.maf
+|   |-- chr3.fa
+|   |-- chr3.primate.maf
+|   |-- chr4.fa
+|   |-- chr4.primate.maf
+|   |-- chr5.fa
+|   |-- chr5.primate.maf
+|   |-- chr6.fa
+|   |-- chr6.primate.maf
+|   |-- chr7.fa
+|   |-- chr7.primate.maf
+|   |-- chr8.fa
+|   |-- chr8.primate.maf
+|   |-- chr9.fa
+|   |-- chr9.primate.maf
+|   |-- chrX.fa
+|   |-- chrX.primate.maf
+|   |-- chrY.fa
+|   |-- chrY.primate.maf
+|   |-- hg19
+|   |-- ncHAE.v2.bed
+|   |-- ncHAE.v3.bed
+|   |-- thurman.bed
+|   `-- thurman.v3.bed
+|-- envs
+|   `-- biopython.yaml
+|-- local_data
+|   |-- allpeaks.bed
+|   |-- peaks.bed
+|   |-- SARS_CoV_2.fasta
+|   `-- SARS_CoV_2.multiple.fasta
+|-- neutral_smk
+|   |-- config.yaml
+|   |-- data
+|   |   |-- chr10.masked.fa
+|   |   |-- chr10.masked.maf
+|   |   |-- chr11.masked.fa
+|   |   |-- chr11.masked.maf
+|   |   |-- chr12.masked.fa
+|   |   |-- chr12.masked.maf
+|   |   |-- chr13.masked.fa
+|   |   |-- chr13.masked.maf
+|   |   |-- chr14.masked.fa
+|   |   |-- chr14.masked.maf
+|   |   |-- chr15.masked.fa
+|   |   |-- chr15.masked.maf
+|   |   |-- chr16.masked.fa
+|   |   |-- chr16.masked.maf
+|   |   |-- chr17.masked.fa
+|   |   |-- chr17.masked.maf
+|   |   |-- chr18.masked.fa
+|   |   |-- chr18.masked.maf
+|   |   |-- chr19.masked.fa
+|   |   |-- chr19.masked.maf
+|   |   |-- chr1.masked.fa
+|   |   |-- chr1.masked.maf
+|   |   |-- chr20.masked.fa
+|   |   |-- chr20.masked.maf
+|   |   |-- chr21.masked.fa
+|   |   |-- chr21.masked.maf
+|   |   |-- chr22.masked.fa
+|   |   |-- chr22.masked.maf
+|   |   |-- chr2.masked.fa
+|   |   |-- chr2.masked.maf
+|   |   |-- chr3.masked.fa
+|   |   |-- chr3.masked.maf
+|   |   |-- chr4.masked.fa
+|   |   |-- chr4.masked.maf
+|   |   |-- chr5.masked.fa
+|   |   |-- chr5.masked.maf
+|   |   |-- chr6.masked.fa
+|   |   |-- chr6.masked.maf
+|   |   |-- chr7.masked.fa
+|   |   |-- chr7.masked.maf
+|   |   |-- chr8.masked.fa
+|   |   |-- chr8.masked.maf
+|   |   |-- chr9.masked.fa
+|   |   |-- chr9.masked.maf
+|   |   |-- chrX.masked.fa
+|   |   |-- chrX.masked.maf
+|   |   |-- chrY.masked.fa
+|   |   |-- chrY.masked.maf
+|   |   |-- hg19.fa
+|   |   `-- hg19.fa.fai
+|   |-- envs
+|   |   `-- biopython.yaml
+|   |-- neutrality-launch-smk.sh
+|   |-- scripts
+|   |   |-- parse_neutral.py
+|   |   `-- select_and_filter_neutral.py
+|   |-- slurm_general
+|   |   `-- config.yaml
+|   `-- Snakefile
+|-- scripts
+|   |-- alt4-fgrnd_spec.model
+|   |-- bf_generator.py
+|   |-- calculate_zeta.py
+|   |-- DictGen.py
+|   |-- extract_res.py
+|   |-- null4-fgrnd_spec.model
+|   `-- select_and_filter.py
+|-- slurm_general
+|   `-- config.yaml
+`-- Snakefile
+
+
 ```
 
  4. ```./adaptiphy-launch-slurm.py``` (optional): update this script if you are planning on using SLURM as a job manager to run the AdaptiPhy snakemake (preferred).
@@ -195,6 +326,8 @@ AdaptiPhy can be run in two modes.
 
 
 ### Building an appropriate neutral proxy set ###
+
+Please make sure your masked data is deposited in the data subdirectory nested in neutral_smk.
 
 **running separate snakemake to generate  neutral set file (second snakemake)**: The most important part of a Global test is to have an appropriate neutral proxy. We have proposed a criteria with a series of steps to be able to identify neutral proxy from random regions in the genome that are masked for functional sequence accordin to a genome of reference.  First you need to mask your maf alignment and we have instructions in ...... Minimally, you should mask all the known coding sequences for yout reference genome.
 
