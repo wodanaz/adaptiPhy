@@ -274,7 +274,7 @@ snakemake --cores $(nproc) --use-conda --latency-wait 120 --keep-going   --conda
 Note that the parameters `--keep-going` and `--conda-prefix` are optional. The first permits snakemake to continue running steps even if an earlier step fails, and the second specifies the install location of conda envs that will be built by the pipeline.
 
 **Option C:** running the snakemake pipeline on your personal computer or other systems
- * we currently don't have support for this option. If you'd like to explore this option, check out the documentation for snakemake on other cluster systems [here] (https://snakemake.readthedocs.io/en/v5.6.0/executable.html) with more examples [here] (https://github.com/snakemake-profiles/doc).
+ * we currently don't have support for this option. If you'd like to explore this option, check out the documentation for snakemake on other cluster systems [here](https://snakemake.readthedocs.io/en/v5.6.0/executable.html) with more examples [here](https://github.com/snakemake-profiles/doc).
  * It's possible to run this pipeline in a personal work machine. I tested it in a lenovo with linux and enough space to store data, 1 core and about 32 Gb of RAM.
 
 to run it, simply execute this in your laptop's terminal and don't turn your computer off, or use a tool such as tmux or nohup to ensure the pipeline continues to run even if the computer sleeps:
