@@ -43,8 +43,6 @@ dependencies:
   - snakemake=9.1
   - python=3.11
   - snakemake-executor-plugin-slurm
-  - bedtools
-  - bedops
   - bzip2
 ```
 
