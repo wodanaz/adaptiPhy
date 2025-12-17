@@ -81,7 +81,7 @@ To run the snakemake pipeline either interactively or through a job manager like
    
 ```bash
 # INPUT SPLITS ##############################################################################################################
-windows: "data/thurman.bed" # this file contains > 100K wich implies > 1M replicates. try with a smaller bed file in the directory
+windows: "data/ncHAE.v2.bed" # thutman.bed is a large run,  thisfile contains > 100K wich implies > 1M replicates. try with a smaller bed file in the directory ... ncHAE.v2.bed contains 2408 human accelerated elements
 num_replicates: 10
 min_frac: 0.9
 
