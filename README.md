@@ -14,7 +14,7 @@ If you are a snakemake 1.0 user, we have deprecated the original version and tho
 
 ### 1a. Recommended: Download the tarball release from the "Releases" page ###
 
-To use the AdaptiPhy 2.0 compressed static release, please navigate to the [Releases](https://github.com/wodanaz/adaptiPhy/releases/tag/v2.0.0) menu on the right-hand side of this README landing page. Please note that the test data to confirm that AdaptiPhy is functioning properly must be separately downloaded from Zenodo and moved into a subdirectory called "data". This option is ready, please download and unzip the file.
+To use the AdaptiPhy 2.3 compressed static release, please navigate to the [Releases](https://github.com/wodanaz/adaptiPhy/releases/) menu on the right-hand side of this README landing page. Please note that the test data to confirm that AdaptiPhy is functioning properly must be separately downloaded from Zenodo and moved into a subdirectory called "data". This option is ready, please download and unzip the file.
 
 ### 1b. Not 100% recommended: Clone the git repo ###
 
