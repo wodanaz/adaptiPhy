@@ -1,11 +1,12 @@
 # INPUT SPLITS #######################################################################################
-windows: "data/thurman.bed"
-num_replicates: 10
-min_frac: 0.9
+windows: "data/ncHAE.v3.bed"
+num_replicates: 1
+min_frac: 0.95
 
 # TREE TOPOLOGY ########################################################################################
 tree_topology: "(rheMac3,(ponAbe2,(gorGor3,(panTro4,hg19))))"
-foreground_branches: ["hg19"]
+#tree_topology_named: "(rheMac3,(ponAbe2,(gorGor3,(panTro4,hg19)Node6)))"  # OPTIONAL, add the internal node id for phyloFit, to know the name assigned by ADAPTIPHY/HYPHY, please look into the readme.md
+foreground_branches: ["hg19", "panTro4"]  # if running an inner branch as foreground, please add branch here (i.e. foreground_branches: ["hg19", "Node6"] ) 
 
 # GENOME TARGET FILES ##################################################################################
 #provide the input file to be split by phast's msa_split here. this file can be in a .fasta, phylip, mpm, maf, or ss file format. msa_split will try to guess the contents.
