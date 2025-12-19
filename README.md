@@ -350,7 +350,7 @@ DO NOT remove the following directories and files unless you know what you're do
 ### APENDIX 1 (INTERNAL BRANCHES) ###
 In order to run a internal branch, make sure you are using version 2.3.
 
--First we need to learn what node id has been assigned by hyphy, so the nodes match between phyloFit and Adaptiphy. To do this: Run a single test. Put a single line in the bed file and run with a single replicate. Make sure the config.yaml file chromosomes setting is set to the same chromosome or scaffold for the site in bed file
+-First we need to learn what node id has been assigned by adaptiphy and hyphy, so the nodes match between phyloFit and Adaptiphy. To do this: Run a single test. Put a single line in the bed file and run with a single replicate. Make sure the config.yaml file chromosomes setting is set to the same chromosome or scaffold for the site in bed file
 
 ```
 INPUT SPLITS #######################################################################################
