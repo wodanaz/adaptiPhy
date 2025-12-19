@@ -387,7 +387,7 @@ Tree ref_hyphy_tree=(ponAbe2:0.01552330221099906,(gorGor3:0.01131179456681608,(p
 
 Now you can see, the branch leading to the common ancestor of humans and chimpanzees is Node6 and the branch leading to the common ancestor of humans, chimpanzees and gorillas is Node4.
 
-Once this is done, you can use Node6 as a forground branch and theres no need to reconstruct the sequence.
+Once this is done, you can use Node6 as a foreground branch and theres no need to reconstruct the sequence.
 
 To run a full test, your config.yaml file should look like:
 
