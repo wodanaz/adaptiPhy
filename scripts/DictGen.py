@@ -10,9 +10,19 @@ from Bio.Align import MultipleSeqAlignment
 import yaml
 from pprint import pprint
 
+if len(sys.argv) < 3:
+    print("Usage: DictGen.py <keys_file> <values_file> [ref_dir=ref] [dict_file=global.dict] [ref_list_file=reference.list]")
+    sys.exit(1)
+
+keys_file = sys.argv[1]
+values_file = sys.argv[2]
+ref_dir = sys.argv[3] if len(sys.argv) > 3 else "ref"
+dict_file = sys.argv[4] if len(sys.argv) > 4 else "global.dict"
+ref_list_file = sys.argv[5] if len(sys.argv) > 5 else "reference.list"
+
 # Ensure logs directory exists
 os.makedirs("logs", exist_ok=True)
-log_file = "logs/dictgen.log"
+log_file = os.path.join("logs", os.path.basename(dict_file).replace('.dict', '.log'))  # Per chrom log?
 
 # Read configuration
 try:
@@ -22,7 +32,6 @@ except Exception as e:
     with open(log_file, "w") as log:
         log.write(f"Error reading config.yaml: {str(e)}\n")
     sys.exit(f"Error reading config.yaml: {str(e)}")
-
 tree_topology = config.get("tree_topology")
 if not tree_topology:
     with open(log_file, "w") as log:
@@ -45,24 +54,21 @@ with open(log_file, "w") as log:
     log.write(f"All species: {all_species}\n")
 
 # Ensure output directory
-os.makedirs("ref", exist_ok=True)
+os.makedirs(ref_dir, exist_ok=True)
 
-# Create empty reference.list
-with open("reference.list", "w") as f:
+# Create empty ref_list_file
+with open(ref_list_file, "w") as f:
     f.write("")
 
 # Read input files
-keys = "goodalignments.txt"
-values = sys.argv[1]
-
 try:
-    with open(keys) as f:
+    with open(keys_file) as f:
         keylist = [line.strip() for line in f if line.strip()]
-    with open(values) as f:
+    with open(values_file) as f:
         valuelist = [line.strip() for line in f if line.strip()]
 except Exception as e:
     with open(log_file, "a") as log:
-        log.write(f"Error reading input files ({keys}, {values}): {str(e)}\n")
+        log.write(f"Error reading input files ({keys_file}, {values_file}): {str(e)}\n")
     sys.exit(f"Error reading input files: {str(e)}")
 
 # Validate and extract basenames from keylist
@@ -83,17 +89,6 @@ with open(log_file, "a") as log:
     log.write(f"Valuelist: {valuelist}\n")
 
 # Helper functions
-def resolve_key_path(filename):
-    if os.path.exists(filename):
-        return filename
-    chrom = filename.split('.')[0]
-    possible = os.path.join("query", chrom, filename)
-    if os.path.exists(possible):
-        return possible
-    with open(log_file, "a") as log:
-        log.write(f"Warning: Key file {filename} not found\n")
-    return filename
-
 def resolve_neutral_path(filename):
     if os.path.exists(filename):
         return filename
@@ -104,18 +99,21 @@ def resolve_neutral_path(filename):
         log.write(f"Warning: Neutral file {filename} not found\n")
     return filename
 
+# Note: resolve_key_path not used, removed if not needed
+
 # Process replicates
-for replicate in range(10):
+num_replicates = config.get("num_replicates", 10)  # Use config if possible
+for replicate in range(num_replicates):
     dictionary = {}
     for key in keylist:
         random.shuffle(valuelist)
         dictionary[key] = valuelist[:20]
-    
-    with open("global.dict", "w") as fielddict_file:
+   
+    with open(dict_file, "w") as fielddict_file:
         pprint(dictionary, fielddict_file)
     with open(log_file, "a") as log:
-        log.write(f"Replicate {replicate}: Wrote global.dict\n")
-    
+        log.write(f"Replicate {replicate}: Wrote {dict_file}\n")
+   
     for key in keylist:
         filename = os.path.basename(key)
         if not filename.endswith(".fa"):
@@ -127,7 +125,7 @@ for replicate in range(10):
             SeqRecord(Seq(''), id=species) for species in all_species
         ])
         combined_seq.sort()
-        
+       
         for ref in neutral_list:
             n += 1
             aligned_file = resolve_neutral_path(ref)
@@ -147,11 +145,11 @@ for replicate in range(10):
                 with open(log_file, "a") as log:
                     log.write(f"Error processing {aligned_file}: {str(e)}\n")
                 continue
-        
+       
         for rec in combined_seq:
             rec.description = rec.id
-        
-        out_filename = os.path.join("ref", f"{base}.{replicate}.ref")
+       
+        out_filename = os.path.join(ref_dir, f"{base}.{replicate}.ref")
         try:
             with open(out_filename, 'w') as write_file:
                 AlignIO.write(combined_seq, write_file, 'fasta')
@@ -161,6 +159,6 @@ for replicate in range(10):
             with open(log_file, "a") as log:
                 log.write(f"Error writing {out_filename}: {str(e)}\n")
             continue
-        
-        with open('reference.list', 'a') as referencelist:
+       
+        with open(ref_list_file, 'a') as referencelist:
             referencelist.write(f"{key}\t{n}\t{replicate}\n")
