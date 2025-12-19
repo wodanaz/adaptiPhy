@@ -87,7 +87,8 @@ min_frac: 0.9
 
 # TREE TOPOLOGY #############################################################################################################
 tree_topology: "(rheMac3,(ponAbe2,(gorGor3,(panTro4,hg19))))"
-foreground_branches: ["hg19"]
+#tree_topology_named: "(rheMac3,(ponAbe2,(gorGor3,(panTro4,hg19)Node6)))"  # OPTIONAL, add the internal node id for phyloFit, to know the name assigned by ADAPTIPHY/HYPHY, please look into the readme.md
+foreground_branches: ["hg19", "panTro4"]  # if running an inner branch as foreground, please add branch here (i.e. foreground_branches: ["hg19", "Node6"] )
 
 # GENOME TARGET FILES #######################################################################################################
 # provide the input file to be split by phast's msa_split here. this file can be in a .fasta, phylip, mpm, maf, or ss file
@@ -344,6 +345,82 @@ __provide details here on how to interpret this table!__
 If you'd like to rerun AdaptiPhy again, make sure to remove the some of the newly generated files: `ADAPTIPHY_DONE OUTPUT_FILES`. You can also remove the `slurm-XXXXXXX.out` if you wish.
 
 DO NOT remove the following directories and files unless you know what you're doing: `data/ config.yaml scripts/ slurm_general/ adaptiphy-launch-slurm.sh envs/ Snakefile`. Remove the `OUTPUT_FINAL` directory only if you're sure you don't need its contents anymore! 
+
+
+### APENDIX 1 (INTERNAL BRANCHES) ###
+In order to run a internal branch, make sure you are using version 2.3.
+
+-First we need to learn what node id has been assigned by hyphy, so the nodes match between phyloFit and Adaptiphy. To do this: Run a single test. Put a single line in the bed file and run with a single replicate. Make sure the config.yaml file chromosomes setting is set to the same chromosome or scaffold for the site in bed file
+
+```
+INPUT SPLITS #######################################################################################
+windows: "data/singlesite.bed"
+num_replicates: 1
+min_frac: 0.95
+.
+.
+.
+chromosomes: ["chr1"] 
+```
+if bed file looks like:
+```
+head singlesite.bed
+chr1  300  600
+```
+
+run snakemake as suggested and once has completed, navigate to OUTPUT_FINAL/HYPHY/, and open any of the out files generated. 
+
+```
+tail chr1.300-600.hg19.alt.0.out
+```
+you should see an output like:
+
+```
+quer_hyphy_tree.panTro4.t=zeta_bgrnd*ref_hyphy_tree.panTro4.t;
+quer_hyphy_tree.hg19.t=zeta_bgrnd*ref_hyphy_tree.hg19.t;
+quer_hyphy_tree.Node6.t=zeta_fgrnd*ref_hyphy_tree.Node6.t;
+quer_hyphy_tree.Node4.t=zeta_bgrnd*ref_hyphy_tree.Node4.t;
+
+Tree quer_hyphy_tree=(ponAbe2:0.00993859751319167,(gorGor3:0.007242233116600383,(panTro4:0.005276326723903601,hg19:0.006070328761461593)Node6:0.0008699856137607418)Node4:0.006849972795940992,rheMac3:0.03457890512237631);
+Tree ref_hyphy_tree=(ponAbe2:0.01552330221099906,(gorGor3:0.01131179456681608,(panTro4:0.008241204474817597,hg19:0.009481372775103613)Node6:0.001358848628662547)Node4:0.01069911501168802,rheMac3:0.05400951126430419);
+```
+
+Now you can see, the branch leading to the common ancestor of humans and chimpanzees is Node6 and the branch leading to the common ancestor of humans, chimpanzees and gorillas is Node4.
+
+Once this is done, you can use Node6 as a forground branch and theres no need to reconstruct the sequence.
+
+To run a full test, your config.yaml file should look like:
+
+```
+# INPUT SPLITS #######################################################################################
+windows: "data/ncHAE.v3.bed"
+num_replicates: 10
+min_frac: 0.95
+
+# TREE TOPOLOGY ########################################################################################
+tree_topology: "(rheMac3,(ponAbe2,(gorGor3,(panTro4,hg19))))"
+tree_topology_named: "(rheMac3,(ponAbe2,(gorGor3,(panTro4,hg19)Node6)))"  # OPTIONAL, add the internal node id for phyloFit, to know the name assigned by ADAPTIPHY/HYPHY, please look into the readme.md
+foreground_branches: ["hg19", "Node6"]  # if running an inner branch as foreground, please add branch here (i.e. foreground_branches: ["hg19", "Node6"] ) 
+
+# GENOME TARGET FILES ##################################################################################
+#provide the input file to be split by phast's msa_split here. this file can be in a .fasta, phylip, mpm, maf, or ss file format. msa_split will try to guess the contents.
+#if this fails, the snakefile may need to be modified to have an --in-format parameter specifying the file type. We typically provide a MAF file.
+maf_pattern: "data/{chrom}.primate.maf"
+#if providing a MAF file, provide the reference sequence location here.
+fa_pattern: "data/{chrom}.fa"
+
+# LOCAL VS GLOBAL RUN SPECIFICATION ####################################################################
+#if running a local version of adaptiphy, no neutral sequence is required. Set the parameter below to "goodalignments.txt". If running a global version of adaptiphy, provide a neutral set file.
+#Keep in mind that if you perform a local run of adaptiphy (meaning that you set neutral_set to "goodalignments.txt") in a global (whole-genome) run, your neutral set
+#is a random sampling of the genome, which may not have a significant effect (see Berrio et. al. BMC) but caveat emptor.
+neutral_set: "neutral_smk/neutralset.txt"
+#options are: local = "goodalignments.txt", global = path to neutral set
+chromosomes: ["chr1","chr2","chr3","chr4","chr5","chr6","chr7","chr8","chr9","chr10","chr11","chr12","chr13","chr14","chr15","chr16","chr17","chr18","chr19","chr20","chr21","chr22", "chrX"]
+#"chr" if one sequence (i.e. viral genome, one chromosome only in the file provided") or specific chromosomes to target if using a multi-chromosome genome (i.e. "chr19", etc)
+
+```
+
+
 
 ### Citation
 If you use this pipeline, please cite:
