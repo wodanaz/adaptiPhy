@@ -4,7 +4,9 @@ import random
 import os
 import yaml
 
+# ------------------------------------------------------------------
 # 1. ALWAYS run from the project root (where config.yaml and Snakefile live)
+# ------------------------------------------------------------------
 script_dir = os.path.dirname(os.path.abspath(__file__))      # .../scripts
 project_root = os.path.abspath(os.path.join(script_dir, ".."))  # one level up
 os.chdir(project_root)
@@ -15,7 +17,9 @@ if len(sys.argv) < 2:
 
 ref_list_file = sys.argv[1]
 
+# ------------------------------------------------------------------
 # 2. Load config safely
+# ------------------------------------------------------------------
 config_path = os.path.join(project_root, "config.yaml")
 if not os.path.exists(config_path):
     sys.exit(f"ERROR: config.yaml not found at {config_path}")
@@ -31,7 +35,9 @@ if not tree_topology:
 if not foreground_branches:
     sys.exit("ERROR: 'foreground_branches' empty in config.yaml")
 
+# ------------------------------------------------------------------
 # 3. Parse reference.list — column 1 can be full path or clean name
+# ------------------------------------------------------------------
 entries = []
 with open(ref_list_file) as f:
     for line in f:
@@ -49,7 +55,9 @@ with open(ref_list_file) as f:
 if not entries:
     sys.exit(f"ERROR: No valid entries found in {ref_list_file}")
 
+# ------------------------------------------------------------------
 # 4. Generate .bf files
+# ------------------------------------------------------------------
 output_dir = "bf_dir"
 os.makedirs(output_dir, exist_ok=True)
 
