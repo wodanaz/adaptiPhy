@@ -7,24 +7,18 @@ import argparse
 import yaml
 import sys
 from dendropy import Tree
-# ------------------------------------------------------------------
 # Force correct working directory (project root)
-# ------------------------------------------------------------------
 script_dir = os.path.dirname(os.path.abspath(__file__))
 project_root = os.path.abspath(os.path.join(script_dir, ".."))
 os.chdir(project_root)
-# ------------------------------------------------------------------
 # Load config
-# ------------------------------------------------------------------
 with open("config.yaml", "r") as f:
     config = yaml.safe_load(f)
 foreground_branches = config.get("foreground_branches", [])
 internal_branches = config.get("internal_branches", [])  # List of dicts: {'name': str, 'tips': list[str]}
 if not foreground_branches:
     sys.exit("Error: 'foreground_branches' must be specified and non-empty in config.yaml")
-# ------------------------------------------------------------------
 # Function to parse TREE line and extract branch lengths
-# ------------------------------------------------------------------
 def parse_tree(tree_line):
     branch_lengths = {}
     # Match species:branch_length (e.g., hg19:0.00806296)
@@ -35,9 +29,7 @@ def parse_tree(tree_line):
         except ValueError:
             continue
     return branch_lengths
-# ------------------------------------------------------------------
 # Parse arguments
-# ------------------------------------------------------------------
 parser = argparse.ArgumentParser(description="Calculate zeta values from phyloFit .mod files")
 parser.add_argument("ref_list", help="Path to reference.list")
 parser.add_argument("query_dir", help="Directory with query .mod files")
@@ -60,9 +52,7 @@ with open(log_file, "w") as log:
     log.write(f"Foreground branches: {foreground_branches}\n")
     if chrom_filter:
         log.write(f"Filtering for chromosome: {chrom_filter}\n")
-# ------------------------------------------------------------------
 # Extract unique basenames from reference.list (column 1 = full path or basename)
-# ------------------------------------------------------------------
 bases = []
 seen = set()
 with open(ref_list, "r") as f:
@@ -90,9 +80,7 @@ if not bases:
         writer = csv.DictWriter(csvfile, fieldnames=["NAME", "BRANCH", "REPL", "zeta"], delimiter="\t")
         writer.writeheader()
 else:
-    # ------------------------------------------------------------------
     # Pre-load all ref .mod paths into a dict {base: {replicate: path}}
-    # ------------------------------------------------------------------
     ref_mod_dict = {}
     for filename in os.listdir(ref_dir):
         if filename.endswith(".mod"):
@@ -106,17 +94,13 @@ else:
                 ref_mod_dict[base][replicate] = path
     with open(log_file, "a") as log:
         log.write(f"Pre-loaded {len(ref_mod_dict)} unique bases from ref_dir\n")
-    # ------------------------------------------------------------------
     # Prepare CSV writer for incremental writing
-    # ------------------------------------------------------------------
     headers = ["NAME", "BRANCH", "REPL", "zeta"]
     with open(summary_table, "w", newline='') as csvfile:
         writer = csv.DictWriter(csvfile, fieldnames=headers, delimiter="\t")
         writer.writeheader()
     row_count = 0
-    # ------------------------------------------------------------------
     # Process each base incrementally
-    # ------------------------------------------------------------------
     for base in bases:
         query_mod = os.path.join(query_dir, f"{base}.mod")
         ref_mods = ref_mod_dict.get(base, {})
@@ -219,9 +203,7 @@ else:
                 except Exception as e:
                     with open(log_file, "a") as log:
                         log.write(f"Failed to compute LCA for {int_name} in {base}: {e}\n")
-# ------------------------------------------------------------------
 # Final log
-# ------------------------------------------------------------------
 with open(log_file, "a") as log:
     log.write(f"Wrote {row_count} zeta values to {summary_table}\n")
     log.write("=== calculate_zeta.py finished successfully ===\n")
