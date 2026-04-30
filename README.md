@@ -6,11 +6,11 @@
 
 # AdaptiPhy: Implementation with snakemake
 
-This code updates the existing AdaptiPhy 2.0 pipeline to run using snakemake, allowing the user to plug in data at the beginning of the pipeline & performing the intermediate steps automatically and reproducibly. 
+This code updates the existing AdaptiPhy 2.3 pipeline to run using snakemake, allowing the user to plug in data at the beginning of the pipeline & performing the intermediate steps automatically and reproducibly. 
 
 If you are a snakemake 1.0 user, we have deprecated the original version and those files can be found in this repo under the folder 'deprecated'.
 
-## 1. Downloading the AdaptiPhy pipeline 2.0 to run with snakemake ##
+## 1. Downloading the AdaptiPhy pipeline 2.3 to run with snakemake ##
 
 ### 1a. Recommended: Download the tarball release from the "Releases" page ###
 
