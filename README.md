@@ -259,7 +259,7 @@ Before getting started, please make sure your masked data is deposited in the da
 * When you're ready, submit your batch job from the neutral_smk top-level directory as:
 
   ```bash
-   sbatch slurm-launch-neutral-smk.sh
+   sbatch neutrality-launch-smk.sh
    ```
   
 * This will source parameters for daughter jobs from `slurm_general/config.yaml`. The resulting SLURM log file will be written to `slurm-<JOBID>out`. Individual rule logs will primarily be written to `logs/`.
