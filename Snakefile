@@ -74,6 +74,7 @@ rule query:
         """
         mkdir -p query/{wildcards.chrom} logs
         msa_split {input.maf} --refseq {input.fa} --gap-strip ANY -q \
+                  --in-format MAF \
                   --features {input.feat} --for-features \
                   --out-root query/{wildcards.chrom}/{wildcards.chrom} > {log} 2>&1 || true
         touch {output}
